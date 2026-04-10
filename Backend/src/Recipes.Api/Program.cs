@@ -6,6 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+builder.Services.AddProblemDetails();
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMediatR(cfg =>
 {
@@ -16,8 +26,16 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors("Frontend");
 
 app.MapHealthChecks("/health");
 
