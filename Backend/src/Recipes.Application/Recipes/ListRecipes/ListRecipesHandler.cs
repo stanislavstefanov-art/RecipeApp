@@ -1,26 +1,28 @@
+using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Abstractions;
-using Recipes.Domain.Primitives;
+using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.Recipes.ListRecipes;
 
-public sealed class ListRecipesHandler : IRequestHandler<ListRecipesQuery, IReadOnlyList<RecipeListItemDto>>
+public sealed class ListRecipesHandler : IRequestHandler<ListRecipesQuery, ErrorOr<IReadOnlyList<RecipeListItemDto>>>
 {
-    private readonly IRecipesDbContext _db;
+    private readonly IRecipeRepository _repository;
 
-    public ListRecipesHandler(IRecipesDbContext db)
+    public ListRecipesHandler(IRecipeRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<IReadOnlyList<RecipeListItemDto>> Handle(ListRecipesQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IReadOnlyList<RecipeListItemDto>>> Handle(
+        ListRecipesQuery request,
+        CancellationToken cancellationToken)
     {
-        return await _db.Recipes
-            .AsNoTracking()
-            .OrderBy(r => r.Name)
+        var recipes = await _repository.GetAllAsync(cancellationToken);
+
+        IReadOnlyList<RecipeListItemDto> result = recipes
             .Select(r => new RecipeListItemDto(r.Id.Value, r.Name.Value))
-            .ToListAsync(cancellationToken);
+            .ToList();
+
+        return result.ToErrorOr();
     }
 }
-

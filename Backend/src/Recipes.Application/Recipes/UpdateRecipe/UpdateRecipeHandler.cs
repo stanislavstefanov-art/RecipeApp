@@ -1,35 +1,33 @@
+using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Abstractions;
 using Recipes.Domain.Primitives;
+using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.Recipes.UpdateRecipe;
 
-public sealed class UpdateRecipeHandler : IRequestHandler<UpdateRecipeCommand, UpdateRecipeResult>
+public sealed class UpdateRecipeHandler : IRequestHandler<UpdateRecipeCommand, ErrorOr<Updated>>
 {
-    private readonly IRecipesDbContext _db;
+    private readonly IRecipeRepository _repository;
 
-    public UpdateRecipeHandler(IRecipesDbContext db)
+    public UpdateRecipeHandler(IRecipeRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<UpdateRecipeResult> Handle(UpdateRecipeCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Updated>> Handle(UpdateRecipeCommand request, CancellationToken cancellationToken)
     {
         var recipeId = RecipeId.From(request.Id);
 
-        var recipe = await _db.Recipes
-            .FirstOrDefaultAsync(r => r.Id == recipeId, cancellationToken);
+        var recipe = await _repository.GetByIdAsync(recipeId, cancellationToken);
 
         if (recipe is null)
         {
-            return UpdateRecipeResult.NotFound;
+            return Error.NotFound("Recipe.NotFound", $"Recipe '{request.Id}' was not found.");
         }
 
         recipe.Rename(request.Name);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
 
-        return UpdateRecipeResult.Updated;
+        return Result.Updated;
     }
 }
-

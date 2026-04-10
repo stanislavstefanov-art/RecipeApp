@@ -1,38 +1,35 @@
+using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Abstractions;
 using Recipes.Domain.Primitives;
+using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.Recipes.AddIngredientToRecipe;
 
-public sealed class AddIngredientToRecipeHandler
-    : IRequestHandler<AddIngredientToRecipeCommand, AddIngredientToRecipeResult>
+public sealed class AddIngredientToRecipeHandler : IRequestHandler<AddIngredientToRecipeCommand, ErrorOr<Success>>
 {
-    private readonly IRecipesDbContext _db;
+    private readonly IRecipeRepository _repository;
 
-    public AddIngredientToRecipeHandler(IRecipesDbContext db)
+    public AddIngredientToRecipeHandler(IRecipeRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<AddIngredientToRecipeResult> Handle(
+    public async Task<ErrorOr<Success>> Handle(
         AddIngredientToRecipeCommand request,
         CancellationToken cancellationToken)
     {
         var recipeId = RecipeId.From(request.RecipeId);
 
-        var recipe = await _db.Recipes
-            .FirstOrDefaultAsync(r => r.Id == recipeId, cancellationToken);
+        var recipe = await _repository.GetByIdAsync(recipeId, cancellationToken);
 
         if (recipe is null)
         {
-            return AddIngredientToRecipeResult.NotFound;
+            return Error.NotFound("Recipe.NotFound", $"Recipe '{request.RecipeId}' was not found.");
         }
 
         recipe.AddIngredient(request.Name, request.Quantity, request.Unit);
-        await _db.SaveChangesAsync(cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
 
-        return AddIngredientToRecipeResult.Added;
+        return Result.Success;
     }
 }
-

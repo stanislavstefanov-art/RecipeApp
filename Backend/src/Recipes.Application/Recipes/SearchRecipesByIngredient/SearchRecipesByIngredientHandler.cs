@@ -1,39 +1,31 @@
+using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Abstractions;
-using Recipes.Domain.Primitives;
+using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.Recipes.SearchRecipesByIngredient;
 
 public sealed class SearchRecipesByIngredientHandler
-    : IRequestHandler<SearchRecipesByIngredientQuery, IReadOnlyList<RecipeSearchResultDto>>
+    : IRequestHandler<SearchRecipesByIngredientQuery, ErrorOr<IReadOnlyList<RecipeSearchResultDto>>>
 {
-    private readonly IRecipesDbContext _db;
+    private readonly IRecipeRepository _repository;
 
-    public SearchRecipesByIngredientHandler(IRecipesDbContext db)
+    public SearchRecipesByIngredientHandler(IRecipeRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<IReadOnlyList<RecipeSearchResultDto>> Handle(
+    public async Task<ErrorOr<IReadOnlyList<RecipeSearchResultDto>>> Handle(
         SearchRecipesByIngredientQuery request,
         CancellationToken cancellationToken)
     {
-        var ingredient = request.Ingredient.Trim();
+        var recipes = await _repository.SearchByIngredientNameAsync(
+            request.Ingredient.Trim(),
+            cancellationToken);
 
-        var recipeIds = await _db.Ingredients
-            .AsNoTracking()
-            .Where(i => EF.Functions.Like(i.Name, $"%{ingredient}%"))
-            .Select(i => EF.Property<Guid>(i, "RecipeId"))
-            .Distinct()
-            .ToListAsync(cancellationToken);
-
-        return await _db.Recipes
-            .AsNoTracking()
-            .Where(r => recipeIds.Contains(r.Id.Value))
-            .OrderBy(r => r.Name)
+        IReadOnlyList<RecipeSearchResultDto> result = recipes
             .Select(r => new RecipeSearchResultDto(r.Id.Value, r.Name.Value))
-            .ToListAsync(cancellationToken);
+            .ToList();
+
+        return result.ToErrorOr();
     }
 }
-

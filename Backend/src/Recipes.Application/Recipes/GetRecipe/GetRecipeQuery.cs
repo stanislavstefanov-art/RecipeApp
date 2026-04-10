@@ -1,8 +1,9 @@
+using ErrorOr;
 using MediatR;
 
 namespace Recipes.Application.Recipes.GetRecipe;
 
-public sealed record GetRecipeQuery(Guid Id) : IRequest<RecipeDto?>;
+public sealed record GetRecipeQuery(Guid Id) : IRequest<ErrorOr<RecipeDto>>;
 
 public sealed record RecipeDto(
     Guid Id,
@@ -13,4 +14,3 @@ public sealed record RecipeDto(
 public sealed record IngredientDto(string Name, decimal Quantity, string Unit);
 
 public sealed record RecipeStepDto(int Order, string Instruction);
-

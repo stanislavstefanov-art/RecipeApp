@@ -1,4 +1,6 @@
 using Recipes.Api.Endpoints;
+using Recipes.Application;
+using Recipes.Application.Behaviors;
 using Recipes.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +18,13 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddProblemDetails();
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblyContaining<Recipes.Application.Recipes.CreateRecipe.CreateRecipeCommand>();
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
 
 builder.Services.AddHealthChecks();

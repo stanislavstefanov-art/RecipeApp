@@ -1,30 +1,28 @@
+using ErrorOr;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Application.Abstractions;
 using Recipes.Domain.Primitives;
+using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.Recipes.GetRecipe;
 
-public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, RecipeDto?>
+public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<RecipeDto>>
 {
-    private readonly IRecipesDbContext _db;
+    private readonly IRecipeRepository _repository;
 
-    public GetRecipeHandler(IRecipesDbContext db)
+    public GetRecipeHandler(IRecipeRepository repository)
     {
-        _db = db;
+        _repository = repository;
     }
 
-    public async Task<RecipeDto?> Handle(GetRecipeQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<RecipeDto>> Handle(GetRecipeQuery request, CancellationToken cancellationToken)
     {
         var recipeId = RecipeId.From(request.Id);
 
-        var recipe = await _db.Recipes
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == recipeId, cancellationToken);
+        var recipe = await _repository.GetByIdAsync(recipeId, cancellationToken);
 
         if (recipe is null)
         {
-            return null;
+            return Error.NotFound("Recipe.NotFound", $"Recipe '{request.Id}' was not found.");
         }
 
         return new RecipeDto(
@@ -34,4 +32,3 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, RecipeDto
             recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList());
     }
 }
-

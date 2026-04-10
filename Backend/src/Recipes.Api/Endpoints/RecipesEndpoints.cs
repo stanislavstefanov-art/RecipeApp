@@ -1,4 +1,5 @@
 using MediatR;
+using Recipes.Api.Extensions;
 using Recipes.Application.Recipes.AddIngredientToRecipe;
 using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
@@ -19,35 +20,31 @@ public static class RecipesEndpoints
         group.MapPost("/", async (CreateRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new CreateRecipeCommand(request.Name), ct);
-            return Results.Created($"/api/recipes/{result.Id}", result);
+            return result.ToHttpResult(response => Results.Created($"/api/recipes/{response.Id}", response));
         });
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
         {
-            var recipe = await sender.Send(new GetRecipeQuery(id), ct);
-            return recipe is null ? Results.NotFound() : Results.Ok(recipe);
+            var result = await sender.Send(new GetRecipeQuery(id), ct);
+            return result.ToHttpResult(recipe => Results.Ok(recipe));
         });
 
         group.MapGet("/", async (ISender sender, CancellationToken ct) =>
         {
-            var recipes = await sender.Send(new ListRecipesQuery(), ct);
-            return Results.Ok(recipes);
+            var result = await sender.Send(new ListRecipesQuery(), ct);
+            return result.ToHttpResult(recipes => Results.Ok(recipes));
         });
 
         group.MapGet("/search", async (string ingredient, ISender sender, CancellationToken ct) =>
         {
-            var results = await sender.Send(new SearchRecipesByIngredientQuery(ingredient), ct);
-            return Results.Ok(results);
+            var result = await sender.Send(new SearchRecipesByIngredientQuery(ingredient), ct);
+            return result.ToHttpResult(recipes => Results.Ok(recipes));
         });
 
         group.MapPut("/{id:guid}", async (Guid id, UpdateRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new UpdateRecipeCommand(id, request.Name), ct);
-            return result switch
-            {
-                UpdateRecipeResult.NotFound => Results.NotFound(),
-                _ => Results.NoContent()
-            };
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         group.MapPost("/{id:guid}/ingredients", async (Guid id, AddIngredientToRecipeRequest request, ISender sender, CancellationToken ct) =>
@@ -55,22 +52,13 @@ public static class RecipesEndpoints
             var result = await sender.Send(
                 new AddIngredientToRecipeCommand(id, request.Name, request.Quantity, request.Unit),
                 ct);
-
-            return result switch
-            {
-                AddIngredientToRecipeResult.NotFound => Results.NotFound(),
-                _ => Results.NoContent()
-            };
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new DeleteRecipeCommand(id), ct);
-            return result switch
-            {
-                DeleteRecipeResult.NotFound => Results.NotFound(),
-                _ => Results.NoContent()
-            };
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         return app;
@@ -80,4 +68,3 @@ public static class RecipesEndpoints
 public sealed record CreateRecipeRequest(string Name);
 
 public sealed record UpdateRecipeRequest(string Name);
-
