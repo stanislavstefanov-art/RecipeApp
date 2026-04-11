@@ -43,18 +43,6 @@ Dependency direction: Api → Application ← Infrastructure, Domain at center.
                            configs in Persistence/Configurations/.
 - Recipes.Api           — Minimal API. RecipesEndpoints.cs delegates to MediatR.
 
-## Adding a new feature
-
-Use the /new-feature slash command or follow the pattern manually:
-
-  Backend/src/Recipes.Application/Recipes/{FeatureName}/
-    {FeatureName}Request.cs      # optional inbound DTO
-    {FeatureName}Command.cs      # or Query — IRequest<T>
-    {FeatureName}Handler.cs      # IRequestHandler<TRequest, TResponse>
-    {FeatureName}Validator.cs    # FluentValidation when input validation needed
-
-Then wire the endpoint in RecipesEndpoints.cs.
-
 ## Key conventions
 
 - Strongly-typed IDs: readonly record struct with New() and From(Guid) factory methods.
@@ -73,8 +61,9 @@ Then wire the endpoint in RecipesEndpoints.cs.
 - Use DIRECT EXECUTION for: single-file bug fixes, adding a new endpoint to an existing
   slice, updating a validator, fixing a failing test.
 - When context fills up during long sessions, use /compact before starting a new task.
-- Use /new-feature skill for scaffolding vertical slices — it runs with context:fork to
-  keep scaffolding output isolated from the main session.
+- Use the scaffold-slice skill for scaffolding vertical slices — it runs in an
+  isolated context via context:fork, keeping scaffolding output out of the main
+  session. Invoke it by asking Claude Code to scaffold a feature by name.
 
 ## Azure deployment targets
 
@@ -91,9 +80,23 @@ Key Vault references. When generating infrastructure code, default to free-tier 
 ## AI features (Claude API integration)
 
 The app integrates Claude for:
-- Ingredient substitution suggestions (claude-haiku-3-5, synchronous)
-- Weekly meal plan generation (multi-agent, claude-haiku-3-5 for subagents)
+- Ingredient substitution suggestions (claude-haiku-4-5, synchronous)
+- Weekly meal plan generation (multi-agent, claude-haiku-4-5 for subagents)
 - Recipe extraction from unstructured text (tool_use + JSON schema)
 
-Use claude-haiku-3-5 for all runtime app calls. Use claude-sonnet-4-5 only for
+Use claude-haiku-4-5 for all runtime app calls. Use claude-sonnet-4-5 only for
 Claude Code sessions. Never call claude-sonnet-4-5 from application code — cost.
+
+## Recipe import
+The recipe import flow is being prepared for Claude-backed structured extraction.
+
+Current state:
+- `IRecipeImportService` returns raw extraction results
+- `RecipeImportOrchestrator` handles validation/retry/mapping
+- `StubRecipeImportService` is the active implementation
+- schema and prompt files live under `Docs/`
+
+Guidance:
+- keep extraction concerns in Infrastructure
+- keep retry and validation orchestration outside the transport layer
+- prefer explicit schema-driven extraction contracts

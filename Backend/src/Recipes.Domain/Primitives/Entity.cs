@@ -1,7 +1,15 @@
+using Recipes.Domain.Events;
+
 namespace Recipes.Domain.Primitives;
 
 public abstract class Entity
 {
-    // Marker base for domain entities. Concrete entities declare their own strongly typed Id.
-}
+    private readonly List<IDomainEvent> _domainEvents = new();
 
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected void RaiseDomainEvent(IDomainEvent domainEvent) =>
+        _domainEvents.Add(domainEvent);
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
+}
