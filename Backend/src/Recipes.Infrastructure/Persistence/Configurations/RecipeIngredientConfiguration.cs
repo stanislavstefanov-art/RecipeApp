@@ -5,9 +5,9 @@ using Recipes.Domain.Primitives;
 
 namespace Recipes.Infrastructure.Persistence.Configurations;
 
-public sealed class IngredientConfiguration : IEntityTypeConfiguration<Ingredient>
+public sealed class RecipeIngredientConfiguration : IEntityTypeConfiguration<RecipeIngredient>
 {
-    public void Configure(EntityTypeBuilder<Ingredient> builder)
+    public void Configure(EntityTypeBuilder<RecipeIngredient> builder)
     {
         builder.ToTable("RecipeIngredients");
 
@@ -16,7 +16,7 @@ public sealed class IngredientConfiguration : IEntityTypeConfiguration<Ingredien
         builder.Property(i => i.Id)
             .HasConversion(
                 id => id.Value,
-                value => IngredientId.From(value))
+                value => RecipeIngredientId.From(value))
             .ValueGeneratedNever();
 
         builder.Property(i => i.RecipeId)
@@ -39,4 +39,3 @@ public sealed class IngredientConfiguration : IEntityTypeConfiguration<Ingredien
         builder.HasIndex(i => i.RecipeId);
     }
 }
-

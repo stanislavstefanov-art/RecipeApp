@@ -45,5 +45,8 @@ app.UseCors("Frontend");
 app.MapHealthChecks("/health");
 
 app.MapRecipesEndpoints();
+app.MapShoppingListsEndpoints();
+app.MapProductsEndpoints();
+app.MapMealPlansEndpoints();
 
 app.Run();

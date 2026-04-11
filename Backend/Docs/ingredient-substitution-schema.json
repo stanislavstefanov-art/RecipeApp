@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IngredientSubstitutionSuggestionDto",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["originalIngredient", "substitutes", "confidence", "needsReview", "notes"],
+  "properties": {
+    "originalIngredient": {
+      "type": "string"
+    },
+    "substitutes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "reason", "quantityAdjustment", "isDirectReplacement"],
+        "properties": {
+          "name": { "type": "string" },
+          "reason": { "type": "string" },
+          "quantityAdjustment": { "type": ["string", "null"] },
+          "isDirectReplacement": { "type": "boolean" }
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "needsReview": { "type": "boolean" },
+    "notes": { "type": ["string", "null"] }
+  }
+}

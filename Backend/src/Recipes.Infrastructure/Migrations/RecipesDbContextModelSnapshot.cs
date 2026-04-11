@@ -22,7 +22,81 @@ namespace Recipes.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Recipes.Domain.Entities.Ingredient", b =>
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MealPlans", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlanEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MealPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MealType")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("PlannedDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MealPlanId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("MealPlanEntries", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.Recipe", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recipes", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeIngredient", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -51,21 +125,6 @@ namespace Recipes.Infrastructure.Migrations
                     b.ToTable("RecipeIngredients", (string)null);
                 });
 
-            modelBuilder.Entity("Recipes.Domain.Entities.Recipe", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Recipes", (string)null);
-                });
-
             modelBuilder.Entity("Recipes.Domain.Entities.RecipeStep", b =>
                 {
                     b.Property<Guid>("Id")
@@ -90,7 +149,68 @@ namespace Recipes.Infrastructure.Migrations
                     b.ToTable("RecipeSteps", (string)null);
                 });
 
-            modelBuilder.Entity("Recipes.Domain.Entities.Ingredient", b =>
+            modelBuilder.Entity("Recipes.Domain.Entities.ShoppingList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingLists", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.ShoppingListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPurchased")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<Guid>("ShoppingListId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShoppingListId");
+
+                    b.ToTable("ShoppingListItems", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlanEntry", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.MealPlan", null)
+                        .WithMany("Entries")
+                        .HasForeignKey("MealPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeIngredient", b =>
                 {
                     b.HasOne("Recipes.Domain.Entities.Recipe", null)
                         .WithMany("Ingredients")
@@ -108,11 +228,30 @@ namespace Recipes.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.ShoppingListItem", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.ShoppingList", null)
+                        .WithMany("Items")
+                        .HasForeignKey("ShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlan", b =>
+                {
+                    b.Navigation("Entries");
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.Recipe", b =>
                 {
                     b.Navigation("Ingredients");
 
                     b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.ShoppingList", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

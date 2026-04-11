@@ -2,17 +2,17 @@ namespace Recipes.Domain.Entities;
 
 using Recipes.Domain.Primitives;
 
-public sealed class Ingredient
+public sealed class RecipeIngredient
 {
-    public IngredientId Id { get; private set; } = IngredientId.New();
+    public RecipeIngredientId Id { get; private set; } = RecipeIngredientId.New();
     public RecipeId RecipeId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public decimal Quantity { get; private set; }
     public string Unit { get; private set; } = string.Empty;
 
-    private Ingredient() { }
+    private RecipeIngredient() { }
 
-    internal Ingredient(RecipeId recipeId, string name, decimal quantity, string unit)
+    internal RecipeIngredient(RecipeId recipeId, string name, decimal quantity, string unit)
     {
         RecipeId = recipeId;
         Name = name;
@@ -20,4 +20,3 @@ public sealed class Ingredient
         Unit = unit;
     }
 }
-

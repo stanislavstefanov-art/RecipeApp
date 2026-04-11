@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MealPlanSuggestionDto",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "entries", "confidence", "needsReview", "notes"],
+  "properties": {
+    "name": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["recipeId", "plannedDate", "mealType"],
+        "properties": {
+          "recipeId": { "type": "string", "format": "uuid" },
+          "plannedDate": { "type": "string", "format": "date" },
+          "mealType": { "type": "integer" }
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "needsReview": { "type": "boolean" },
+    "notes": { "type": ["string", "null"] }
+  }
+}
