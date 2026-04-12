@@ -12,6 +12,10 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
     [Fact]
     public async Task Should_Add_Ingredients_From_MealPlan_Recipes_To_ShoppingList()
     {
+        var person = new Person("Stanislav");
+        var household = new Household("Family");
+        household.AddMember(person);
+
         var recipe1 = new Recipe("Pasta");
         recipe1.AddIngredient("Tomato", 2, "pcs");
         recipe1.AddIngredient("Garlic", 3, "cloves");
@@ -20,9 +24,19 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
         recipe2.AddIngredient("Tomato", 1, "pcs");
         recipe2.AddIngredient("Onion", 1, "pcs");
 
-        var mealPlan = new MealPlan("Weekly dinners");
-        mealPlan.AddRecipe(recipe1, new DateOnly(2026, 4, 21), MealType.Dinner);
-        mealPlan.AddRecipe(recipe2, new DateOnly(2026, 4, 22), MealType.Dinner);
+        var mealPlan = new MealPlan("Weekly dinners", household.Id);
+        mealPlan.AddRecipe(
+            recipe1,
+            new DateOnly(2026, 4, 21),
+            MealType.Dinner,
+            MealScope.Shared,
+            [(person.Id, recipe1.Id, null, 1.0m, null)]);
+        mealPlan.AddRecipe(
+            recipe2,
+            new DateOnly(2026, 4, 22),
+            MealType.Dinner,
+            MealScope.Shared,
+            [(person.Id, recipe2.Id, null, 1.0m, null)]);
 
         var shoppingList = new ShoppingList("Weekly shopping");
 
@@ -31,11 +45,14 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
         var recipeRepository = new FakeRecipeRepository([recipe1, recipe2]);
         var productRepository = new FakeProductRepository();
 
+        var personRepository = new FakePersonRepository([person]);
+
         var handler = new GenerateShoppingListFromMealPlanHandler(
             mealPlanRepository,
             shoppingListRepository,
             recipeRepository,
-            productRepository);
+            productRepository,
+            personRepository);
 
         var result = await handler.Handle(
             new GenerateShoppingListFromMealPlanCommand(mealPlan.Id.Value, shoppingList.Id.Value),
@@ -49,106 +66,75 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
     private sealed class FakeMealPlanRepository : IMealPlanRepository
     {
         private readonly List<MealPlan> _mealPlans;
-
-        public FakeMealPlanRepository(IEnumerable<MealPlan> mealPlans)
-        {
-            _mealPlans = mealPlans.ToList();
-        }
-
+        public FakeMealPlanRepository(IEnumerable<MealPlan> mealPlans) => _mealPlans = mealPlans.ToList();
         public Task<MealPlan?> GetByIdAsync(MealPlanId id, CancellationToken cancellationToken = default)
             => Task.FromResult(_mealPlans.SingleOrDefault(x => x.Id == id));
-
-        public Task AddAsync(MealPlan mealPlan, CancellationToken cancellationToken = default)
-        {
-            _mealPlans.Add(mealPlan);
-            return Task.CompletedTask;
-        }
-
+        public Task AddAsync(MealPlan mealPlan, CancellationToken cancellationToken = default) { _mealPlans.Add(mealPlan); return Task.CompletedTask; }
         public Task<IReadOnlyList<MealPlan>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<MealPlan>)_mealPlans);
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
     private sealed class FakeShoppingListRepository : IShoppingListRepository
     {
         private readonly List<ShoppingList> _shoppingLists;
-
-        public FakeShoppingListRepository(IEnumerable<ShoppingList> shoppingLists)
-        {
-            _shoppingLists = shoppingLists.ToList();
-        }
-
+        public FakeShoppingListRepository(IEnumerable<ShoppingList> shoppingLists) => _shoppingLists = shoppingLists.ToList();
         public Task<ShoppingList?> GetByIdAsync(ShoppingListId id, CancellationToken cancellationToken = default)
             => Task.FromResult(_shoppingLists.SingleOrDefault(x => x.Id == id));
-
-        public Task AddAsync(ShoppingList shoppingList, CancellationToken cancellationToken = default)
-        {
-            _shoppingLists.Add(shoppingList);
-            return Task.CompletedTask;
-        }
-
+        public Task AddAsync(ShoppingList shoppingList, CancellationToken cancellationToken = default) { _shoppingLists.Add(shoppingList); return Task.CompletedTask; }
         public Task<IReadOnlyList<ShoppingList>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
     private sealed class FakeRecipeRepository : IRecipeRepository
     {
         private readonly List<Recipe> _recipes;
-
-        public FakeRecipeRepository(IEnumerable<Recipe> recipes)
-        {
-            _recipes = recipes.ToList();
-        }
-
+        public FakeRecipeRepository(IEnumerable<Recipe> recipes) => _recipes = recipes.ToList();
         public Task<Recipe?> GetByIdAsync(RecipeId id, CancellationToken cancellationToken = default)
             => Task.FromResult(_recipes.SingleOrDefault(x => x.Id == id));
-
         public Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes);
-
         public Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(string ingredientName, CancellationToken cancellationToken = default)
-            => Task.FromResult((IReadOnlyList<Recipe>)_recipes
-                .Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase)))
-                .ToList());
-
-        public void Add(Recipe recipe)
-        {
-            _recipes.Add(recipe);
-        }
-
-        public void Remove(Recipe recipe)
-        {
-            _recipes.Remove(recipe);
-        }
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+            => Task.FromResult((IReadOnlyList<Recipe>)_recipes.Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase))).ToList());
+        public void Add(Recipe recipe) => _recipes.Add(recipe);
+        public void Remove(Recipe recipe) => _recipes.Remove(recipe);
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
     private sealed class FakeProductRepository : IProductRepository
     {
-        private readonly List<Product> _products = new();
-
+        private readonly List<Product> _products = [];
         public Task<Product?> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
             => Task.FromResult(_products.SingleOrDefault(x => x.Id == id));
-
         public Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
-            => Task.FromResult(_products.SingleOrDefault(x =>
-                string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
-
-        public Task AddAsync(Product product, CancellationToken cancellationToken = default)
-        {
-            _products.Add(product);
-            return Task.CompletedTask;
-        }
-
+            => Task.FromResult(_products.SingleOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
+        public Task AddAsync(Product product, CancellationToken cancellationToken = default) { _products.Add(product); return Task.CompletedTask; }
         public Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Product>)_products);
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
+    private sealed class FakePersonRepository : IPersonRepository
+    {
+        private readonly List<Person> _persons;
+
+        public FakePersonRepository(IEnumerable<Person> persons)
+        {
+            _persons = persons.ToList();
+        }
+
+        public Task<Person?> GetByIdAsync(PersonId id, CancellationToken cancellationToken = default)
+            => Task.FromResult(_persons.SingleOrDefault(x => x.Id == id));
+
+        public Task<IReadOnlyList<Person>> GetAllAsync(CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Person>)_persons);
+
+        public Task AddAsync(Person person, CancellationToken cancellationToken = default)
+        {
+            _persons.Add(person);
+            return Task.CompletedTask;
+        }
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;

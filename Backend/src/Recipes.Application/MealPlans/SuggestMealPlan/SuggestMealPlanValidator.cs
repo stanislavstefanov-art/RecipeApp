@@ -11,6 +11,9 @@ public sealed class SuggestMealPlanValidator : AbstractValidator<SuggestMealPlan
             .NotEmpty()
             .MaximumLength(200);
 
+        RuleFor(x => x.HouseholdId)
+            .NotEmpty();
+
         RuleFor(x => x.NumberOfDays)
             .GreaterThan(0)
             .LessThanOrEqualTo(31);

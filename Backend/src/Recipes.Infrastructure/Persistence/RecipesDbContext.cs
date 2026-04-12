@@ -25,6 +25,13 @@ public sealed class RecipesDbContext : DbContext, IRecipesDbContext
     public DbSet<ShoppingListItem> ShoppingListItems => Set<ShoppingListItem>();
     public DbSet<MealPlan> MealPlans => Set<MealPlan>();
     public DbSet<MealPlanEntry> MealPlanEntries => Set<MealPlanEntry>();
+    public DbSet<Expense> Expenses => Set<Expense>();
+    public DbSet<Person> Persons => Set<Person>();
+    public DbSet<Household> Households => Set<Household>();
+    public DbSet<HouseholdMember> HouseholdMembers => Set<HouseholdMember>();
+    public DbSet<MealPlanPersonAssignment> MealPlanPersonAssignments => Set<MealPlanPersonAssignment>();
+    public DbSet<RecipeVariation> RecipeVariations => Set<RecipeVariation>();
+    public DbSet<RecipeVariationIngredientOverride> RecipeVariationIngredientOverrides => Set<RecipeVariationIngredientOverride>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

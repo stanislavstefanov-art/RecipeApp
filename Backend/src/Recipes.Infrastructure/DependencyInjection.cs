@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recipes.Application.Abstractions;
 using Recipes.Application.Common.AI;
+using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
@@ -51,6 +52,9 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
         services.AddScoped<IMealPlanRepository, MealPlanRepository>();
+        services.AddScoped<IExpenseRepository, ExpenseRepository>();
+        services.AddScoped<IPersonRepository, PersonRepository>();
+        services.AddScoped<IHouseholdRepository, HouseholdRepository>();
 
         services.AddScoped<StubRecipeImportService>();
         services.AddScoped<ClaudeRecipeImportService>();
@@ -96,6 +100,11 @@ public static class DependencyInjection
             };
         });
 
+        services.AddScoped<StubExpenseInsightService>();
+        services.AddScoped<ClaudeExpenseInsightService>();
+
+        services.AddScoped<IExpenseInsightService>(_ => _.GetRequiredService<StubExpenseInsightService>());
+
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
         services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();        
 
@@ -108,6 +117,10 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(60);
         });        
         services.AddHttpClient<IClaudeIngredientSubstitutionClient, ClaudeIngredientSubstitutionClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
+        services.AddHttpClient<IClaudeExpenseInsightClient, ClaudeExpenseInsightClient>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(60);
         });

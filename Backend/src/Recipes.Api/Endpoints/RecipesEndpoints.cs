@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Recipes.AddIngredientToRecipe;
+using Recipes.Application.Recipes.AddRecipeVariation;
 using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
 using Recipes.Application.Recipes.GetRecipe;
@@ -9,6 +10,7 @@ using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Application.Recipes.UpdateRecipe;
+using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 
 namespace Recipes.Api.Endpoints;
 
@@ -81,6 +83,40 @@ public static class RecipesEndpoints
             return result.ToHttpResult(response => Results.Ok(response));
         });
 
+        group.MapPost("/{id:guid}/variations", async (Guid id, AddRecipeVariationRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new AddRecipeVariationCommand(
+                    id,
+                    request.Name,
+                    request.Notes,
+                    request.IngredientAdjustmentNotes),
+                ct);
+
+            return result.ToHttpResult(response => Results.Created($"/api/recipes/{id}/variations/{response.Id}", response));
+        });
+
+        group.MapPut("/{recipeId:guid}/variations/{recipeVariationId:guid}/overrides", async (
+            Guid recipeId,
+            Guid recipeVariationId,
+            UpdateRecipeVariationOverridesRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new UpdateRecipeVariationOverridesCommand(
+                    recipeId,
+                    recipeVariationId,
+                    request.Overrides.Select(x => new RecipeVariationIngredientOverrideDto(
+                        x.IngredientName,
+                        x.Quantity,
+                        x.Unit,
+                        x.IsRemoved)).ToList()),
+                ct);
+
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
         return app;
     }
 }
@@ -92,3 +128,9 @@ public sealed record ImportRecipeRequest(string Text);
 public sealed record UpdateRecipeRequest(string Name);
 
 public sealed record SuggestIngredientSubstitutionsRequest(string IngredientName, string? RecipeContext, string? DietaryGoal);
+
+public sealed record AddRecipeVariationRequest(string Name, string? Notes, string? IngredientAdjustmentNotes);
+
+public sealed record UpdateRecipeVariationOverridesRequest(IReadOnlyList<RecipeVariationIngredientOverrideRequest> Overrides);
+
+public sealed record RecipeVariationIngredientOverrideRequest(string IngredientName, decimal? Quantity, string? Unit, bool IsRemoved);

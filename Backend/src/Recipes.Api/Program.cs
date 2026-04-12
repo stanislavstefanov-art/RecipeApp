@@ -48,5 +48,8 @@ app.MapRecipesEndpoints();
 app.MapShoppingListsEndpoints();
 app.MapProductsEndpoints();
 app.MapMealPlansEndpoints();
+app.MapExpensesEndpoints();
+app.MapPersonsEndpoints();
+app.MapHouseholdsEndpoints();
 
 app.Run();

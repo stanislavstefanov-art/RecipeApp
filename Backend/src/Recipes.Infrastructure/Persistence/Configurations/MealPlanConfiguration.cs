@@ -19,6 +19,12 @@ public sealed class MealPlanConfiguration : IEntityTypeConfiguration<MealPlan>
                 value => MealPlanId.From(value))
             .ValueGeneratedNever();
 
+        builder.Property(x => x.HouseholdId)
+            .HasConversion(
+                id => id.Value,
+                value => HouseholdId.From(value))
+            .IsRequired();
+
         builder.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(200);

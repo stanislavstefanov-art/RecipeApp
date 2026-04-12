@@ -38,6 +38,9 @@ public sealed class GetShoppingListHandler
                 i.ProductName,
                 i.Quantity,
                 i.Unit,
-                i.IsPurchased)).ToList());
+                i.IsPurchased,
+                i.Notes,
+                (int)i.SourceType,
+                i.SourceReferenceId)).ToList());
     }
 }

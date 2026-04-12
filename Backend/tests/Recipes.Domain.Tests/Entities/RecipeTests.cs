@@ -160,4 +160,32 @@ public class RecipeTests
 
         act.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void AddVariation_Should_Add_Variation()
+    {
+        var recipe = new Recipe("Gyuvetche");
+
+        var variation = recipe.AddVariation(
+            "Vegetarian",
+            "No meat version",
+            "Remove meat and add more potatoes");
+
+        recipe.Variations.Should().ContainSingle();
+        variation.Name.Should().Be("Vegetarian");
+    }
+
+    [Fact]
+    public void Variation_Should_Support_Remove_And_Override_Ingredient()
+    {
+        var recipe = new Recipe("Gyuvetche");
+        var variation = recipe.AddVariation("Vegetarian", "No meat", "Remove meat and add more potatoes");
+
+        variation.RemoveIngredient("Meat");
+        variation.OverrideIngredient("Potatoes", 500, "g");
+
+        variation.IngredientOverrides.Should().HaveCount(2);
+        variation.IngredientOverrides.Should().Contain(x => x.IngredientName == "Meat" && x.IsRemoved);
+        variation.IngredientOverrides.Should().Contain(x => x.IngredientName == "Potatoes" && x.Quantity == 500);
+    }
 }

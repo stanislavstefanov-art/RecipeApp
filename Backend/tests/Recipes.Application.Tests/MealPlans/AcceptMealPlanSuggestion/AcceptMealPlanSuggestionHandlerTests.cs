@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Recipes.Application.MealPlans.AcceptMealPlanSuggestion;
 using Recipes.Domain.Entities;
+using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -11,6 +12,10 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
     [Fact]
     public async Task Should_Create_MealPlan_From_Suggestion()
     {
+        var person = new Person("Stanislav");
+        var household = new Household("Family");
+        household.AddMember(person);
+
         var recipes = new List<Recipe>
         {
             new("Pasta"),
@@ -19,15 +24,44 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
 
         var mealPlanRepository = new FakeMealPlanRepository();
         var recipeRepository = new FakeRecipeRepository(recipes);
+        var householdRepository = new FakeHouseholdRepository([household]);
 
-        var handler = new AcceptMealPlanSuggestionHandler(mealPlanRepository, recipeRepository);
+        var handler = new AcceptMealPlanSuggestionHandler(
+            mealPlanRepository,
+            recipeRepository,
+            householdRepository);
 
         var result = await handler.Handle(
             new AcceptMealPlanSuggestionCommand(
                 "Weekly dinners",
+                household.Id.Value,
                 [
-                    new AcceptMealPlanSuggestionEntryDto(recipes[0].Id.Value, new DateOnly(2026, 4, 21), 3),
-                    new AcceptMealPlanSuggestionEntryDto(recipes[1].Id.Value, new DateOnly(2026, 4, 22), 3)
+                    new AcceptMealPlanSuggestionEntryDto(
+                        recipes[0].Id.Value,
+                        new DateOnly(2026, 4, 21),
+                        (int)MealType.Dinner,
+                        (int)MealScope.Shared,
+                        [
+                            new AcceptMealPlanSuggestionAssignmentDto(
+                                person.Id.Value,
+                                recipes[0].Id.Value,
+                                null,
+                                1.0m,
+                                null)
+                        ]),
+                    new AcceptMealPlanSuggestionEntryDto(
+                        recipes[1].Id.Value,
+                        new DateOnly(2026, 4, 22),
+                        (int)MealType.Dinner,
+                        (int)MealScope.Shared,
+                        [
+                            new AcceptMealPlanSuggestionAssignmentDto(
+                                person.Id.Value,
+                                recipes[1].Id.Value,
+                                null,
+                                1.0m,
+                                null)
+                        ])
                 ]),
             CancellationToken.None);
 
@@ -38,7 +72,7 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
 
     private sealed class FakeMealPlanRepository : IMealPlanRepository
     {
-        public List<MealPlan> Stored { get; } = new();
+        public List<MealPlan> Stored { get; } = [];
 
         public Task<MealPlan?> GetByIdAsync(MealPlanId id, CancellationToken cancellationToken = default)
             => Task.FromResult(Stored.SingleOrDefault(x => x.Id == id));
@@ -76,14 +110,30 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
                 .Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase)))
                 .ToList());
 
-        public void Add(Recipe recipe)
+        public void Add(Recipe recipe) => _recipes.Add(recipe);
+        public void Remove(Recipe recipe) => _recipes.Remove(recipe);
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
+    private sealed class FakeHouseholdRepository : IHouseholdRepository
+    {
+        private readonly List<Household> _households;
+
+        public FakeHouseholdRepository(IEnumerable<Household> households)
         {
-            _recipes.Add(recipe);
+            _households = households.ToList();
         }
 
-        public void Remove(Recipe recipe)
+        public Task<Household?> GetByIdAsync(HouseholdId id, CancellationToken cancellationToken = default)
+            => Task.FromResult(_households.SingleOrDefault(x => x.Id == id));
+
+        public Task<IReadOnlyList<Household>> GetAllAsync(CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Household>)_households);
+
+        public Task AddAsync(Household household, CancellationToken cancellationToken = default)
         {
-            _recipes.Remove(recipe);
+            _households.Add(household);
+            return Task.CompletedTask;
         }
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)

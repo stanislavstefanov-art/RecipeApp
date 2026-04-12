@@ -7,4 +7,13 @@ public sealed record AddRecipeToMealPlanCommand(
     Guid MealPlanId,
     Guid RecipeId,
     DateOnly PlannedDate,
-    int MealType) : IRequest<ErrorOr<Success>>;
+    int MealType,
+    int Scope,
+    IReadOnlyList<MealPlanPersonAssignmentInputDto> Assignments) : IRequest<ErrorOr<Success>>;
+
+public sealed record MealPlanPersonAssignmentInputDto(
+    Guid PersonId,
+    Guid AssignedRecipeId,
+    Guid? RecipeVariationId,
+    decimal PortionMultiplier,
+    string? Notes);

@@ -36,6 +36,12 @@ public sealed class FileSystemClaudeAssetProvider : IClaudeAssetProvider
     public Task<string> GetIngredientSubstitutionSchemaAsync(CancellationToken cancellationToken)
         => ReadAsync(_options.IngredientSubstitutionSchemaPath, "ingredient substitution schema", cancellationToken);
 
+    public Task<string> GetExpenseInsightPromptAsync(CancellationToken cancellationToken)
+        => ReadAsync(_options.ExpenseInsightPromptPath, "expense insight prompt", cancellationToken);
+
+    public Task<string> GetExpenseInsightSchemaAsync(CancellationToken cancellationToken)
+        => ReadAsync(_options.ExpenseInsightSchemaPath, "expense insight schema", cancellationToken);
+
     private async Task<string> ReadAsync(string relativePath, string description, CancellationToken cancellationToken)
     {
         var path = ResolvePath(relativePath);

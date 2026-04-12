@@ -8,6 +8,7 @@ using Recipes.Application.ShoppingLists.GetShoppingList;
 using Recipes.Application.ShoppingLists.ListShoppingLists;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPending;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPurchased;
+using Recipes.Application.ShoppingLists.PurchaseShoppingListItem;
 
 namespace Recipes.Api.Endpoints;
 
@@ -100,6 +101,26 @@ public static class ShoppingListsEndpoints
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
+        group.MapPost("/{shoppingListId:guid}/items/{shoppingListItemId:guid}/purchase-with-expense", async (
+            Guid shoppingListId,
+            Guid shoppingListItemId,
+            PurchaseShoppingListItemRequest request,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new PurchaseShoppingListItemCommand(
+                    shoppingListId,
+                    shoppingListItemId,
+                    request.Amount,
+                    request.Currency,
+                    request.ExpenseDate,
+                    request.Description),
+                ct);
+
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
         return app;
     }
 }
@@ -107,3 +128,4 @@ public static class ShoppingListsEndpoints
 public sealed record CreateShoppingListRequest(string Name);
 public sealed record AddShoppingListItemRequest(Guid ProductId, decimal Quantity, string Unit);
 public sealed record AddRecipesToShoppingListRequest(IReadOnlyList<Guid> RecipeIds);
+public sealed record PurchaseShoppingListItemRequest(decimal Amount, string Currency, DateOnly ExpenseDate, string? Description);

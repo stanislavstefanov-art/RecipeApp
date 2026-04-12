@@ -8,4 +8,6 @@ public interface IClaudeAssetProvider
     Task<string> GetMealPlanSuggestionSchemaAsync(CancellationToken cancellationToken);
     Task<string> GetIngredientSubstitutionPromptAsync(CancellationToken cancellationToken);
     Task<string> GetIngredientSubstitutionSchemaAsync(CancellationToken cancellationToken);
+    Task<string> GetExpenseInsightPromptAsync(CancellationToken cancellationToken);
+    Task<string> GetExpenseInsightSchemaAsync(CancellationToken cancellationToken);
 }

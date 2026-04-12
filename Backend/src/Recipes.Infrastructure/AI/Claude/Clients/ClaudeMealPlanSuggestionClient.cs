@@ -137,21 +137,52 @@ The JSON must match this schema exactly:
     {
         var recipes = string.Join(
             "\n",
-            request.AvailableRecipes.Select(x => $"- {x.RecipeId}: {x.Name}"));
+            request.AvailableRecipes.Select(recipe =>
+            {
+                var variations = recipe.Variations.Count == 0
+                    ? "None"
+                    : string.Join(
+                        "\n",
+                        recipe.Variations.Select(v =>
+                            $"    - VariationId: {v.RecipeVariationId}, Name: {v.Name}, Notes: {v.Notes ?? "N/A"}, IngredientAdjustmentNotes: {v.IngredientAdjustmentNotes ?? "N/A"}"));
+
+                return $"""
+        - RecipeId: {recipe.RecipeId}
+        Name: {recipe.Name}
+        Variations:
+        {variations}
+        """;
+            }));
 
         var mealTypes = string.Join(", ", request.MealTypes);
 
+        var householdMembers = string.Join(
+            "\n",
+            request.Household.Members.Select(member =>
+                $"""
+                - PersonId: {member.PersonId}
+                Name: {member.Name}
+                DietaryPreferences: {(member.DietaryPreferences.Count == 0 ? "None" : string.Join(", ", member.DietaryPreferences))}
+                HealthConcerns: {(member.HealthConcerns.Count == 0 ? "None" : string.Join(", ", member.HealthConcerns))}
+                Notes: {member.Notes ?? "N/A"}
+                """));
+
         return $"""
-Suggest a meal plan using only the available recipes below.
+            Suggest a realistic household meal plan.
 
-Meal plan name: {request.Name}
-Start date: {request.StartDate:yyyy-MM-dd}
-Number of days: {request.NumberOfDays}
-Meal types: {mealTypes}
+            Meal plan name: {request.Name}
+            HouseholdId: {request.Household.HouseholdId}
+            HouseholdName: {request.Household.HouseholdName}
+            Start date: {request.StartDate:yyyy-MM-dd}
+            Number of days: {request.NumberOfDays}
+            Meal types: {mealTypes}
 
-Available recipes:
-{recipes}
-""";
+            Household members:
+            {householdMembers}
+
+            Available recipes:
+            {recipes}
+            """;
     }
 
     private static string ExtractText(ClaudeMessagesResponse response)

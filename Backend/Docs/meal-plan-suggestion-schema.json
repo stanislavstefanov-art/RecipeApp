@@ -11,11 +11,30 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["recipeId", "plannedDate", "mealType"],
+        "required": ["baseRecipeId", "plannedDate", "mealType", "scope", "assignments"],
         "properties": {
-          "recipeId": { "type": "string", "format": "uuid" },
+          "baseRecipeId": { "type": "string", "format": "uuid" },
           "plannedDate": { "type": "string", "format": "date" },
-          "mealType": { "type": "integer" }
+          "mealType": { "type": "integer" },
+          "scope": { "type": "integer" },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["personId", "assignedRecipeId", "recipeVariationId", "portionMultiplier", "notes"],
+              "properties": {
+                "personId": { "type": "string", "format": "uuid" },
+                "assignedRecipeId": { "type": "string", "format": "uuid" },
+                "recipeVariationId": { "type": ["string", "null"], "format": "uuid" },
+                "portionMultiplier": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "notes": { "type": ["string", "null"] }
+              }
+            }
+          }
         }
       }
     },

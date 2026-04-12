@@ -11,4 +11,7 @@ public sealed record ShoppingListDetailsItemDto(
     string ProductName,
     decimal Quantity,
     string Unit,
-    bool IsPurchased);
+    bool IsPurchased,
+    string? Notes,
+    int SourceType,
+    Guid? SourceReferenceId);

@@ -7,12 +7,14 @@ public sealed class Recipe : Entity
 {
     private readonly List<RecipeIngredient> _ingredients = new();
     private readonly List<RecipeStep> _steps = new();
+    private readonly List<RecipeVariation> _variations = new();
 
     public RecipeId Id { get; private set; } = RecipeId.New();
     public RecipeName Name { get; private set; }
 
     public IReadOnlyCollection<RecipeIngredient> Ingredients => _ingredients.AsReadOnly();
     public IReadOnlyCollection<RecipeStep> Steps => _steps.AsReadOnly();
+    public IReadOnlyCollection<RecipeVariation> Variations => _variations.AsReadOnly();
 
     private Recipe() { }
 
@@ -73,5 +75,24 @@ public sealed class Recipe : Entity
         var step = new RecipeStep(Id, _steps.Count + 1, instruction.Trim());
         _steps.Add(step);
         RaiseDomainEvent(new StepAdded(Id, step.Order, step.Instruction));
+    }
+
+    public RecipeVariation AddVariation(
+        string name,
+        string? notes = null,
+        string? ingredientAdjustmentNotes = null)
+    {
+        var existing = _variations.SingleOrDefault(x =>
+            string.Equals(x.Name, name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (existing is not null)
+        {
+            throw new InvalidOperationException($"Variation '{name}' already exists for recipe '{Id}'.");
+        }
+
+        var variation = new RecipeVariation(Id, name, notes, ingredientAdjustmentNotes);
+        _variations.Add(variation);
+
+        return variation;
     }
 }

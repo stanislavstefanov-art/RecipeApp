@@ -44,5 +44,16 @@ public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<Sho
 
         builder.HasIndex(x => x.ShoppingListId);
         builder.HasIndex(x => x.ProductId);
+
+        builder.Property(x => x.Notes)
+            .HasMaxLength(1000);
+
+        builder.Property(x => x.SourceType)
+            .HasConversion<int>()
+            .IsRequired();
+
+        builder.Property(x => x.SourceReferenceId);
+
+        builder.HasIndex(x => new { x.SourceType, x.SourceReferenceId });
     }
 }

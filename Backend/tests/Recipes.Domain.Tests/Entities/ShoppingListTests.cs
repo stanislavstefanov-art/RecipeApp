@@ -68,4 +68,22 @@ public sealed class ShoppingListTests
 
         shoppingList.Items.Should().BeEmpty();
     }
+
+    [Fact]
+    public void RemoveGeneratedItems_Should_Remove_Only_Matching_Source_Items()
+    {
+        var shoppingList = new ShoppingList("Weekend groceries");
+        var product1 = new Product("Tomato");
+        var product2 = new Product("Onion");
+
+        var mealPlanId = Guid.NewGuid();
+
+        shoppingList.AddItem(product1, 2, "pcs", null, Recipes.Domain.Enums.ShoppingListItemSourceType.MealPlan, mealPlanId);
+        shoppingList.AddItem(product2, 1, "pcs", null, Recipes.Domain.Enums.ShoppingListItemSourceType.Manual, null);
+
+        shoppingList.RemoveGeneratedItems(Recipes.Domain.Enums.ShoppingListItemSourceType.MealPlan, mealPlanId);
+
+        shoppingList.Items.Should().HaveCount(1);
+        shoppingList.Items.Single().ProductName.Should().Be("Onion");
+    }
 }

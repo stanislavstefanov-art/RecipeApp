@@ -8,6 +8,15 @@ public sealed record MealPlanSuggestionDto(
     string? Notes);
 
 public sealed record MealPlanSuggestionEntryDto(
-    Guid RecipeId,
+    Guid BaseRecipeId,
     DateOnly PlannedDate,
-    int MealType);
+    int MealType,
+    int Scope,
+    IReadOnlyList<MealPlanSuggestionAssignmentDto> Assignments);
+
+public sealed record MealPlanSuggestionAssignmentDto(
+    Guid PersonId,
+    Guid AssignedRecipeId,
+    Guid? RecipeVariationId,
+    decimal PortionMultiplier,
+    string? Notes);

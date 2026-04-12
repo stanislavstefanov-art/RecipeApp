@@ -1,5 +1,6 @@
 namespace Recipes.Domain.Entities;
 
+using Recipes.Domain.Enums;
 using Recipes.Domain.Events;
 using Recipes.Domain.Primitives;
 
@@ -29,17 +30,25 @@ public sealed class ShoppingList : Entity
         Name = name.Trim();
     }
 
-    public void AddItem(Product product, decimal quantity, string unit)
+    public void AddItem(
+        Product product,
+        decimal quantity,
+        string unit,
+        string? notes = null,
+        ShoppingListItemSourceType sourceType = ShoppingListItemSourceType.Manual,
+        Guid? sourceReferenceId = null)
     {
         ArgumentNullException.ThrowIfNull(product);
 
         var existing = _items.FirstOrDefault(x =>
             x.ProductId == product.Id &&
-            string.Equals(x.Unit, unit, StringComparison.OrdinalIgnoreCase));
+            string.Equals(x.Unit, unit, StringComparison.OrdinalIgnoreCase) &&
+            x.MatchesSource(sourceType, sourceReferenceId));
 
         if (existing is not null)
         {
             existing.IncreaseQuantity(quantity);
+            existing.MergeNotes(notes);
 
             RaiseDomainEvent(new ShoppingListItemQuantityIncreased(
                 Id,
@@ -57,7 +66,10 @@ public sealed class ShoppingList : Entity
             product.Id,
             product.Name,
             quantity,
-            unit);
+            unit,
+            notes,
+            sourceType,
+            sourceReferenceId);
 
         _items.Add(item);
 
@@ -68,6 +80,24 @@ public sealed class ShoppingList : Entity
             item.ProductName,
             item.Quantity,
             item.Unit));
+    }
+
+    public void RemoveGeneratedItems(ShoppingListItemSourceType sourceType, Guid sourceReferenceId)
+    {
+        var toRemove = _items
+            .Where(x => x.SourceType == sourceType && x.SourceReferenceId == sourceReferenceId)
+            .ToList();
+
+        foreach (var item in toRemove)
+        {
+            _items.Remove(item);
+
+            RaiseDomainEvent(new ShoppingListItemRemoved(
+                Id,
+                item.Id,
+                item.ProductId,
+                item.ProductName));
+        }
     }
 
     public void MarkItemPurchased(ShoppingListItemId itemId)

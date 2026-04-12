@@ -1,5 +1,6 @@
 namespace Recipes.Domain.Entities;
 
+using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 
 public sealed class ShoppingListItem
@@ -11,6 +12,9 @@ public sealed class ShoppingListItem
     public decimal Quantity { get; private set; }
     public string Unit { get; private set; } = string.Empty;
     public bool IsPurchased { get; private set; }
+    public string? Notes { get; private set; }
+    public ShoppingListItemSourceType SourceType { get; private set; }
+    public Guid? SourceReferenceId { get; private set; }
 
     private ShoppingListItem() { }
 
@@ -19,7 +23,10 @@ public sealed class ShoppingListItem
         ProductId productId,
         string productName,
         decimal quantity,
-        string unit)
+        string unit,
+        string? notes = null,
+        ShoppingListItemSourceType sourceType = ShoppingListItemSourceType.Manual,
+        Guid? sourceReferenceId = null)
     {
         if (string.IsNullOrWhiteSpace(productName))
         {
@@ -41,6 +48,9 @@ public sealed class ShoppingListItem
         ProductName = productName.Trim();
         Quantity = quantity;
         Unit = unit.Trim();
+        Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
+        SourceType = sourceType;
+        SourceReferenceId = sourceReferenceId;
         IsPurchased = false;
     }
 
@@ -53,6 +63,28 @@ public sealed class ShoppingListItem
 
         Quantity += quantity;
     }
+
+    internal void MergeNotes(string? notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes))
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Notes))
+        {
+            Notes = notes.Trim();
+            return;
+        }
+
+        if (!Notes.Contains(notes, StringComparison.OrdinalIgnoreCase))
+        {
+            Notes = $"{Notes}; {notes.Trim()}";
+        }
+    }
+
+    internal bool MatchesSource(ShoppingListItemSourceType sourceType, Guid? sourceReferenceId)
+        => SourceType == sourceType && SourceReferenceId == sourceReferenceId;
 
     internal void MarkPurchased()
     {

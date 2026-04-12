@@ -30,7 +30,10 @@ public sealed class ListShoppingListsHandler
                     i.ProductName,
                     i.Quantity,
                     i.Unit,
-                    i.IsPurchased))
+                    i.IsPurchased,
+                    i.Notes,
+                    (int)i.SourceType,
+                    i.SourceReferenceId))
                 .ToList()))
             .ToList();
 

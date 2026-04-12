@@ -22,9 +22,86 @@ namespace Recipes.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Recipes.Domain.Entities.Expense", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateOnly>("ExpenseDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("SourceReferenceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("ExpenseDate");
+
+                    b.ToTable("Expenses", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.Household", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Households", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.HouseholdMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HouseholdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HouseholdId", "PersonId")
+                        .IsUnique();
+
+                    b.ToTable("HouseholdMembers", (string)null);
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.MealPlan", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("HouseholdId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -42,6 +119,9 @@ namespace Recipes.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BaseRecipeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("MealPlanId")
                         .HasColumnType("uniqueidentifier");
 
@@ -51,16 +131,79 @@ namespace Recipes.Infrastructure.Migrations
                     b.Property<DateOnly>("PlannedDate")
                         .HasColumnType("date");
 
-                    b.Property<Guid>("RecipeId")
+                    b.Property<int>("Scope")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseRecipeId");
+
+                    b.HasIndex("MealPlanId");
+
+                    b.ToTable("MealPlanEntries", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlanPersonAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssignedRecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MealPlanEntryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PortionMultiplier")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
+
+                    b.Property<Guid?>("RecipeVariationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MealPlanId");
+                    b.HasIndex("MealPlanEntryId");
 
-                    b.HasIndex("RecipeId");
+                    b.HasIndex("PersonId");
 
-                    b.ToTable("MealPlanEntries", (string)null);
+                    b.ToTable("MealPlanPersonAssignments", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.Person", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("_dietaryPreferences")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DietaryPreferences");
+
+                    b.Property<string>("_healthConcerns")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("HealthConcerns");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons", (string)null);
                 });
 
             modelBuilder.Entity("Recipes.Domain.Entities.Product", b =>
@@ -149,6 +292,35 @@ namespace Recipes.Infrastructure.Migrations
                     b.ToTable("RecipeSteps", (string)null);
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeVariation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("IngredientAdjustmentNotes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("RecipeVariations", (string)null);
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.ShoppingList", b =>
                 {
                     b.Property<Guid>("Id")
@@ -172,6 +344,10 @@ namespace Recipes.Infrastructure.Migrations
                     b.Property<bool>("IsPurchased")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
@@ -187,6 +363,12 @@ namespace Recipes.Infrastructure.Migrations
                     b.Property<Guid>("ShoppingListId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("SourceReferenceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Unit")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -198,7 +380,18 @@ namespace Recipes.Infrastructure.Migrations
 
                     b.HasIndex("ShoppingListId");
 
+                    b.HasIndex("SourceType", "SourceReferenceId");
+
                     b.ToTable("ShoppingListItems", (string)null);
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.HouseholdMember", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.Household", null)
+                        .WithMany("Members")
+                        .HasForeignKey("HouseholdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Recipes.Domain.Entities.MealPlanEntry", b =>
@@ -206,6 +399,15 @@ namespace Recipes.Infrastructure.Migrations
                     b.HasOne("Recipes.Domain.Entities.MealPlan", null)
                         .WithMany("Entries")
                         .HasForeignKey("MealPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlanPersonAssignment", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.MealPlanEntry", null)
+                        .WithMany("PersonAssignments")
+                        .HasForeignKey("MealPlanEntryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -228,6 +430,15 @@ namespace Recipes.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeVariation", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.Recipe", null)
+                        .WithMany("Variations")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.ShoppingListItem", b =>
                 {
                     b.HasOne("Recipes.Domain.Entities.ShoppingList", null)
@@ -237,9 +448,19 @@ namespace Recipes.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.Household", b =>
+                {
+                    b.Navigation("Members");
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.MealPlan", b =>
                 {
                     b.Navigation("Entries");
+                });
+
+            modelBuilder.Entity("Recipes.Domain.Entities.MealPlanEntry", b =>
+                {
+                    b.Navigation("PersonAssignments");
                 });
 
             modelBuilder.Entity("Recipes.Domain.Entities.Recipe", b =>
@@ -247,6 +468,8 @@ namespace Recipes.Infrastructure.Migrations
                     b.Navigation("Ingredients");
 
                     b.Navigation("Steps");
+
+                    b.Navigation("Variations");
                 });
 
             modelBuilder.Entity("Recipes.Domain.Entities.ShoppingList", b =>
