@@ -12,7 +12,7 @@ Full-stack: React 19 frontend + .NET 10 API backend, deployed to Azure.
 ## Repository structure
 
 - /Backend    — .NET 10 Clean Architecture API (Domain, Application, Infrastructure, Api)
-- /frontend   — React 19 + TypeScript + Vite + TanStack Query + Tailwind (not yet created)
+- /Frontend   — React 19 + TypeScript + Vite + TanStack Query + Tailwind (not yet created)
 - /infra      — Bicep IaC templates for Azure deployment (not yet created)
 - /docs       — Architecture Decision Records
 
@@ -64,6 +64,17 @@ Dependency direction: Api → Application ← Infrastructure, Domain at center.
 - Use the scaffold-slice skill for scaffolding vertical slices — it runs in an
   isolated context via context:fork, keeping scaffolding output out of the main
   session. Invoke it by asking Claude Code to scaffold a feature by name.
+
+## Frontend implementation guidance
+
+For frontend work:
+- Build one vertical slice at a time.
+- Prefer feature folders under /Frontend/src/features.
+- Keep server state in TanStack Query.
+- Keep API calls in /Frontend/src/api.
+- Prefer React Hook Form + Zod for forms.
+- Avoid global state libraries unless clearly needed.
+- Frontend should consume backend read models directly where possible rather than reconstructing names from ids.
 
 ## Azure deployment targets
 
