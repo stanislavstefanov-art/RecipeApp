@@ -124,7 +124,7 @@ export function SuggestMealPlanForm() {
               <input
                 type="checkbox"
                 value={option.value}
-                {...form.register("mealTypes", { valueAsNumber: true })}
+                {...form.register("mealTypes")}
               />
               {option.label}
             </label>

@@ -50,7 +50,7 @@ export const suggestMealPlanInputSchema = z.object({
   householdId: z.string().uuid("Household is required"),
   startDate: z.string().min(1, "Start date is required"),
   numberOfDays: z.coerce.number().int().min(1).max(31),
-  mealTypes: z.array(z.number()).min(1, "Select at least one meal type"),
+  mealTypes: z.array(z.coerce.number()).min(1, "Select at least one meal type"),
 });
 
 export const suggestMealPlanAssignmentSchema = z.object({

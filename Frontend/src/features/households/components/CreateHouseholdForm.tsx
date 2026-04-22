@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createHouseholdSchema,
   type CreateHouseholdInput,
+  type CreateHouseholdData,
 } from "../schemas";
 import { useCreateHousehold } from "../hooks/useCreateHousehold";
 import { LoadingButton } from "../../../components/ui/LoadingButton";
@@ -13,14 +14,14 @@ export function CreateHouseholdForm() {
   const mutation = useCreateHousehold();
   const pushToast = useToastStore((s) => s.pushToast);
 
-  const form = useForm<CreateHouseholdInput>({
+  const form = useForm<CreateHouseholdInput, unknown, CreateHouseholdData>({
     resolver: zodResolver(createHouseholdSchema),
     defaultValues: {
       name: "",
     },
   });
 
-  const onSubmit = async (values: CreateHouseholdInput) => {
+  const onSubmit = async (values: CreateHouseholdData) => {
     try {
       await mutation.mutateAsync(values);
       form.reset();

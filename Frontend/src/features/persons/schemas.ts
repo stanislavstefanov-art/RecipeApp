@@ -10,8 +10,8 @@ export const personDetailsSchema = z.object({
 
 export const createPersonSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
-  dietaryPreferences: z.array(z.number()).default([]),
-  healthConcerns: z.array(z.number()).default([]),
+  dietaryPreferences: z.array(z.coerce.number()).default([]),
+  healthConcerns: z.array(z.coerce.number()).default([]),
   notes: z.string().max(1000).optional().or(z.literal("")),
 });
 

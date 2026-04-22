@@ -6,6 +6,8 @@ import {
   type GenerateShoppingListFromMealPlanInput,
 } from "../schemas";
 import { useGenerateShoppingListFromMealPlan } from "../hooks/useGenerateShoppingListFromMealPlan";
+import { useToastStore } from "../../../stores/toastStore";
+import { getErrorMessage } from "../../../lib/getErrorMessage";
 
 type Props = {
   shoppingListId: string;
@@ -14,6 +16,7 @@ type Props = {
 export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
   const { data: mealPlans = [] } = useMealPlans();
   const mutation = useGenerateShoppingListFromMealPlan();
+  const pushToast = useToastStore((s) => s.pushToast);
 
   const form = useForm<GenerateShoppingListFromMealPlanInput>({
     resolver: zodResolver(generateShoppingListFromMealPlanSchema),
@@ -24,7 +27,12 @@ export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
   });
 
   const onSubmit = async (values: GenerateShoppingListFromMealPlanInput) => {
-    await mutation.mutateAsync(values);
+    try {
+      await mutation.mutateAsync(values);
+      pushToast("success", "Shopping list generated from meal plan.");
+    } catch (error) {
+      pushToast("error", getErrorMessage(error, "Failed to generate shopping list."));
+    }
   };
 
   return (

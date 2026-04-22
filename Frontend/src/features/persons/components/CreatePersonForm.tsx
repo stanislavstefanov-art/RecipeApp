@@ -70,7 +70,7 @@ export function CreatePersonForm() {
               <input
                 type="checkbox"
                 value={option.value}
-                {...form.register("dietaryPreferences", { valueAsNumber: true })}
+                {...form.register("dietaryPreferences")}
               />
               {option.label}
             </label>
@@ -86,7 +86,7 @@ export function CreatePersonForm() {
               <input
                 type="checkbox"
                 value={option.value}
-                {...form.register("healthConcerns", { valueAsNumber: true })}
+                {...form.register("healthConcerns")}
               />
               {option.label}
             </label>

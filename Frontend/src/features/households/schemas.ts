@@ -26,4 +26,5 @@ export const createHouseholdSchema = z.object({
 
 export type HouseholdDetails = z.infer<typeof householdDetailsSchema>;
 export type HouseholdListItem = z.infer<typeof householdListItemSchema>;
-export type CreateHouseholdInput = z.infer<typeof createHouseholdSchema>;
+export type CreateHouseholdInput = z.input<typeof createHouseholdSchema>;
+export type CreateHouseholdData = z.output<typeof createHouseholdSchema>;
