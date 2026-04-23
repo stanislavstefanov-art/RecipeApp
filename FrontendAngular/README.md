@@ -1,51 +1,59 @@
 # FrontendAngular
 
-Angular implementation of the Recipes domain — sibling to the React app at
-`/Frontend`. Both consume the same backend API at `/Backend`.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
 
-This folder is intentionally near-empty until the Angular project is scaffolded.
+## Development server
 
-## Scaffold (first-time setup)
-
-Run from the repo root. The flags pin the non-default choices captured in
-`.claude/rules/frontend-angular.md` and the forthcoming ADRs:
+To start a local development server, run:
 
 ```bash
-npx @angular/cli@latest new frontend-angular \
-  --directory FrontendAngular \
-  --style=css \
-  --ssr=false \
-  --routing \
-  --strict \
-  --standalone \
-  --zoneless \
-  --package-manager=npm
+ng serve
 ```
 
-After scaffolding:
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-1. Replace Karma/Jasmine with Jest or Vitest.
-2. Add Tailwind CSS.
-3. Add `angular-eslint` + Prettier.
-4. Add `@softarc/sheriff` and a starter `sheriff.config.ts`.
-5. Confirm `ChangeDetectionStrategy.OnPush` is wired as a default (schematic or
-   lint rule).
+## Code scaffolding
 
-## Dev server
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
 ```bash
-npm run start   # http://localhost:4200
+ng generate component component-name
 ```
 
-The React app runs on `http://localhost:5173`. Backend CORS must allow both
-origins in development.
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-## Rules and guidance
+```bash
+ng generate --help
+```
 
-- Claude Code rules: `.claude/rules/frontend-angular.md` (path-scoped to this
-  folder).
-- Best-practices reference: `Docs/angular-best-practices.md` (to be added).
-- Architectural decisions: `Docs/adr/` (to be added).
+## Building
 
-Do not share source code with `/Frontend`. The point of keeping both apps is
-the side-by-side contrast — reimplement each slice idiomatically per framework.
+To build the project run:
+
+```bash
+ng build
+```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Running unit tests
+
+To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
