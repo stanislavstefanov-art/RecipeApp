@@ -1,20 +1,31 @@
 # CLAUDE.md
 
 @import .claude/rules/backend.md
-@import .claude/rules/frontend.md
+@import .claude/rules/frontend-react.md
+@import .claude/rules/frontend-angular.md
 @import .claude/rules/testing.md
 
 ## Project overview
 
 RecipeApp — a cooking recipes application with AI-powered meal planning.
-Full-stack: React 19 frontend + .NET 10 API backend, deployed to Azure.
+Full-stack: .NET 10 API backend plus **two parallel frontends** (React 19 and
+Angular) sharing the same API. Keeping both is intentional — a learning
+exercise to contrast the frameworks against the same domain. Do not share
+source code between them.
+
+Deployed to Azure.
 
 ## Repository structure
 
-- /Backend    — .NET 10 Clean Architecture API (Domain, Application, Infrastructure, Api)
-- /Frontend   — React 19 + TypeScript + Vite + TanStack Query + Tailwind (not yet created)
-- /infra      — Bicep IaC templates for Azure deployment (not yet created)
-- /docs       — Architecture Decision Records
+- /Backend         — .NET 10 Clean Architecture API (Domain, Application, Infrastructure, Api)
+- /Frontend        — React 19 + TypeScript + Vite + TanStack Query + Tailwind
+- /FrontendAngular — Angular (zoneless, standalone, signals) + Tailwind — scaffold pending
+- /infra           — Bicep IaC templates for Azure deployment (not yet created)
+- /Docs            — Architecture Decision Records and reference material
+
+The `.claude/rules/frontend-react.md` and `.claude/rules/frontend-angular.md`
+rule files are `paths:`-scoped so Claude only applies the matching framework's
+rules when working inside each folder.
 
 ## Commands
 
@@ -28,6 +39,19 @@ dotnet ef migrations add <Name> \
   --project Backend/src/Recipes.Infrastructure \
   --startup-project Backend/src/Recipes.Api
 dotnet ef database update --startup-project Backend/src/Recipes.Api
+
+### Frontend (React) — from /Frontend
+npm run dev        # http://localhost:5173
+npm run build
+npm run lint
+
+### Frontend (Angular) — from /FrontendAngular (once scaffolded)
+npm run start      # http://localhost:4200
+npm run build
+npm run lint
+
+Backend CORS in development must allow both `http://localhost:5173` and
+`http://localhost:4200`.
 
 ## Architecture
 
@@ -67,14 +91,18 @@ Dependency direction: Api → Application ← Infrastructure, Domain at center.
 
 ## Frontend implementation guidance
 
-For frontend work:
+Framework-specific rules live in:
+- `.claude/rules/frontend-react.md` (scoped to `/Frontend`)
+- `.claude/rules/frontend-angular.md` (scoped to `/FrontendAngular`)
+
+Cross-framework guidance (applies to both):
 - Build one vertical slice at a time.
-- Prefer feature folders under /Frontend/src/features.
-- Keep server state in TanStack Query.
-- Keep API calls in /Frontend/src/api.
-- Prefer React Hook Form + Zod for forms.
-- Avoid global state libraries unless clearly needed.
-- Frontend should consume backend read models directly where possible rather than reconstructing names from ids.
+- Organize by feature folders, not by file type.
+- Keep API calls in a dedicated `api/` folder — never fetch from components.
+- Consume backend read models directly rather than reconstructing names from ids.
+- Every page/major component must explicitly handle loading, error, and empty states.
+- Do not share source code between the React and Angular apps — reimplement
+  each slice idiomatically per framework.
 
 ## Azure deployment targets
 

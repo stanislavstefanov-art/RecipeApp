@@ -4,6 +4,9 @@ paths: ["Frontend/**/*"]
 
 # Claude Code Rules: React 19 Feature-Driven Architecture
 
+> Applies to the **React** app at `/Frontend`. The sibling Angular app lives at
+> `/FrontendAngular` — do not share source code between the two.
+
 ## Core Tech Stack
 - **Framework:** React 19 + TypeScript (Strict Mode) + Vite
 - **Styling:** Tailwind CSS
