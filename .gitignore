@@ -9,6 +9,7 @@ appsettings.Local.json
 
 # Claude Code local state
 .claude/settings.local.json
+.claude/worktrees/
 
 # Azure
 .azure/
