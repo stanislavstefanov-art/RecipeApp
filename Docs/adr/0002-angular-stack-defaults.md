@@ -22,9 +22,9 @@ defaults. Rather than re-derive each decision per feature, lock them here.
 
 | Concern | Decision |
 |---|---|
-| Angular version | Latest stable at scaffold time |
+| Angular version | 21.2 at scaffold (latest stable at the time) |
 | Component style | **Standalone only** — no `NgModule` |
-| Change detection | Zoneless, `OnPush` on every component |
+| Change detection | Zoneless (no `zone.js` in deps), `OnPush` on every component |
 | Reactivity | Signals first (`signal`, `computed`, `effect`) |
 | Template control flow | `@if`, `@for`, `@switch` only |
 | Dependency injection | `inject()` function, no constructor injection |
@@ -34,10 +34,10 @@ defaults. Rather than re-derive each decision per feature, lock them here.
 
 | Concern | Decision | Rationale |
 |---|---|---|
-| Build | Vite / esbuild builder | Faster dev loop; Angular's modern default |
-| Lint | `angular-eslint` + Prettier | Standard modern stack |
+| Build | `@angular/build:application` (esbuild) | Angular 21 default; fast dev loop |
+| Lint | `angular-eslint` + Prettier | Standard modern stack (Prettier pre-wired by scaffold) |
 | Boundaries | `@softarc/sheriff` | Enforce feature/shared/core layering |
-| Unit test | Jest or Vitest | Avoid Karma/Jasmine; align with ecosystem direction |
+| Unit test | **Vitest** (pre-wired by scaffold) | Replaces Karma/Jasmine; aligns with ecosystem direction |
 | E2E test | Playwright | Modern, cross-browser, maintained |
 | Styling | Tailwind CSS | Mirrors `/Frontend` choice for visual consistency |
 
@@ -65,24 +65,26 @@ Enable all of: `strict`, `strictTemplates`, `noImplicitOverride`,
 
 ## Scaffold command
 
-These decisions translate into the following `ng new` invocation (also in
-`FrontendAngular/README.md`):
+The project was scaffolded with:
 
 ```bash
 npx @angular/cli@latest new frontend-angular \
   --directory FrontendAngular \
-  --style=css \
-  --ssr=false \
-  --routing \
-  --strict \
-  --standalone \
-  --zoneless \
+  --style=css --ssr=false --routing \
+  --strict --standalone --zoneless \
   --package-manager=npm
 ```
 
-Post-scaffold steps — Karma → Jest/Vitest, add Tailwind, add
-`angular-eslint`/Prettier, add Sheriff with an initial `sheriff.config.ts` —
-are tracked separately after the scaffold lands.
+Notes from the actual run:
+- The CLI prompts interactively for "Which AI tools do you want to configure
+  with Angular best practices?" — answered **None**. No flag found to suppress
+  this prompt; expect it if re-running.
+- `--strict` and `--standalone` are defaults in Angular 21 and are effectively
+  no-ops; kept in the command for documentation value.
+
+Post-scaffold follow-ups (tracked in separate commits after the scaffold):
+add Tailwind, add `angular-eslint`, add Sheriff + initial `sheriff.config.ts`,
+enforce `OnPush` via lint rule.
 
 ## Consequences
 
@@ -94,8 +96,6 @@ are tracked separately after the scaffold lands.
 
 **Negative**
 
-- Some decisions (e.g., "Jest or Vitest") defer the final pick. When the
-  scaffold replaces Karma, that choice must be made and this ADR updated.
 - NgRx Signal Store usage requires a judgment call per feature — the ADR
   intentionally doesn't prescribe when it's "needed". Expect the first few
   features to recalibrate this rule.
