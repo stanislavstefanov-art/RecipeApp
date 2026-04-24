@@ -50,4 +50,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/households/households-details').then((m) => m.HouseholdsDetails),
   },
+  {
+    path: 'meal-plans',
+    loadComponent: () =>
+      import('./features/meal-plans/meal-plans-list').then((m) => m.MealPlansList),
+  },
+  {
+    path: 'meal-plans/new',
+    loadComponent: () =>
+      import('./features/meal-plans/meal-plans-create').then((m) => m.MealPlansCreate),
+  },
+  {
+    path: 'meal-plans/suggest',
+    loadComponent: () =>
+      import('./features/meal-plans/meal-plans-suggest').then((m) => m.MealPlansSuggest),
+  },
+  {
+    path: 'meal-plans/:id',
+    loadComponent: () =>
+      import('./features/meal-plans/meal-plans-details').then((m) => m.MealPlansDetails),
+  },
 ];
