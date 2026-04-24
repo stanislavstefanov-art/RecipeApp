@@ -7,8 +7,10 @@ import {
   AddStepRequest,
   CreateRecipeRequest,
   CreateRecipeResponse,
+  IngredientSubstitutionSuggestionDto,
   RecipeDto,
   RecipeListItemDto,
+  SuggestSubstitutionsRequest,
   UpdateRecipeRequest,
 } from './recipes.dto';
 
@@ -50,5 +52,14 @@ export class RecipesClient {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/recipes/${id}`);
+  }
+
+  suggestSubstitutions(
+    payload: SuggestSubstitutionsRequest,
+  ): Observable<IngredientSubstitutionSuggestionDto> {
+    return this.http.post<IngredientSubstitutionSuggestionDto>(
+      `${API_BASE_URL}/api/recipes/suggest-substitutions`,
+      payload,
+    );
   }
 }

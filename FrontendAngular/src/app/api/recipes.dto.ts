@@ -42,3 +42,24 @@ export interface RecipeDto {
   readonly ingredients: readonly IngredientDto[];
   readonly steps: readonly RecipeStepDto[];
 }
+
+export interface SuggestSubstitutionsRequest {
+  readonly ingredientName: string;
+  readonly recipeContext?: string;
+  readonly dietaryGoal?: string;
+}
+
+export interface IngredientSubstituteDto {
+  readonly name: string;
+  readonly reason: string;
+  readonly quantityAdjustment?: string;
+  readonly isDirectReplacement: boolean;
+}
+
+export interface IngredientSubstitutionSuggestionDto {
+  readonly originalIngredient: string;
+  readonly substitutes: readonly IngredientSubstituteDto[];
+  readonly confidence: number;
+  readonly needsReview: boolean;
+  readonly notes?: string;
+}
