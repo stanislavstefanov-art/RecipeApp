@@ -36,11 +36,17 @@ export interface RecipeStepDto {
   readonly instruction: string;
 }
 
+export interface RecipeVariationDto {
+  readonly id: string;
+  readonly name: string;
+}
+
 export interface RecipeDto {
   readonly id: string;
   readonly name: string;
   readonly ingredients: readonly IngredientDto[];
   readonly steps: readonly RecipeStepDto[];
+  readonly variations?: readonly RecipeVariationDto[];
 }
 
 export interface SuggestSubstitutionsRequest {

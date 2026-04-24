@@ -103,3 +103,11 @@ export interface MealPlanDetailsDto {
   readonly householdName: string;
   readonly entries: readonly MealPlanEntryDto[];
 }
+
+export interface UpdateMealPlanPersonAssignmentRequest {
+  readonly personId: string;
+  readonly assignedRecipeId: string;
+  readonly recipeVariationId: string | null;
+  readonly portionMultiplier: number;
+  readonly notes: string | null;
+}

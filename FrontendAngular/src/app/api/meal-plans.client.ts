@@ -11,6 +11,7 @@ import {
   MealPlanListItemDto,
   MealPlanSuggestionDto,
   SuggestMealPlanRequest,
+  UpdateMealPlanPersonAssignmentRequest,
 } from './meal-plans.dto';
 
 const API_BASE_URL = 'http://localhost:5117';
@@ -56,6 +57,17 @@ export class MealPlansClient {
     return this.http.post<void>(
       `${API_BASE_URL}/api/meal-plans/${mealPlanId}/shopping-lists/${shoppingListId}/regenerate`,
       null,
+    );
+  }
+
+  updateAssignment(
+    mealPlanId: string,
+    mealPlanEntryId: string,
+    payload: UpdateMealPlanPersonAssignmentRequest,
+  ): Observable<void> {
+    return this.http.put<void>(
+      `${API_BASE_URL}/api/meal-plans/${mealPlanId}/entries/${mealPlanEntryId}/assignments`,
+      payload,
     );
   }
 }
