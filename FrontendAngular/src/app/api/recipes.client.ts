@@ -7,6 +7,8 @@ import {
   AddStepRequest,
   CreateRecipeRequest,
   CreateRecipeResponse,
+  ImportRecipeRequest,
+  ImportedRecipeDto,
   IngredientSubstitutionSuggestionDto,
   RecipeDto,
   RecipeListItemDto,
@@ -59,6 +61,13 @@ export class RecipesClient {
   ): Observable<IngredientSubstitutionSuggestionDto> {
     return this.http.post<IngredientSubstitutionSuggestionDto>(
       `${API_BASE_URL}/api/recipes/suggest-substitutions`,
+      payload,
+    );
+  }
+
+  importFromText(payload: ImportRecipeRequest): Observable<ImportedRecipeDto> {
+    return this.http.post<ImportedRecipeDto>(
+      `${API_BASE_URL}/api/recipes/import`,
       payload,
     );
   }

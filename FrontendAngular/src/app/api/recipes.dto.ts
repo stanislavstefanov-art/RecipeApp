@@ -63,3 +63,24 @@ export interface IngredientSubstitutionSuggestionDto {
   readonly needsReview: boolean;
   readonly notes?: string;
 }
+
+export interface ImportRecipeRequest {
+  readonly text: string;
+}
+
+export interface ImportedIngredientDto {
+  readonly name: string;
+  readonly quantity?: string;
+  readonly unit?: string;
+  readonly notes?: string;
+}
+
+export interface ImportedRecipeDto {
+  readonly title?: string;
+  readonly servings?: number;
+  readonly ingredients: readonly ImportedIngredientDto[];
+  readonly steps: readonly string[];
+  readonly notes?: string;
+  readonly confidence: number;
+  readonly needsReview: boolean;
+}
