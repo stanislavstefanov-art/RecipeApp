@@ -15,6 +15,12 @@ export interface UpdateRecipeRequest {
   readonly name: string;
 }
 
+export interface AddIngredientRequest {
+  readonly name: string;
+  readonly quantity: number;
+  readonly unit: string;
+}
+
 export interface IngredientDto {
   readonly name: string;
   readonly quantity: number;

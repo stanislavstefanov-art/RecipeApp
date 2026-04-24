@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import {
+  AddIngredientRequest,
   CreateRecipeRequest,
   CreateRecipeResponse,
   RecipeDto,
@@ -30,5 +31,12 @@ export class RecipesClient {
 
   updateName(id: string, payload: UpdateRecipeRequest): Observable<void> {
     return this.http.put<void>(`${API_BASE_URL}/api/recipes/${id}`, payload);
+  }
+
+  addIngredient(recipeId: string, payload: AddIngredientRequest): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/ingredients`,
+      payload,
+    );
   }
 }
