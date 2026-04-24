@@ -42,8 +42,9 @@ test.describe('add ingredient', () => {
       await route.fulfill({ status: 204, body: '' });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
-    await page.getByLabel('Ingredient name').fill('Flour');
+    await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('100');
     await page.getByLabel('Unit').fill('');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
@@ -66,8 +67,9 @@ test.describe('add ingredient', () => {
       await route.fulfill({ status: 204, body: '' });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
-    await page.getByLabel('Ingredient name').fill('Flour');
+    await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('0');
     await page.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
@@ -103,17 +105,18 @@ test.describe('add ingredient', () => {
       await route.fulfill({ status: 204, body: '' });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
     await expect(page.getByText('No ingredients')).toBeVisible();
 
-    await page.getByLabel('Ingredient name').fill('Flour');
+    await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
     await page.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     await expect(page.getByText('Flour', { exact: true })).toBeVisible();
     await expect(page.getByText('200 g')).toBeVisible();
-    await expect(page.getByLabel('Ingredient name')).toHaveValue('');
+    await expect(form.getByLabel('Ingredient name')).toHaveValue('');
     await expect(page.getByLabel('Quantity')).toHaveValue('1');
     await expect(page.getByLabel('Unit')).toHaveValue('');
   });
@@ -137,15 +140,16 @@ test.describe('add ingredient', () => {
       });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
-    await page.getByLabel('Ingredient name').fill('Flour');
+    await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
     await page.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
-    const alert = page.locator('app-add-ingredient-form [role="alert"]');
+    const alert = form.locator('[role="alert"]');
     await expect(alert).toContainText('Ingredient name already exists.');
-    await expect(page.getByLabel('Ingredient name')).toHaveValue('Flour');
+    await expect(form.getByLabel('Ingredient name')).toHaveValue('Flour');
     await expect(page.getByLabel('Quantity')).toHaveValue('200');
     await expect(page.getByLabel('Unit')).toHaveValue('g');
   });
@@ -166,15 +170,16 @@ test.describe('add ingredient', () => {
       });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
-    await page.getByLabel('Ingredient name').fill('Flour');
+    await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
     await page.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
-    const alert = page.locator('app-add-ingredient-form [role="alert"]');
+    const alert = form.locator('[role="alert"]');
     await expect(alert).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add ingredient' })).toBeEnabled();
-    await expect(page.getByLabel('Ingredient name')).toBeEditable();
+    await expect(form.getByLabel('Ingredient name')).toBeEditable();
   });
 });
