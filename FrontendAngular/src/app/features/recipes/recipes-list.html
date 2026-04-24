@@ -1,12 +1,20 @@
 <section class="mx-auto max-w-6xl p-6">
   <header class="mb-6 flex items-center justify-between">
     <h1 class="text-2xl font-semibold">Recipes</h1>
-    <a
-      routerLink="/recipes/new"
-      class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-    >
-      New recipe
-    </a>
+    <div class="flex gap-2">
+      <a
+        routerLink="/recipes/import"
+        class="rounded bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+      >
+        Import recipe
+      </a>
+      <a
+        routerLink="/recipes/new"
+        class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+      >
+        New recipe
+      </a>
+    </div>
   </header>
 
   @if (recipes.isLoading()) {

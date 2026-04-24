@@ -1,0 +1,106 @@
+<section class="mx-auto max-w-2xl p-6">
+  <a routerLink="/recipes" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to recipes
+  </a>
+
+  <header class="mt-6 mb-6">
+    <h1 class="text-2xl font-semibold">Import recipe</h1>
+    <p class="mt-1 text-sm text-gray-500">Paste any recipe text and we'll extract the structure for you.</p>
+  </header>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="space-y-4 rounded-xl border border-gray-200 bg-white p-6"
+    novalidate
+  >
+    @if (submitError(); as error) {
+      <div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <div>
+      <label for="recipeText" class="block text-sm font-medium">Recipe text</label>
+      <textarea
+        id="recipeText"
+        formControlName="recipeText"
+        rows="10"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        placeholder="Paste the recipe here…"
+      ></textarea>
+      @if (form.controls.recipeText.touched && form.controls.recipeText.errors; as errors) {
+        @if (errors['required']) {
+          <p class="mt-1 text-sm text-red-600">Recipe text is required.</p>
+        } @else if (errors['minlength']) {
+          <p class="mt-1 text-sm text-red-600">Recipe text must be at least 10 characters.</p>
+        }
+      }
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isLoading()"
+      class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+    >
+      {{ isLoading() ? 'Extracting…' : 'Extract' }}
+    </button>
+  </form>
+
+  @if (result(); as data) {
+    <div class="mt-8 rounded-xl border border-gray-200 bg-white p-6">
+      <h2 class="text-lg font-semibold">Extracted recipe</h2>
+
+      @if (data.needsReview) {
+        <div class="mt-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+          This extraction may need review — verify the details before using.
+        </div>
+      }
+
+      @if (data.title) {
+        <p class="mt-4 text-xl font-medium">{{ data.title }}</p>
+      }
+
+      @if (data.servings) {
+        <p class="mt-1 text-sm text-gray-500">Serves {{ data.servings }}</p>
+      }
+
+      @if (data.ingredients.length > 0) {
+        <h3 class="mt-5 text-sm font-semibold uppercase tracking-wide text-gray-500">Ingredients</h3>
+        <ul class="mt-2 space-y-1">
+          @for (ingredient of data.ingredients; track $index) {
+            <li class="text-sm text-gray-800">
+              {{ ingredient.name }}
+              @if (ingredient.quantity || ingredient.unit) {
+                <span class="text-gray-500">
+                  — {{ ingredient.quantity }}{{ ingredient.unit ? ' ' + ingredient.unit : '' }}
+                </span>
+              }
+              @if (ingredient.notes) {
+                <span class="text-gray-400">({{ ingredient.notes }})</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (data.steps.length > 0) {
+        <h3 class="mt-5 text-sm font-semibold uppercase tracking-wide text-gray-500">Steps</h3>
+        <ol class="mt-2 space-y-2">
+          @for (step of data.steps; track $index) {
+            <li class="flex gap-3 text-sm">
+              <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold">
+                {{ $index + 1 }}
+              </span>
+              <span class="text-gray-800">{{ step }}</span>
+            </li>
+          }
+        </ol>
+      }
+
+      @if (data.notes) {
+        <p class="mt-4 text-sm text-gray-500">{{ data.notes }}</p>
+      }
+    </div>
+  }
+</section>
