@@ -1,0 +1,186 @@
+<section class="mx-auto max-w-2xl p-6">
+  <a routerLink="/shopping-lists" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to shopping lists
+  </a>
+
+  @if (is404()) {
+    <div class="mt-8 rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="font-semibold text-gray-700">Shopping list not found.</p>
+    </div>
+  } @else if (shoppingList.error() && !is404()) {
+    <div class="mt-6 rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load shopping list</p>
+      <p class="text-sm">{{ errorMessage() }}</p>
+    </div>
+  } @else if (shoppingList.isLoading()) {
+    <p class="mt-6 text-gray-500">Loading…</p>
+  } @else if (shoppingList.value(); as data) {
+    <header class="mt-6 mb-4 flex items-center justify-between">
+      <h1 class="text-2xl font-semibold">{{ data.name }}</h1>
+    </header>
+
+    <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4">
+      <p class="mb-2 text-sm font-medium text-gray-700">Generate from meal plan</p>
+      <div class="flex flex-wrap gap-2">
+        <select
+          [formControl]="selectedMealPlanId"
+          class="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        >
+          <option value="">Select a meal plan…</option>
+          @for (mp of mealPlans.value(); track mp.id) {
+            <option [value]="mp.id">{{ mp.name }}</option>
+          }
+        </select>
+        <button
+          type="button"
+          (click)="onGenerate()"
+          [disabled]="!selectedMealPlanId.value || generateState().kind === 'busy'"
+          class="rounded bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+        >
+          {{ generateState().kind === 'busy' ? 'Generating…' : 'Generate' }}
+        </button>
+        <button
+          type="button"
+          (click)="onRegenerate()"
+          [disabled]="!selectedMealPlanId.value || regenerateState().kind === 'busy'"
+          class="rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+        >
+          {{ regenerateState().kind === 'busy' ? 'Regenerating…' : 'Regenerate' }}
+        </button>
+      </div>
+      @if (generateState().kind === 'error') {
+        <p class="mt-2 text-sm text-red-700">{{ $any(generateState()).message }}</p>
+      }
+      @if (regenerateState().kind === 'error') {
+        <p class="mt-2 text-sm text-red-700">{{ $any(regenerateState()).message }}</p>
+      }
+    </div>
+
+    @if (data.items.length === 0) {
+      <div class="rounded border border-gray-200 bg-white p-6 text-center">
+        <p class="text-sm text-gray-500">No items yet.</p>
+      </div>
+    } @else {
+      <ul class="space-y-2">
+        @for (item of data.items; track item.id) {
+          <li class="rounded-lg border border-gray-200 bg-white p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <p class="font-medium" [class.line-through]="item.isPurchased" [class.text-gray-400]="item.isPurchased">
+                  {{ item.name }}
+                </p>
+                @if (item.quantity) {
+                  <p class="text-sm text-gray-500">{{ item.quantity }}</p>
+                }
+                <div class="mt-1 flex flex-wrap gap-1">
+                  <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                    {{ sourceTypeLabels[item.sourceType] }}
+                  </span>
+                  @if (item.isPurchased) {
+                    <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">Purchased</span>
+                  } @else if (item.isPending) {
+                    <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">Pending</span>
+                  }
+                </div>
+                @if (markPendingState().kind === 'error' && $any(markPendingState()).itemId === item.id) {
+                  <p class="mt-1 text-sm text-red-700">{{ $any(markPendingState()).message }}</p>
+                }
+              </div>
+              @if (!item.isPurchased) {
+                <div class="flex shrink-0 gap-2">
+                  @if (!item.isPending) {
+                    <button
+                      type="button"
+                      (click)="onMarkPending(item)"
+                      [disabled]="markPendingState().kind === 'busy' && $any(markPendingState()).itemId === item.id"
+                      class="rounded border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Mark pending
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    (click)="onOpenPurchase(item)"
+                    class="rounded bg-black px-2 py-1 text-xs font-medium text-white hover:bg-gray-800"
+                  >
+                    Purchase
+                  </button>
+                </div>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (purchasingItem(); as item) {
+      <div class="mt-6 rounded-xl border border-gray-200 bg-white p-6">
+        <h2 class="mb-4 text-lg font-semibold">Purchase: {{ item.name }}</h2>
+        <form (ngSubmit)="onSubmitPurchase()" class="space-y-4">
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label for="purchase-amount" class="mb-1 block text-sm font-medium text-gray-700">Amount</label>
+              <input
+                id="purchase-amount"
+                [formControl]="purchaseForm.controls.amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+              />
+            </div>
+            <div>
+              <label for="purchase-currency" class="mb-1 block text-sm font-medium text-gray-700">Currency</label>
+              <input
+                id="purchase-currency"
+                [formControl]="purchaseForm.controls.currency"
+                type="text"
+                placeholder="USD"
+                class="w-24 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label for="purchase-date" class="mb-1 block text-sm font-medium text-gray-700">Date</label>
+            <input
+              id="purchase-date"
+              [formControl]="purchaseForm.controls.expenseDate"
+              type="date"
+              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+            />
+          </div>
+          <div>
+            <label for="purchase-description" class="mb-1 block text-sm font-medium text-gray-700">Description (optional)</label>
+            <textarea
+              id="purchase-description"
+              [formControl]="purchaseForm.controls.description"
+              rows="2"
+              placeholder="Optional note…"
+              class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+            ></textarea>
+          </div>
+          @if (purchaseState().kind === 'error') {
+            <p class="text-sm text-red-700">{{ $any(purchaseState()).message }}</p>
+          }
+          <div class="flex gap-3">
+            <button
+              type="submit"
+              [disabled]="purchaseForm.invalid || purchaseState().kind === 'busy'"
+              class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+            >
+              {{ purchaseState().kind === 'busy' ? 'Saving…' : 'Save purchase' }}
+            </button>
+            <button
+              type="button"
+              (click)="onCancelPurchase()"
+              class="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  }
+</section>

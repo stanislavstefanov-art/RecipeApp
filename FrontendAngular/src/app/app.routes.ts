@@ -75,4 +75,26 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/meal-plans/meal-plans-details').then((m) => m.MealPlansDetails),
   },
+  {
+    path: 'shopping-lists',
+    loadComponent: () =>
+      import('./features/shopping-lists/shopping-lists-list').then((m) => m.ShoppingListsList),
+  },
+  {
+    path: 'shopping-lists/:id',
+    loadComponent: () =>
+      import('./features/shopping-lists/shopping-lists-details').then(
+        (m) => m.ShoppingListsDetails,
+      ),
+  },
+  {
+    path: 'expenses',
+    loadComponent: () =>
+      import('./features/expenses/expenses-list').then((m) => m.ExpensesList),
+  },
+  {
+    path: 'expenses/report',
+    loadComponent: () =>
+      import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
+  },
 ];

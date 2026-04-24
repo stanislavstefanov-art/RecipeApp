@@ -44,4 +44,18 @@ export class MealPlansClient {
       payload,
     );
   }
+
+  generateFromMealPlan(mealPlanId: string, shoppingListId: string): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/meal-plans/${mealPlanId}/shopping-lists/${shoppingListId}`,
+      null,
+    );
+  }
+
+  regenerateFromMealPlan(mealPlanId: string, shoppingListId: string): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/meal-plans/${mealPlanId}/shopping-lists/${shoppingListId}/regenerate`,
+      null,
+    );
+  }
 }
