@@ -1,0 +1,23 @@
+<div
+  aria-live="polite"
+  aria-atomic="false"
+  class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+>
+  @for (toast of service.toasts(); track toast.id) {
+    <div
+      role="alert"
+      class="pointer-events-auto flex max-w-sm items-start gap-3 rounded-lg border px-4 py-3 shadow-lg"
+      [class]="toast.kind === 'success' ? 'border-green-200 bg-green-50 text-green-900'
+             : toast.kind === 'error'   ? 'border-red-200 bg-red-50 text-red-900'
+             :                            'border-blue-200 bg-blue-50 text-blue-900'"
+    >
+      <span class="flex-1 text-sm">{{ toast.message }}</span>
+      <button
+        type="button"
+        (click)="service.dismiss(toast.id)"
+        class="shrink-0 text-lg leading-none opacity-60 hover:opacity-100"
+        aria-label="Dismiss"
+      >&times;</button>
+    </div>
+  }
+</div>

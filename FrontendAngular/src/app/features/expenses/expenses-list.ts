@@ -5,6 +5,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { ToastService } from '../../core/toast.service';
 import { ExpensesClient } from '../../api/expenses.client';
 
 type SubmitState =
@@ -37,6 +38,7 @@ export const EXPENSE_SOURCE_TYPE_LABELS: Readonly<Record<number, string>> = {
 })
 export class ExpensesList {
   private readonly client = inject(ExpensesClient);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly categoryLabels = CATEGORY_LABELS;
@@ -96,6 +98,7 @@ export class ExpensesList {
           this.createForm.reset({ currency: 'USD' });
           this.submitState.set({ kind: 'idle' });
           this.expenses.reload();
+          this.toast.show('success', 'Expense recorded');
         },
         error: (err: Error) => {
           this.submitState.set({ kind: 'error', message: err.message ?? 'Failed to create' });

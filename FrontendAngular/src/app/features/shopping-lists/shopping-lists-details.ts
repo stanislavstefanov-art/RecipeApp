@@ -12,6 +12,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
 import { ShoppingListDetailsItemDto } from '../../api/shopping-lists.dto';
@@ -42,6 +43,7 @@ export class ShoppingListsDetails {
 
   private readonly client = inject(ShoppingListsClient);
   private readonly mealPlansClient = inject(MealPlansClient);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly shoppingList = rxResource({
@@ -88,6 +90,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.markPendingState.set({ kind: 'idle' });
           this.shoppingList.reload();
+          this.toast.show('success', `"${item.name}" marked as pending`);
         },
         error: (err: Error) => {
           this.markPendingState.set({
@@ -129,6 +132,7 @@ export class ShoppingListsDetails {
           this.purchasingItem.set(null);
           this.purchaseState.set({ kind: 'idle' });
           this.shoppingList.reload();
+          this.toast.show('success', 'Item purchased and expense recorded');
         },
         error: (err: Error) => {
           this.purchaseState.set({ kind: 'error', message: err.message ?? 'Failed' });
@@ -148,6 +152,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.generateState.set({ kind: 'idle' });
           this.shoppingList.reload();
+          this.toast.show('success', 'Shopping list generated from meal plan');
         },
         error: (err: Error) => {
           this.generateState.set({ kind: 'error', message: err.message ?? 'Failed' });
@@ -167,6 +172,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.regenerateState.set({ kind: 'idle' });
           this.shoppingList.reload();
+          this.toast.show('success', 'Shopping list regenerated');
         },
         error: (err: Error) => {
           this.regenerateState.set({ kind: 'error', message: err.message ?? 'Failed' });

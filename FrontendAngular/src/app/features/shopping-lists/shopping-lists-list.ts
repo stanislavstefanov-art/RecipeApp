@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 
+import { ToastService } from '../../core/toast.service';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
 
 type SubmitState =
@@ -27,6 +28,7 @@ export const SOURCE_TYPE_LABELS: Readonly<Record<number, string>> = {
 })
 export class ShoppingListsList {
   private readonly client = inject(ShoppingListsClient);
+  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly shoppingLists = rxResource({
@@ -60,6 +62,7 @@ export class ShoppingListsList {
           this.nameControl.reset();
           this.submitState.set({ kind: 'idle' });
           this.shoppingLists.reload();
+          this.toast.show('success', 'Shopping list created');
         },
         error: (err: Error) => {
           this.submitState.set({ kind: 'error', message: err.message ?? 'Failed to create' });
