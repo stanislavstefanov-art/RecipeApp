@@ -1,0 +1,37 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-3" novalidate>
+  @if (submitError(); as error) {
+    <div
+      class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+  }
+
+  <div>
+    <label for="step-instruction" class="block text-sm font-medium">Instruction</label>
+    <textarea
+      id="step-instruction"
+      formControlName="instruction"
+      rows="4"
+      class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+    ></textarea>
+    @if (form.controls.instruction.touched && form.controls.instruction.errors; as errors) {
+      @if (errors['required']) {
+        <p class="mt-1 text-sm text-red-600">Instruction is required.</p>
+      } @else if (errors['maxlength']) {
+        <p class="mt-1 text-sm text-red-600">
+          Instruction must be 1000 characters or fewer.
+        </p>
+      }
+    }
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="isSubmitting()"
+    class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+  >
+    {{ isSubmitting() ? 'Adding…' : 'Add step' }}
+  </button>
+</form>

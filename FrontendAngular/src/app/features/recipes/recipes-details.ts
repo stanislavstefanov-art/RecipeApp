@@ -11,11 +11,12 @@ import { RouterLink } from '@angular/router';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { AddIngredientForm } from './add-ingredient-form';
+import { AddStepForm } from './add-step-form';
 import { UpdateRecipeNameForm } from './update-recipe-name-form';
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm],
+  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +36,10 @@ export class RecipesDetails {
   }
 
   protected onIngredientAdded(): void {
+    this.recipe.reload();
+  }
+
+  protected onStepAdded(): void {
     this.recipe.reload();
   }
 
