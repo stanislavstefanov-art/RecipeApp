@@ -7,6 +7,7 @@ import {
   CreateRecipeResponse,
   RecipeDto,
   RecipeListItemDto,
+  UpdateRecipeRequest,
 } from './recipes.dto';
 
 const API_BASE_URL = 'http://localhost:5117';
@@ -25,5 +26,9 @@ export class RecipesClient {
 
   create(payload: CreateRecipeRequest): Observable<CreateRecipeResponse> {
     return this.http.post<CreateRecipeResponse>(`${API_BASE_URL}/api/recipes`, payload);
+  }
+
+  updateName(id: string, payload: UpdateRecipeRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/api/recipes/${id}`, payload);
   }
 }

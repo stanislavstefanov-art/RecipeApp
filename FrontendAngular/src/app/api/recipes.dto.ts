@@ -11,6 +11,10 @@ export interface CreateRecipeResponse {
   readonly id: string;
 }
 
+export interface UpdateRecipeRequest {
+  readonly name: string;
+}
+
 export interface IngredientDto {
   readonly name: string;
   readonly quantity: number;
