@@ -35,4 +35,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/persons/persons-create').then((m) => m.PersonsCreate),
   },
+  {
+    path: 'households',
+    loadComponent: () =>
+      import('./features/households/households-list').then((m) => m.HouseholdsList),
+  },
+  {
+    path: 'households/new',
+    loadComponent: () =>
+      import('./features/households/households-create').then((m) => m.HouseholdsCreate),
+  },
+  {
+    path: 'households/:id',
+    loadComponent: () =>
+      import('./features/households/households-details').then((m) => m.HouseholdsDetails),
+  },
 ];
