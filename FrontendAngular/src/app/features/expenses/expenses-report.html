@@ -1,0 +1,88 @@
+<section class="mx-auto max-w-2xl p-6">
+  <header class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Monthly Report</h1>
+    <a
+      routerLink="/expenses"
+      class="text-sm text-gray-500 hover:text-gray-800"
+    >
+      &larr; Back to expenses
+    </a>
+  </header>
+
+  <form (ngSubmit)="onSubmit()" class="mb-6 flex flex-wrap items-end gap-3">
+    <div>
+      <label for="report-year" class="mb-1 block text-sm font-medium text-gray-700">Year</label>
+      <input
+        id="report-year"
+        [formControl]="queryForm.controls.year"
+        type="number"
+        min="2000"
+        class="w-28 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+    </div>
+    <div>
+      <label for="report-month" class="mb-1 block text-sm font-medium text-gray-700">Month</label>
+      <input
+        id="report-month"
+        [formControl]="queryForm.controls.month"
+        type="number"
+        min="1"
+        max="12"
+        class="w-20 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+    </div>
+    <button
+      type="submit"
+      [disabled]="queryForm.invalid"
+      class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+    >
+      Load
+    </button>
+  </form>
+
+  @if (report.isLoading()) {
+    <p class="text-gray-500">Loading report…</p>
+  } @else if (report.error()) {
+    <div class="rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load report</p>
+    </div>
+  } @else if (report.value(); as data) {
+    <div class="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+      <p class="text-sm text-gray-500">
+        {{ data.year }}-{{ data.month | number: '2.0-0' }}
+      </p>
+      <p class="mt-1 text-3xl font-bold">
+        {{ data.totalAmount | number: '1.2-2' }} {{ data.currency }}
+      </p>
+
+      @if (data.byCategory.length > 0) {
+        <div class="mt-4 space-y-2">
+          @for (cat of data.byCategory; track cat.category) {
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-700">{{ categoryLabels[cat.category] }}</span>
+              <span class="text-sm font-medium">
+                {{ cat.totalAmount | number: '1.2-2' }} {{ data.currency }}
+                <span class="ml-1 text-gray-400">({{ cat.count }})</span>
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (insights.isLoading()) {
+    <p class="text-gray-500">Loading insights…</p>
+  } @else if (insights.value(); as insightData) {
+    @if (insightData.insights.length > 0) {
+      <div class="rounded-xl border border-gray-200 bg-white p-5">
+        <h2 class="mb-3 text-base font-semibold">Insights</h2>
+        <ul class="space-y-2">
+          @for (insight of insightData.insights; track $index) {
+            <li class="text-sm text-gray-700">{{ insight }}</li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</section>
