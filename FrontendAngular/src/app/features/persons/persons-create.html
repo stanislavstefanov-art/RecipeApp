@@ -1,0 +1,104 @@
+<section class="mx-auto max-w-xl p-6">
+  <a routerLink="/persons" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to persons
+  </a>
+
+  <header class="mt-6 mb-6">
+    <h1 class="text-2xl font-semibold">New person</h1>
+  </header>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="space-y-5 rounded-xl border border-gray-200 bg-white p-6"
+    novalidate
+  >
+    @if (submitError(); as error) {
+      <div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <div>
+      <label for="name" class="block text-sm font-medium">Name</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+      @if (form.controls.name.touched && form.controls.name.errors; as errors) {
+        @if (errors['required']) {
+          <p class="mt-1 text-sm text-red-600">Name is required.</p>
+        } @else if (errors['maxlength']) {
+          <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+        }
+      }
+    </div>
+
+    <fieldset>
+      <legend class="text-sm font-medium">Dietary preferences</legend>
+      <div class="mt-2 space-y-2">
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="vegetarian" class="rounded" />
+          Vegetarian
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="pescatarian" class="rounded" />
+          Pescatarian
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="vegan" class="rounded" />
+          Vegan
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="highProtein" class="rounded" />
+          High protein
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="text-sm font-medium">Health concerns</legend>
+      <div class="mt-2 space-y-2">
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="diabetes" class="rounded" />
+          Diabetes
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="highBloodPressure" class="rounded" />
+          High blood pressure
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="glutenIntolerance" class="rounded" />
+          Gluten intolerance
+        </label>
+      </div>
+    </fieldset>
+
+    <div>
+      <label for="notes" class="block text-sm font-medium">
+        Notes
+        <span class="font-normal text-gray-400">(optional)</span>
+      </label>
+      <textarea
+        id="notes"
+        formControlName="notes"
+        rows="3"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        placeholder="Any additional notes…"
+      ></textarea>
+      @if (form.controls.notes.touched && form.controls.notes.hasError('maxlength')) {
+        <p class="mt-1 text-sm text-red-600">Notes must be 1000 characters or fewer.</p>
+      }
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isSubmitting()"
+      class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+    >
+      {{ isSubmitting() ? 'Creating…' : 'Create' }}
+    </button>
+  </form>
+</section>

@@ -25,4 +25,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/recipes/recipes-details').then((m) => m.RecipesDetails),
   },
+  {
+    path: 'persons',
+    loadComponent: () =>
+      import('./features/persons/persons-list').then((m) => m.PersonsList),
+  },
+  {
+    path: 'persons/new',
+    loadComponent: () =>
+      import('./features/persons/persons-create').then((m) => m.PersonsCreate),
+  },
 ];

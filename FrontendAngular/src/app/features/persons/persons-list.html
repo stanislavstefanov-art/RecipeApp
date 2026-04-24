@@ -1,0 +1,54 @@
+<section class="mx-auto max-w-3xl p-6">
+  <header class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Persons</h1>
+    <a
+      routerLink="/persons/new"
+      class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+    >
+      New person
+    </a>
+  </header>
+
+  @if (persons.isLoading()) {
+    <p class="text-gray-500">Loading persons…</p>
+  } @else if (persons.error()) {
+    <div class="rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load persons</p>
+      <p class="text-sm">{{ errorMessage() }}</p>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="font-semibold">No persons yet</p>
+      <p class="mt-1 text-sm text-gray-500">Add a person to get started.</p>
+    </div>
+  } @else {
+    <ul class="space-y-3">
+      @for (person of persons.value(); track person.id) {
+        <li class="rounded-lg border border-gray-200 bg-white p-4">
+          <p class="font-medium">{{ person.name }}</p>
+          @if (person.dietaryPreferences.length > 0 || person.healthConcerns.length > 0) {
+            <div class="mt-2 flex flex-wrap gap-1">
+              @for (pref of person.dietaryPreferences; track pref) {
+                @if (dietaryLabels[pref]) {
+                  <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                    {{ dietaryLabels[pref] }}
+                  </span>
+                }
+              }
+              @for (concern of person.healthConcerns; track concern) {
+                @if (concernLabels[concern]) {
+                  <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                    {{ concernLabels[concern] }}
+                  </span>
+                }
+              }
+            </div>
+          }
+          @if (person.notes) {
+            <p class="mt-1 text-sm text-gray-500">{{ person.notes }}</p>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>
