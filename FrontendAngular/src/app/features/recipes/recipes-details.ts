@@ -14,6 +14,7 @@ import { Router, RouterLink } from '@angular/router';
 import { RecipesClient } from '../../api/recipes.client';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
+import { SuggestSubstitutionsForm } from './suggest-substitutions-form';
 import { UpdateRecipeNameForm } from './update-recipe-name-form';
 
 type DeleteState =
@@ -23,7 +24,7 @@ type DeleteState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm],
+  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
