@@ -1,1 +1,46 @@
-<router-outlet />
+<div class="min-h-screen bg-gray-50">
+  <header class="border-b bg-white">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <div>
+        <a routerLink="/" class="text-lg font-semibold sm:text-xl">RecipeApp</a>
+        <p class="text-xs text-gray-500 sm:text-sm">Recipes, meal plans, shopping, expenses</p>
+      </div>
+
+      <button
+        type="button"
+        (click)="toggleNav()"
+        class="rounded-lg border px-3 py-2 text-sm md:hidden"
+      >
+        {{ isNavOpen() ? 'Close' : 'Menu' }}
+      </button>
+
+      <nav class="hidden gap-5 text-sm md:flex">
+        <a routerLink="/recipes" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Recipes</a>
+        <a routerLink="/persons" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Persons</a>
+        <a routerLink="/households" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Households</a>
+        <a routerLink="/meal-plans" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Meal plans</a>
+        <a routerLink="/shopping-lists" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Shopping lists</a>
+        <a routerLink="/expenses" routerLinkActive="font-medium text-blue-600" [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 hover:text-gray-900">Expenses</a>
+        <a routerLink="/expenses/report" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">Reports</a>
+      </nav>
+    </div>
+
+    @if (isNavOpen()) {
+      <nav class="border-t bg-white px-4 py-3 md:hidden sm:px-6">
+        <div class="flex flex-col gap-3 text-sm">
+          <a routerLink="/recipes" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Recipes</a>
+          <a routerLink="/persons" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Persons</a>
+          <a routerLink="/households" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Households</a>
+          <a routerLink="/meal-plans" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Meal plans</a>
+          <a routerLink="/shopping-lists" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Shopping lists</a>
+          <a routerLink="/expenses" routerLinkActive="font-medium text-blue-600" [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Expenses</a>
+          <a routerLink="/expenses/report" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">Reports</a>
+        </div>
+      </nav>
+    }
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+    <router-outlet />
+  </main>
+</div>
