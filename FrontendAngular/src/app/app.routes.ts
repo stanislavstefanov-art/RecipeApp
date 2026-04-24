@@ -18,8 +18,6 @@ export const routes: Routes = [
   {
     path: 'recipes/:id',
     loadComponent: () =>
-      import('./features/recipes/recipes-details-placeholder').then(
-        (m) => m.RecipesDetailsPlaceholder,
-      ),
+      import('./features/recipes/recipes-details').then((m) => m.RecipesDetails),
   },
 ];

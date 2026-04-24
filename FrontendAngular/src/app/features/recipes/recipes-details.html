@@ -1,0 +1,66 @@
+<section class="mx-auto max-w-3xl p-6">
+  <a routerLink="/recipes" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to recipes
+  </a>
+
+  @if (recipe.isLoading()) {
+    <p class="mt-6 text-gray-500">Loading recipe…</p>
+  } @else if (isNotFound()) {
+    <div class="mt-6 rounded border border-gray-200 bg-white p-6">
+      <h1 class="text-2xl font-semibold">Recipe not found</h1>
+      <p class="mt-2 text-sm text-gray-500">
+        The recipe you're looking for doesn't exist or has been deleted.
+      </p>
+    </div>
+  } @else if (errorMessage(); as error) {
+    <div
+      class="mt-6 rounded border border-red-300 bg-red-50 p-4 text-red-900"
+      role="alert"
+    >
+      <p class="font-semibold">Failed to load recipe</p>
+      <p class="text-sm">{{ error }}</p>
+    </div>
+  } @else if (recipe.value(); as data) {
+    <header class="mt-4">
+      <h1 class="text-3xl font-semibold">{{ data.name }}</h1>
+    </header>
+
+    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-medium">Ingredients</h2>
+      @if (hasIngredients()) {
+        <ul class="mt-4 space-y-3">
+          @for (ingredient of data.ingredients; track $index) {
+            <li class="flex justify-between gap-3 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
+              <span class="min-w-0">{{ ingredient.name }}</span>
+              <span class="shrink-0 text-sm text-gray-500">
+                {{ ingredient.quantity }} {{ ingredient.unit }}
+              </span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="mt-4 text-sm text-gray-500">No ingredients</p>
+      }
+    </section>
+
+    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-medium">Steps</h2>
+      @if (hasSteps()) {
+        <ol class="mt-4 space-y-3">
+          @for (step of data.steps; track step.order) {
+            <li class="flex gap-3">
+              <span
+                class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold"
+              >
+                {{ step.order }}
+              </span>
+              <span class="text-sm text-gray-700">{{ step.instruction }}</span>
+            </li>
+          }
+        </ol>
+      } @else {
+        <p class="mt-4 text-sm text-gray-500">No steps</p>
+      }
+    </section>
+  }
+</section>
