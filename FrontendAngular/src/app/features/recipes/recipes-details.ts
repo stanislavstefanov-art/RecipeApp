@@ -10,10 +10,11 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { UpdateRecipeNameForm } from './update-recipe-name-form';
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink],
+  imports: [RouterLink, UpdateRecipeNameForm],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +28,10 @@ export class RecipesDetails {
     params: () => this.id(),
     stream: ({ params }) => this.client.get(params),
   });
+
+  protected onNameSaved(): void {
+    this.recipe.reload();
+  }
 
   protected readonly isNotFound = computed(() => {
     const err = this.recipe.error();
