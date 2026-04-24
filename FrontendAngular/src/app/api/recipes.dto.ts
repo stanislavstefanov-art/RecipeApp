@@ -10,3 +10,21 @@ export interface CreateRecipeRequest {
 export interface CreateRecipeResponse {
   readonly id: string;
 }
+
+export interface IngredientDto {
+  readonly name: string;
+  readonly quantity: number;
+  readonly unit: string;
+}
+
+export interface RecipeStepDto {
+  readonly order: number;
+  readonly instruction: string;
+}
+
+export interface RecipeDto {
+  readonly id: string;
+  readonly name: string;
+  readonly ingredients: readonly IngredientDto[];
+  readonly steps: readonly RecipeStepDto[];
+}

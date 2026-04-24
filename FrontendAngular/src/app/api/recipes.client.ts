@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import {
   CreateRecipeRequest,
   CreateRecipeResponse,
+  RecipeDto,
   RecipeListItemDto,
 } from './recipes.dto';
 
@@ -16,6 +17,10 @@ export class RecipesClient {
 
   list(): Observable<RecipeListItemDto[]> {
     return this.http.get<RecipeListItemDto[]>(`${API_BASE_URL}/api/recipes`);
+  }
+
+  get(id: string): Observable<RecipeDto> {
+    return this.http.get<RecipeDto>(`${API_BASE_URL}/api/recipes/${id}`);
   }
 
   create(payload: CreateRecipeRequest): Observable<CreateRecipeResponse> {
