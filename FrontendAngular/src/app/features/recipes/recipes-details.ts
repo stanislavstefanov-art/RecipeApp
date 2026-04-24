@@ -2,17 +2,24 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   input,
+  signal,
 } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
 import { UpdateRecipeNameForm } from './update-recipe-name-form';
+
+type DeleteState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'deleting' }
+  | { readonly kind: 'error'; readonly message: string };
 
 @Component({
   selector: 'app-recipes-details',
@@ -23,12 +30,25 @@ import { UpdateRecipeNameForm } from './update-recipe-name-form';
 })
 export class RecipesDetails {
   private readonly client = inject(RecipesClient);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input.required<string>();
 
   protected readonly recipe = rxResource({
     params: () => this.id(),
     stream: ({ params }) => this.client.get(params),
+  });
+
+  private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
+
+  protected readonly isDeleting = computed(
+    () => this.deleteState().kind === 'deleting',
+  );
+
+  protected readonly deleteError = computed(() => {
+    const state = this.deleteState();
+    return state.kind === 'error' ? state.message : '';
   });
 
   protected onNameSaved(): void {
@@ -41,6 +61,37 @@ export class RecipesDetails {
 
   protected onStepAdded(): void {
     this.recipe.reload();
+  }
+
+  protected onDelete(): void {
+    if (!window.confirm('Delete this recipe?')) {
+      return;
+    }
+
+    this.deleteState.set({ kind: 'deleting' });
+
+    this.client
+      .delete(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          void this.router.navigate(['/recipes']);
+        },
+        error: (err: unknown) => {
+          this.deleteState.set({ kind: 'error', message: this.toDeleteMessage(err) });
+        },
+      });
+  }
+
+  private toDeleteMessage(err: unknown): string {
+    if (err instanceof HttpErrorResponse) {
+      const problem = err.error as { title?: string; detail?: string } | null;
+      return problem?.detail ?? problem?.title ?? err.message;
+    }
+    if (err instanceof Error) {
+      return err.message;
+    }
+    return 'Failed to delete recipe.';
   }
 
   protected readonly isNotFound = computed(() => {
