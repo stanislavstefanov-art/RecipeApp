@@ -35,7 +35,10 @@ spec. Implementation details belong in the respective rules files.
     and issue **no** request.
   - If client validation passes, `POST /api/recipes` with `{ name }`.
 - On `201 Created`, navigate to `/recipes/{id}` using the `id` from
-  the response body. That route is 404 until slice 3 (parity).
+  the response body. The target route resolves to a placeholder view
+  until slice 3 replaces it with the full details page (React's
+  `/recipes/:recipeId` already renders `RecipeDetailsPage`, which is
+  functionally a placeholder at this point in the slice sequence).
 - On `400` or `5xx`, display a non-empty error message near the form.
   The form stays interactive and the name field is preserved.
 - The "New recipe" button on `/recipes` links to `/recipes/new`.

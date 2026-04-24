@@ -15,4 +15,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/recipes/recipes-create').then((m) => m.RecipesCreate),
   },
+  {
+    path: 'recipes/:id',
+    loadComponent: () =>
+      import('./features/recipes/recipes-details-placeholder').then(
+        (m) => m.RecipesDetailsPlaceholder,
+      ),
+  },
 ];
