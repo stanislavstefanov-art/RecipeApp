@@ -10,11 +10,12 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { AddIngredientForm } from './add-ingredient-form';
 import { UpdateRecipeNameForm } from './update-recipe-name-form';
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, UpdateRecipeNameForm],
+  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +31,10 @@ export class RecipesDetails {
   });
 
   protected onNameSaved(): void {
+    this.recipe.reload();
+  }
+
+  protected onIngredientAdded(): void {
     this.recipe.reload();
   }
 

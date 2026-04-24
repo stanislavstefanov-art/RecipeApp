@@ -1,0 +1,72 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-3" novalidate>
+  @if (submitError(); as error) {
+    <div
+      class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+  }
+
+  <div>
+    <label for="ingredient-name" class="block text-sm font-medium">Ingredient name</label>
+    <input
+      id="ingredient-name"
+      type="text"
+      formControlName="name"
+      class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+    />
+    @if (form.controls.name.touched && form.controls.name.errors; as errors) {
+      @if (errors['required']) {
+        <p class="mt-1 text-sm text-red-600">Ingredient name is required.</p>
+      } @else if (errors['maxlength']) {
+        <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+      }
+    }
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <label for="ingredient-quantity" class="block text-sm font-medium">Quantity</label>
+      <input
+        id="ingredient-quantity"
+        type="number"
+        step="0.01"
+        formControlName="quantity"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+      />
+      @if (form.controls.quantity.touched && form.controls.quantity.errors; as errors) {
+        @if (errors['required']) {
+          <p class="mt-1 text-sm text-red-600">Quantity is required.</p>
+        } @else if (errors['greaterThanZero']) {
+          <p class="mt-1 text-sm text-red-600">Quantity must be greater than 0.</p>
+        }
+      }
+    </div>
+
+    <div>
+      <label for="ingredient-unit" class="block text-sm font-medium">Unit</label>
+      <input
+        id="ingredient-unit"
+        type="text"
+        formControlName="unit"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+      />
+      @if (form.controls.unit.touched && form.controls.unit.errors; as errors) {
+        @if (errors['required']) {
+          <p class="mt-1 text-sm text-red-600">Unit is required.</p>
+        } @else if (errors['maxlength']) {
+          <p class="mt-1 text-sm text-red-600">Unit must be 50 characters or fewer.</p>
+        }
+      }
+    </div>
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="isSubmitting()"
+    class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+  >
+    {{ isSubmitting() ? 'Adding…' : 'Add ingredient' }}
+  </button>
+</form>

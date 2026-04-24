@@ -37,6 +37,16 @@
     </section>
 
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-medium">Add ingredient</h2>
+      <div class="mt-4">
+        <app-add-ingredient-form
+          [recipeId]="data.id"
+          (added)="onIngredientAdded()"
+        />
+      </div>
+    </section>
+
+    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
       <h2 class="text-lg font-medium">Ingredients</h2>
       @if (hasIngredients()) {
         <ul class="mt-4 space-y-3">
