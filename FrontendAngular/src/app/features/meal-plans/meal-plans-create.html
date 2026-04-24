@@ -1,0 +1,71 @@
+<section class="mx-auto max-w-xl p-6">
+  <a routerLink="/meal-plans" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to meal plans
+  </a>
+
+  <header class="mt-6 mb-6">
+    <h1 class="text-2xl font-semibold">New meal plan</h1>
+  </header>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="space-y-5 rounded-xl border border-gray-200 bg-white p-6"
+    novalidate
+  >
+    @if (submitError(); as error) {
+      <div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <div>
+      <label for="name" class="block text-sm font-medium">Name</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+      @if (form.controls.name.touched && form.controls.name.errors; as errors) {
+        @if (errors['required']) {
+          <p class="mt-1 text-sm text-red-600">Name is required.</p>
+        } @else if (errors['maxlength']) {
+          <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+        }
+      }
+    </div>
+
+    <div>
+      <label for="household" class="block text-sm font-medium">Household</label>
+      <select
+        id="household"
+        formControlName="householdId"
+        [disabled]="households.isLoading()"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:bg-gray-100"
+      >
+        <option value="">
+          @if (households.isLoading()) {
+            Loading households…
+          } @else {
+            Select a household…
+          }
+        </option>
+        @for (household of households.value() ?? []; track household.id) {
+          <option [value]="household.id">{{ household.name }}</option>
+        }
+      </select>
+      @if (form.controls.householdId.touched && form.controls.householdId.hasError('required')) {
+        <p class="mt-1 text-sm text-red-600">Household is required.</p>
+      }
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isSubmitting()"
+      class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+    >
+      {{ isSubmitting() ? 'Creating…' : 'Create' }}
+    </button>
+  </form>
+</section>
