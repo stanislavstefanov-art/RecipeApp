@@ -2,6 +2,7 @@ using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Recipes.AddIngredientToRecipe;
 using Recipes.Application.Recipes.AddRecipeVariation;
+using Recipes.Application.Recipes.AddStepToRecipe;
 using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
 using Recipes.Application.Recipes.GetRecipe;
@@ -61,6 +62,14 @@ public static class RecipesEndpoints
         {
             var result = await sender.Send(
                 new AddIngredientToRecipeCommand(id, request.Name, request.Quantity, request.Unit),
+                ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{id:guid}/steps", async (Guid id, AddStepToRecipeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new AddStepToRecipeCommand(id, request.Instruction),
                 ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
