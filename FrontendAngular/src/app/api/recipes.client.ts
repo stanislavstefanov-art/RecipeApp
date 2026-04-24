@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import {
   AddIngredientRequest,
+  AddStepRequest,
   CreateRecipeRequest,
   CreateRecipeResponse,
   RecipeDto,
@@ -36,6 +37,13 @@ export class RecipesClient {
   addIngredient(recipeId: string, payload: AddIngredientRequest): Observable<void> {
     return this.http.post<void>(
       `${API_BASE_URL}/api/recipes/${recipeId}/ingredients`,
+      payload,
+    );
+  }
+
+  addStep(recipeId: string, payload: AddStepRequest): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/steps`,
       payload,
     );
   }
