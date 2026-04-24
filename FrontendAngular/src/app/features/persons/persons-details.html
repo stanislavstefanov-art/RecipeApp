@@ -1,0 +1,67 @@
+<section class="mx-auto max-w-xl p-6">
+  <a routerLink="/persons" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to persons
+  </a>
+
+  @if (is404()) {
+    <div class="mt-8 rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="font-semibold text-gray-700">Person not found.</p>
+    </div>
+  } @else if (person.error() && !is404()) {
+    <div class="mt-6 rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load person</p>
+      <p class="text-sm">{{ errorMessage() }}</p>
+    </div>
+  } @else if (person.isLoading()) {
+    <p class="mt-6 text-gray-500">Loading…</p>
+  } @else if (person.value(); as data) {
+    <header class="mt-6 mb-6">
+      <h1 class="text-2xl font-semibold">{{ data.name }}</h1>
+    </header>
+
+    <div class="space-y-5 rounded-xl border border-gray-200 bg-white p-6">
+      <div>
+        <p class="text-sm font-medium text-gray-700">Dietary preferences</p>
+        @if (data.dietaryPreferences.length === 0) {
+          <p class="mt-1 text-sm text-gray-500">None</p>
+        } @else {
+          <div class="mt-2 flex flex-wrap gap-1">
+            @for (pref of data.dietaryPreferences; track pref) {
+              @if (dietaryLabels[pref]) {
+                <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                  {{ dietaryLabels[pref] }}
+                </span>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-gray-700">Health concerns</p>
+        @if (data.healthConcerns.length === 0) {
+          <p class="mt-1 text-sm text-gray-500">None</p>
+        } @else {
+          <div class="mt-2 flex flex-wrap gap-1">
+            @for (concern of data.healthConcerns; track concern) {
+              @if (concernLabels[concern]) {
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                  {{ concernLabels[concern] }}
+                </span>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-gray-700">Notes</p>
+        @if (data.notes) {
+          <p class="mt-1 text-sm text-gray-600">{{ data.notes }}</p>
+        } @else {
+          <p class="mt-1 text-sm text-gray-500">No notes</p>
+        }
+      </div>
+    </div>
+  }
+</section>

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { CreatePersonRequest, CreatePersonResponse, PersonDto } from './persons.dto';
+import { CreatePersonRequest, CreatePersonResponse, PersonDetailsDto, PersonDto } from './persons.dto';
 
 const API_BASE_URL = 'http://localhost:5117';
 
@@ -12,6 +12,10 @@ export class PersonsClient {
 
   list(): Observable<PersonDto[]> {
     return this.http.get<PersonDto[]>(`${API_BASE_URL}/api/persons`);
+  }
+
+  get(id: string): Observable<PersonDetailsDto> {
+    return this.http.get<PersonDetailsDto>(`${API_BASE_URL}/api/persons/${id}`);
   }
 
   create(payload: CreatePersonRequest): Observable<CreatePersonResponse> {
