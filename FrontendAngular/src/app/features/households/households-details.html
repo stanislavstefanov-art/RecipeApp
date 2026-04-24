@@ -1,0 +1,95 @@
+<section class="mx-auto max-w-3xl p-6">
+  <a routerLink="/households" class="text-sm text-gray-500 hover:text-gray-800">
+    &larr; Back to households
+  </a>
+
+  @if (is404()) {
+    <div class="mt-8 rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="font-semibold text-gray-700">Household not found.</p>
+      <p class="mt-1 text-sm text-gray-500">
+        This household does not exist or has been removed.
+      </p>
+    </div>
+  } @else if (household.error() && !is404()) {
+    <div class="mt-6 rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load household</p>
+      <p class="text-sm">{{ householdErrorMessage() }}</p>
+    </div>
+  } @else if (household.isLoading()) {
+    <p class="mt-6 text-gray-500">Loading…</p>
+  } @else if (household.value(); as data) {
+    <header class="mt-6 mb-6">
+      <h1 class="text-3xl font-semibold">{{ data.name }}</h1>
+    </header>
+
+    <div class="mb-8">
+      <h2 class="mb-3 text-lg font-medium">Members</h2>
+      @if (data.members.length === 0) {
+        <p class="text-sm text-gray-500">No members yet.</p>
+      } @else {
+        <ul class="space-y-3">
+          @for (member of data.members; track member.personId) {
+            <li class="rounded-lg border border-gray-200 bg-white p-4">
+              <p class="font-medium">{{ member.personName }}</p>
+              @if (member.dietaryPreferences.length > 0 || member.healthConcerns.length > 0) {
+                <div class="mt-2 flex flex-wrap gap-1">
+                  @for (pref of member.dietaryPreferences; track pref) {
+                    @if (dietaryLabels[pref]) {
+                      <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                        {{ dietaryLabels[pref] }}
+                      </span>
+                    }
+                  }
+                  @for (concern of member.healthConcerns; track concern) {
+                    @if (concernLabels[concern]) {
+                      <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                        {{ concernLabels[concern] }}
+                      </span>
+                    }
+                  }
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="rounded-xl border border-gray-200 bg-white p-6">
+      <h2 class="mb-4 text-lg font-medium">Add member</h2>
+      <div class="flex items-start gap-3">
+        <div class="flex-1">
+          <label for="person-select" class="sr-only">Select person</label>
+          <select
+            id="person-select"
+            [formControl]="selectedPersonId"
+            [disabled]="persons.isLoading()"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:bg-gray-100"
+          >
+            <option value="">
+              @if (persons.isLoading()) {
+                Loading persons…
+              } @else {
+                Select a person…
+              }
+            </option>
+            @for (person of persons.value() ?? []; track person.id) {
+              <option [value]="person.id">{{ person.name }}</option>
+            }
+          </select>
+        </div>
+        <button
+          type="button"
+          (click)="onAddMember()"
+          [disabled]="isSubmitting() || !selectedPersonId.value"
+          class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          {{ isSubmitting() ? 'Adding…' : 'Add' }}
+        </button>
+      </div>
+      @if (addMemberError(); as error) {
+        <p class="mt-2 text-sm text-red-700" role="alert">{{ error }}</p>
+      }
+    </div>
+  }
+</section>
