@@ -1,0 +1,47 @@
+<section class="mx-auto max-w-3xl p-6">
+  <header class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Meal Plans</h1>
+    <div class="flex gap-2">
+      <a
+        routerLink="/meal-plans/suggest"
+        class="rounded border border-black px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100"
+      >
+        Suggest with AI
+      </a>
+      <a
+        routerLink="/meal-plans/new"
+        class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+      >
+        New meal plan
+      </a>
+    </div>
+  </header>
+
+  @if (mealPlans.isLoading()) {
+    <p class="text-gray-500">Loading meal plans…</p>
+  } @else if (mealPlans.error()) {
+    <div class="rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
+      <p class="font-semibold">Failed to load meal plans</p>
+      <p class="text-sm">{{ errorMessage() }}</p>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="font-semibold">No meal plans yet.</p>
+      <p class="mt-1 text-sm text-gray-500">Create a meal plan or use AI to suggest one.</p>
+    </div>
+  } @else {
+    <ul class="space-y-3">
+      @for (plan of mealPlans.value(); track plan.id) {
+        <li class="rounded-lg border border-gray-200 bg-white p-4">
+          <a routerLink="/meal-plans/{{ plan.id }}" class="font-medium hover:underline">
+            {{ plan.name }}
+          </a>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ plan.householdName }} &middot;
+            {{ plan.entryCount }} {{ plan.entryCount === 1 ? 'entry' : 'entries' }}
+          </p>
+        </li>
+      }
+    </ul>
+  }
+</section>
