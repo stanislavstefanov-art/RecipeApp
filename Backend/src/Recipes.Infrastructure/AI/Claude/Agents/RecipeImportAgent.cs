@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ using System.Text.RegularExpressions;
 using ErrorOr;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Infrastructure.AI.Claude.Models;
@@ -62,16 +64,19 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
     private readonly HttpClient _urlFetcher;
     private readonly ClaudeOptions _options;
     private readonly ILogger<RecipeImportAgent> _logger;
+    private readonly IToolCallTelemetry _telemetry;
 
     public RecipeImportAgent(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
-        ILogger<RecipeImportAgent> logger)
+        ILogger<RecipeImportAgent> logger,
+        IToolCallTelemetry telemetry)
     {
         _claudeClient = httpClientFactory.CreateClient("ClaudeAgent");
         _urlFetcher   = httpClientFactory.CreateClient("RecipeUrlFetcher");
         _options      = options.Value;
         _logger       = logger;
+        _telemetry    = telemetry;
     }
 
     public async Task<ErrorOr<ImportedRecipeDto>> RunAsync(
@@ -111,7 +116,7 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
                 .ToList();
 
             var results = await Task.WhenAll(
-                toolUseBlocks.Select(b => DispatchToolAsync(b, state, cancellationToken)));
+                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, response.Usage, cancellationToken)));
 
             _logger.LogInformation(
                 "Executed {Count} tool call(s): {Names}",
@@ -168,6 +173,31 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
     }
 
     // ── Tool dispatcher ────────────────────────────────────────────────────
+
+    private async Task<ClaudeAgentContentBlock> InstrumentedDispatchAsync(
+        ClaudeAgentContentBlock toolUse,
+        AgentState state,
+        ClaudeUsage? usage,
+        CancellationToken ct)
+    {
+        var sw = Stopwatch.StartNew();
+        var result = await DispatchToolAsync(toolUse, state, ct);
+        sw.Stop();
+        _telemetry.Record(new ToolCallRecord
+        {
+            AgentName           = "RecipeImportAgent",
+            ToolName            = toolUse.Name ?? "unknown",
+            InputBytes          = toolUse.Input?.GetRawText().Length ?? 0,
+            OutputBytes         = result.Content?.Length ?? 0,
+            LatencyMs           = sw.ElapsedMilliseconds,
+            IsError             = result.IsError ?? false,
+            InputTokens         = usage?.InputTokens,
+            OutputTokens        = usage?.OutputTokens,
+            CacheReadTokens     = usage?.CacheReadInputTokens,
+            CacheCreationTokens = usage?.CacheCreationInputTokens,
+        });
+        return result;
+    }
 
     private async Task<ClaudeAgentContentBlock> DispatchToolAsync(
         ClaudeAgentContentBlock toolUse,

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -5,6 +6,7 @@ using System.Text.Json.Serialization;
 using ErrorOr;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.AnalyseRecipeNutrition;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
@@ -41,19 +43,22 @@ public sealed class NutritionAnalysisAgent : INutritionAnalysisAgent
     private readonly IRecipeRepository _recipeRepository;
     private readonly ClaudeOptions _options;
     private readonly ILogger<NutritionAnalysisAgent> _logger;
+    private readonly IToolCallTelemetry _telemetry;
 
     public NutritionAnalysisAgent(
         IHttpClientFactory httpClientFactory,
         IMcpClientHost mcpClient,
         IRecipeRepository recipeRepository,
         IOptions<ClaudeOptions> options,
-        ILogger<NutritionAnalysisAgent> logger)
+        ILogger<NutritionAnalysisAgent> logger,
+        IToolCallTelemetry telemetry)
     {
         _claudeClient     = httpClientFactory.CreateClient("ClaudeAgent");
         _mcpClient        = mcpClient;
         _recipeRepository = recipeRepository;
         _options          = options.Value;
         _logger           = logger;
+        _telemetry        = telemetry;
     }
 
     public async Task<ErrorOr<NutritionAnalysisDto>> RunAsync(Guid recipeId, CancellationToken ct)
@@ -103,7 +108,7 @@ public sealed class NutritionAnalysisAgent : INutritionAnalysisAgent
 
             // Parallel dispatch — static tools execute locally; MCP tools forward to client
             var toolResults = await Task.WhenAll(
-                toolUseBlocks.Select(b => DispatchToolAsync(b, state, ct)));
+                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, response.Usage, ct)));
 
             if (state.LoopComplete)
                 return state.Result!;
@@ -173,6 +178,31 @@ public sealed class NutritionAnalysisAgent : INutritionAnalysisAgent
     }
 
     // ── Tool dispatcher ────────────────────────────────────────────────────
+
+    private async Task<ClaudeAgentContentBlock> InstrumentedDispatchAsync(
+        ClaudeAgentContentBlock toolUse,
+        AgentState state,
+        ClaudeUsage? usage,
+        CancellationToken ct)
+    {
+        var sw = Stopwatch.StartNew();
+        var result = await DispatchToolAsync(toolUse, state, ct);
+        sw.Stop();
+        _telemetry.Record(new ToolCallRecord
+        {
+            AgentName           = "NutritionAnalysisAgent",
+            ToolName            = toolUse.Name ?? "unknown",
+            InputBytes          = toolUse.Input?.GetRawText().Length ?? 0,
+            OutputBytes         = result.Content?.Length ?? 0,
+            LatencyMs           = sw.ElapsedMilliseconds,
+            IsError             = result.IsError ?? false,
+            InputTokens         = usage?.InputTokens,
+            OutputTokens        = usage?.OutputTokens,
+            CacheReadTokens     = usage?.CacheReadInputTokens,
+            CacheCreationTokens = usage?.CacheCreationInputTokens,
+        });
+        return result;
+    }
 
     private async Task<ClaudeAgentContentBlock> DispatchToolAsync(
         ClaudeAgentContentBlock toolUse,

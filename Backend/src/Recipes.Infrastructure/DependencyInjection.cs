@@ -12,6 +12,7 @@ using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
 using Recipes.Infrastructure.Mcp;
+using Recipes.Infrastructure.Telemetry;
 using Recipes.Infrastructure.AI.Claude.Assets;
 using Recipes.Infrastructure.AI.Claude.Clients;
 using Recipes.Infrastructure.AI.Claude.Services;
@@ -111,6 +112,7 @@ public static class DependencyInjection
 
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
         services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();
+        services.AddSingleton<IToolCallTelemetry, InMemoryToolCallTelemetry>();
         services.AddScoped<IRecipeImportAgent, RecipeImportAgent>();
         services.AddScoped<IMcpClientHost, NutritionMcpClient>();
         services.AddScoped<INutritionAnalysisAgent, NutritionAnalysisAgent>();

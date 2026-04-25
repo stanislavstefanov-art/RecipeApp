@@ -51,5 +51,6 @@ app.MapMealPlansEndpoints();
 app.MapExpensesEndpoints();
 app.MapPersonsEndpoints();
 app.MapHouseholdsEndpoints();
+app.MapAdminEndpoints();
 
 app.Run();
