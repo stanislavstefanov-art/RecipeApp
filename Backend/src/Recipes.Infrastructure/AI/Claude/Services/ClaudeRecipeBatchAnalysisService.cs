@@ -1,9 +1,11 @@
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.BatchAnalyseRecipes;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Infrastructure.AI.Claude.Models;
@@ -57,15 +59,22 @@ public sealed class ClaudeRecipeBatchAnalysisService : IRecipeBatchAnalysisServi
     private readonly ClaudeOptions _options;
     private readonly ILogger<ClaudeRecipeBatchAnalysisService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IProvenanceStore _provenanceStore;
+    private readonly string _promptVersion;
 
     public ClaudeRecipeBatchAnalysisService(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
-        ILogger<ClaudeRecipeBatchAnalysisService> logger)
+        ILogger<ClaudeRecipeBatchAnalysisService> logger,
+        IProvenanceStore provenanceStore)
     {
-        _httpClient = httpClientFactory.CreateClient("ClaudeAgent");
-        _options    = options.Value;
-        _logger     = logger;
+        _httpClient      = httpClientFactory.CreateClient("ClaudeAgent");
+        _options         = options.Value;
+        _logger          = logger;
+        _provenanceStore = provenanceStore;
+        var text = CachedSystemBlocks[0].Text ?? string.Empty;
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(text));
+        _promptVersion = Convert.ToHexString(hash)[..8].ToLowerInvariant();
     }
 
     public async Task<BatchSubmissionDto> SubmitBatchAsync(
@@ -119,7 +128,8 @@ public sealed class ClaudeRecipeBatchAnalysisService : IRecipeBatchAnalysisServi
             "Batch {BatchId} submitted. Status: {Status}.",
             batchStatus.Id, batchStatus.ProcessingStatus);
 
-        return new BatchSubmissionDto(batchStatus.Id, batchStatus.ProcessingStatus, recipes.Count);
+        var provenanceId = _provenanceStore.Record("recipe-batch", _options.Model, _promptVersion);
+        return new BatchSubmissionDto(batchStatus.Id, batchStatus.ProcessingStatus, recipes.Count, provenanceId);
     }
 
     public async Task<BatchResultsDto> GetResultsAsync(string batchId, CancellationToken cancellationToken)

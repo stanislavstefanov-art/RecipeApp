@@ -1,9 +1,11 @@
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Infrastructure.AI.Claude.Models;
@@ -45,15 +47,21 @@ public sealed class ClaudeRecipeScalingService : IRecipeScalingService
     private readonly ClaudeOptions _options;
     private readonly ILogger<ClaudeRecipeScalingService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IProvenanceStore _provenanceStore;
+    private readonly string _promptVersion;
 
     public ClaudeRecipeScalingService(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
-        ILogger<ClaudeRecipeScalingService> logger)
+        ILogger<ClaudeRecipeScalingService> logger,
+        IProvenanceStore provenanceStore)
     {
-        _httpClient = httpClientFactory.CreateClient("ClaudeAgent");
-        _options    = options.Value;
-        _logger     = logger;
+        _httpClient      = httpClientFactory.CreateClient("ClaudeAgent");
+        _options         = options.Value;
+        _logger          = logger;
+        _provenanceStore = provenanceStore;
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(SystemPrompt));
+        _promptVersion = Convert.ToHexString(hash)[..8].ToLowerInvariant();
     }
 
     public async Task<ScaledRecipeDto> ScaleAsync(
@@ -85,7 +93,10 @@ public sealed class ClaudeRecipeScalingService : IRecipeScalingService
             var (dto, errors) = TryParseResponse(rawResponse, recipe.Id, recipe.Name, fromServings, toServings, attempt);
 
             if (errors.Count == 0)
-                return dto!;
+            {
+                var provenanceId = _provenanceStore.Record("recipe-scaling", _options.Model, _promptVersion);
+                return dto! with { ProvenanceId = provenanceId };
+            }
 
             _logger.LogWarning(
                 "Attempt {Attempt} validation failed for recipe {RecipeId}. Errors: {Errors}",
@@ -216,7 +227,7 @@ public sealed class ClaudeRecipeScalingService : IRecipeScalingService
         if (validationErrors.Count > 0)
             return (null, validationErrors);
 
-        return (new ScaledRecipeDto(recipeId, recipeName, fromServings, toServings, scaledIngredients, attempt),
+        return (new ScaledRecipeDto(recipeId, recipeName, fromServings, toServings, scaledIngredients, attempt, Guid.Empty),
                 Array.Empty<string>());
     }
 }

@@ -4,7 +4,8 @@ public sealed record RecipeCritiqueDto(
     IReadOnlyList<CritiqueDimensionDto> Dimensions,
     string Summary,
     string Confidence,
-    bool NeedsReview);
+    bool NeedsReview,
+    Guid ProvenanceId);
 
 public sealed record CritiqueDimensionDto(
     string Dimension,

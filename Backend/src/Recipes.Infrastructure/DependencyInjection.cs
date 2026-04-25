@@ -19,6 +19,7 @@ using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
 using Recipes.Infrastructure.AI.Claude.Hooks;
 using Recipes.Infrastructure.AI.Calibration;
+using Recipes.Infrastructure.AI.Provenance;
 using Recipes.Infrastructure.AI.Claude.Workflow;
 using Recipes.Infrastructure.Mcp;
 using Recipes.Infrastructure.Telemetry;
@@ -137,6 +138,7 @@ public static class DependencyInjection
         services.AddScoped<IAgentHook, SlotCapacityHook>();
         services.AddScoped<IAgentHookRunner, AgentHookRunner>();
         services.AddSingleton<IConfidenceCalibrationStore, InMemoryConfidenceCalibrationStore>();
+        services.AddSingleton<IProvenanceStore, InMemoryProvenanceStore>();
         services.AddSingleton<IWorkflowSessionStore, InMemoryWorkflowSessionStore>();
         services.AddScoped<IWorkflowGate, MinSlotsCoveredGate>();
         services.AddScoped<IWorkflowGate, RecipeDiversityGate>();

@@ -1,9 +1,11 @@
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.ReviewRecipeDraft;
 using Recipes.Infrastructure.AI.Claude.Models;
@@ -76,15 +78,22 @@ public sealed class ClaudeRecipeDraftReviewService : IRecipeDraftReviewService
     private readonly ClaudeOptions _options;
     private readonly ILogger<ClaudeRecipeDraftReviewService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IProvenanceStore _provenanceStore;
+    private readonly string _promptVersion;
 
     public ClaudeRecipeDraftReviewService(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
-        ILogger<ClaudeRecipeDraftReviewService> logger)
+        ILogger<ClaudeRecipeDraftReviewService> logger,
+        IProvenanceStore provenanceStore)
     {
-        _httpClient = httpClientFactory.CreateClient("ClaudeAgent");
-        _options    = options.Value;
-        _logger     = logger;
+        _httpClient      = httpClientFactory.CreateClient("ClaudeAgent");
+        _options         = options.Value;
+        _logger          = logger;
+        _provenanceStore = provenanceStore;
+        var combined = string.Concat(Reviewers.Select(r => r.SystemPrompt));
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(combined));
+        _promptVersion = Convert.ToHexString(hash)[..8].ToLowerInvariant();
     }
 
     public async Task<RecipeDraftReviewDto> ReviewAsync(
@@ -111,7 +120,8 @@ public sealed class ClaudeRecipeDraftReviewService : IRecipeDraftReviewService
             consensus,
             string.Join(", ", jurorVerdicts.Select(v => $"[{v.Role}]={v.Verdict}")));
 
-        return new RecipeDraftReviewDto(draft, consensus, jurorVerdicts);
+        var provenanceId = _provenanceStore.Record("recipe-jury", _options.Model, _promptVersion);
+        return new RecipeDraftReviewDto(draft, consensus, jurorVerdicts, provenanceId);
     }
 
     private async Task<JurorVerdictDto> CallReviewerAsync(

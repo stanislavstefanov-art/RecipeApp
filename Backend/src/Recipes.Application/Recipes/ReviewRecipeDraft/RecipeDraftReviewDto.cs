@@ -5,7 +5,8 @@ namespace Recipes.Application.Recipes.ReviewRecipeDraft;
 public sealed record RecipeDraftReviewDto(
     ImportedRecipeDto Draft,
     string Consensus,
-    IReadOnlyList<JurorVerdictDto> JurorVerdicts);
+    IReadOnlyList<JurorVerdictDto> JurorVerdicts,
+    Guid ProvenanceId);
 
 public sealed record JurorVerdictDto(
     int JurorIndex,

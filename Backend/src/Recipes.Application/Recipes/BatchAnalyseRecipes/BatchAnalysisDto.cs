@@ -3,7 +3,8 @@ namespace Recipes.Application.Recipes.BatchAnalyseRecipes;
 public sealed record BatchSubmissionDto(
     string BatchId,
     string Status,
-    int RequestCount);
+    int RequestCount,
+    Guid ProvenanceId);
 
 public sealed record BatchResultsDto(
     string BatchId,

@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Application.Admin;
 using Recipes.Application.Admin.GetCalibrationReport;
+using Recipes.Application.Admin.GetProvenance;
 
 namespace Recipes.Api.Endpoints;
 
@@ -26,6 +27,16 @@ public static class AdminEndpoints
             return Results.Ok(report);
         })
         .WithSummary("Return confidence-calibration metrics (approval rate by confidence bucket).");
+
+        group.MapGet("/provenance", async (
+            int limit = 100,
+            ISender sender = default!,
+            CancellationToken ct = default) =>
+        {
+            var records = await sender.Send(new GetProvenanceQuery(limit), ct);
+            return Results.Ok(records);
+        })
+        .WithSummary("Return recent AI output provenance records (newest first, default 100, max 1000).");
 
         return app;
     }

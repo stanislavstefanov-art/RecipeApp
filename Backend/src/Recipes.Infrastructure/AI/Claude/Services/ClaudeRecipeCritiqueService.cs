@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -21,19 +22,24 @@ public sealed class ClaudeRecipeCritiqueService : IRecipeCritiqueService
     private readonly ClaudeOptions _options;
     private readonly ILogger<ClaudeRecipeCritiqueService> _logger;
     private readonly HttpClient _httpClient;
+    private readonly IProvenanceStore _provenanceStore;
 
     // Built once at construction — PromptBuilder composes it from labeled sections + few-shot examples.
     private readonly string _systemPrompt;
+    private readonly string _promptVersion;
 
     public ClaudeRecipeCritiqueService(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
-        ILogger<ClaudeRecipeCritiqueService> logger)
+        ILogger<ClaudeRecipeCritiqueService> logger,
+        IProvenanceStore provenanceStore)
     {
-        _httpClient    = httpClientFactory.CreateClient("ClaudeAgent");
-        _options       = options.Value;
-        _logger        = logger;
-        _systemPrompt  = BuildSystemPrompt();
+        _httpClient      = httpClientFactory.CreateClient("ClaudeAgent");
+        _options         = options.Value;
+        _logger          = logger;
+        _provenanceStore = provenanceStore;
+        _systemPrompt    = BuildSystemPrompt();
+        _promptVersion   = ComputePromptVersion(_systemPrompt);
     }
 
     public async Task<RecipeCritiqueDto> CritiqueAsync(RecipeDto recipe, CancellationToken cancellationToken)
@@ -85,8 +91,16 @@ public sealed class ClaudeRecipeCritiqueService : IRecipeCritiqueService
             .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x))
                    ?? throw new InvalidOperationException("Claude response contained no text.");
 
-        return JsonSerializer.Deserialize<RecipeCritiqueDto>(text, JsonOptions)
-               ?? throw new InvalidOperationException("Claude critique response could not be deserialized.");
+        var critique = JsonSerializer.Deserialize<RecipeCritiqueDto>(text, JsonOptions)
+                       ?? throw new InvalidOperationException("Claude critique response could not be deserialized.");
+        var provenanceId = _provenanceStore.Record("recipe-critique", _options.Model, _promptVersion);
+        return critique with { ProvenanceId = provenanceId };
+    }
+
+    private static string ComputePromptVersion(string prompt)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(prompt));
+        return Convert.ToHexString(hash)[..8].ToLowerInvariant();
     }
 
     private static string BuildSystemPrompt() =>

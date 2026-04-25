@@ -6,7 +6,8 @@ public sealed record ScaledRecipeDto(
     int FromServings,
     int ToServings,
     IReadOnlyList<ScaledIngredientDto> Ingredients,
-    int AttemptsTaken);
+    int AttemptsTaken,
+    Guid ProvenanceId);
 
 public sealed record ScaledIngredientDto(
     string Name,
