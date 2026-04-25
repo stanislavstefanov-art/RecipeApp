@@ -7,6 +7,7 @@ using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Application.Recipes.ImportRecipeFromText;
+using Recipes.Application.Recipes.AnalyseRecipeNutrition;
 using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
@@ -85,6 +86,12 @@ public static class RecipesEndpoints
         {
             var result = await sender.Send(new DeleteRecipeCommand(id), ct);
             return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{id:guid}/analyse-nutrition", async (Guid id, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new AnalyseRecipeNutritionCommand(id), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
         group.MapPost("/suggest-substitutions", async (SuggestIngredientSubstitutionsRequest request, ISender sender, CancellationToken ct) =>

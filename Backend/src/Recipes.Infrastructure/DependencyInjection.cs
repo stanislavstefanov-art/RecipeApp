@@ -6,10 +6,12 @@ using Recipes.Application.Common.AI;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.Recipes.ImportRecipeFromText;
+using Recipes.Application.Recipes.AnalyseRecipeNutrition;
 using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
+using Recipes.Infrastructure.Mcp;
 using Recipes.Infrastructure.AI.Claude.Assets;
 using Recipes.Infrastructure.AI.Claude.Clients;
 using Recipes.Infrastructure.AI.Claude.Services;
@@ -110,6 +112,8 @@ public static class DependencyInjection
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
         services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();
         services.AddScoped<IRecipeImportAgent, RecipeImportAgent>();
+        services.AddScoped<IMcpClientHost, NutritionMcpClient>();
+        services.AddScoped<INutritionAnalysisAgent, NutritionAnalysisAgent>();
 
         services.AddHttpClient("ClaudeAgent", client =>
         {
