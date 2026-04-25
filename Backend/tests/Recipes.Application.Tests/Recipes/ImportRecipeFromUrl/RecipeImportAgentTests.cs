@@ -4,7 +4,9 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Recipes.Application.Common.AI;
+using Recipes.Infrastructure.AI;
 using Recipes.Infrastructure.AI.Claude.Agents;
+using Recipes.Infrastructure.AI.Claude.Models;
 using Recipes.Infrastructure.Options;
 
 namespace Recipes.Application.Tests.Recipes.ImportRecipeFromUrl;
@@ -234,7 +236,7 @@ public sealed class RecipeImportAgentTests
         });
 
         return new RecipeImportAgent(factory, options, NullLogger<RecipeImportAgent>.Instance,
-            new NoOpTelemetry());
+            new NoOpTelemetry(), new NoOpContextWindowManager());
     }
 
     private static HttpResponseMessage ClaudeOk(string json) =>
@@ -248,6 +250,13 @@ public sealed class RecipeImportAgentTests
         {
             Content = new StringContent(html, Encoding.UTF8, "text/html")
         };
+}
+
+// ── Context window stub ────────────────────────────────────────────────────
+
+file sealed class NoOpContextWindowManager : IContextWindowManager
+{
+    public int Trim(List<ClaudeAgentMessage> messages, int maxMessages) => 0;
 }
 
 // ── Telemetry stub ─────────────────────────────────────────────────────────

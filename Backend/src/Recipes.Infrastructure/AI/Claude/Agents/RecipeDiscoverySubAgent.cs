@@ -9,6 +9,7 @@ using Recipes.Application.Common.AI;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Models;
+using Recipes.Infrastructure.AI;
 using Recipes.Infrastructure.Options;
 
 namespace Recipes.Infrastructure.AI.Claude.Agents;
@@ -45,6 +46,7 @@ public sealed class RecipeDiscoverySubAgent
     private readonly ILogger<RecipeDiscoverySubAgent> _logger;
     private readonly IToolCallTelemetry _telemetry;
     private readonly IAgentHookRunner _hookRunner;
+    private readonly IContextWindowManager _contextManager;
 
     public RecipeDiscoverySubAgent(
         IHttpClientFactory httpClientFactory,
@@ -53,15 +55,17 @@ public sealed class RecipeDiscoverySubAgent
         IOptions<ClaudeOptions> options,
         ILogger<RecipeDiscoverySubAgent> logger,
         IToolCallTelemetry telemetry,
-        IAgentHookRunner hookRunner)
+        IAgentHookRunner hookRunner,
+        IContextWindowManager contextManager)
     {
-        _claudeClient      = httpClientFactory.CreateClient("ClaudeAgent");
-        _recipeRepository  = recipeRepository;
+        _claudeClient       = httpClientFactory.CreateClient("ClaudeAgent");
+        _recipeRepository   = recipeRepository;
         _mealPlanRepository = mealPlanRepository;
-        _options           = options.Value;
-        _logger            = logger;
-        _telemetry         = telemetry;
-        _hookRunner        = hookRunner;
+        _options            = options.Value;
+        _logger             = logger;
+        _telemetry          = telemetry;
+        _hookRunner         = hookRunner;
+        _contextManager     = contextManager;
     }
 
     internal async Task<IReadOnlyList<RecipeCandidate>> RunAsync(
@@ -95,12 +99,19 @@ public sealed class RecipeDiscoverySubAgent
 
         for (int iteration = 0; iteration < MaxIterations; iteration++)
         {
+            _contextManager.Trim(messages, _options.MaxContextMessages);
+
             var response = await CallClaudeAsync(messages, MealPlanAgentTools.DiscoveryTools, ct);
 
             _logger.LogInformation(
                 "RecipeDiscoverySubAgent iteration {Iter}: {Stop}, in={In} out={Out}",
                 iteration + 1, response.StopReason,
                 response.Usage?.InputTokens, response.Usage?.OutputTokens);
+
+            if ((response.Usage?.InputTokens ?? 0) > _options.TokenBudgetWarningThreshold)
+                _logger.LogWarning(
+                    "RecipeDiscoverySubAgent context approaching budget: {InputTokens}/{Threshold} tokens.",
+                    response.Usage!.InputTokens, _options.TokenBudgetWarningThreshold);
 
             messages.Add(new("assistant", response.Content));
 

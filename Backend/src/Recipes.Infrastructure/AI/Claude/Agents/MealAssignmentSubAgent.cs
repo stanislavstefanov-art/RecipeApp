@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Recipes.Application.Common.AI;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Infrastructure.AI.Claude.Models;
+using Recipes.Infrastructure.AI;
 using Recipes.Infrastructure.Options;
 
 namespace Recipes.Infrastructure.AI.Claude.Agents;
@@ -44,19 +45,22 @@ public sealed class MealAssignmentSubAgent
     private readonly ILogger<MealAssignmentSubAgent> _logger;
     private readonly IToolCallTelemetry _telemetry;
     private readonly IAgentHookRunner _hookRunner;
+    private readonly IContextWindowManager _contextManager;
 
     public MealAssignmentSubAgent(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
         ILogger<MealAssignmentSubAgent> logger,
         IToolCallTelemetry telemetry,
-        IAgentHookRunner hookRunner)
+        IAgentHookRunner hookRunner,
+        IContextWindowManager contextManager)
     {
-        _claudeClient = httpClientFactory.CreateClient("ClaudeAgent");
-        _options      = options.Value;
-        _logger       = logger;
-        _telemetry    = telemetry;
-        _hookRunner   = hookRunner;
+        _claudeClient   = httpClientFactory.CreateClient("ClaudeAgent");
+        _options        = options.Value;
+        _logger         = logger;
+        _telemetry      = telemetry;
+        _hookRunner     = hookRunner;
+        _contextManager = contextManager;
     }
 
     internal async Task<MealPlanSuggestionDto> RunAsync(
@@ -90,12 +94,19 @@ public sealed class MealAssignmentSubAgent
 
         for (int iteration = 0; iteration < MaxIterations; iteration++)
         {
+            _contextManager.Trim(messages, _options.MaxContextMessages);
+
             var response = await CallClaudeAsync(messages, MealPlanAgentTools.AssignmentTools, ct);
 
             _logger.LogInformation(
                 "MealAssignmentSubAgent iteration {Iter}: {Stop}, in={In} out={Out}",
                 iteration + 1, response.StopReason,
                 response.Usage?.InputTokens, response.Usage?.OutputTokens);
+
+            if ((response.Usage?.InputTokens ?? 0) > _options.TokenBudgetWarningThreshold)
+                _logger.LogWarning(
+                    "MealAssignmentSubAgent context approaching budget: {InputTokens}/{Threshold} tokens.",
+                    response.Usage!.InputTokens, _options.TokenBudgetWarningThreshold);
 
             messages.Add(new("assistant", response.Content));
 

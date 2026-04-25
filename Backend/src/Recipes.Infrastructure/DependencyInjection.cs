@@ -18,6 +18,7 @@ using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
 using Recipes.Infrastructure.AI.Claude.Hooks;
+using Recipes.Infrastructure.AI;
 using Recipes.Infrastructure.AI.Calibration;
 using Recipes.Infrastructure.AI.Provenance;
 using Recipes.Infrastructure.AI.Claude.Workflow;
@@ -131,6 +132,7 @@ public static class DependencyInjection
         services.AddScoped<IRecipeImportAgent, RecipeImportAgent>();
         services.AddScoped<IMcpClientHost, NutritionMcpClient>();
         services.AddScoped<INutritionAnalysisAgent, NutritionAnalysisAgent>();
+        services.AddScoped<IContextWindowManager, ContextWindowManager>();
         services.AddScoped<RecipeDiscoverySubAgent>();
         services.AddScoped<MealAssignmentSubAgent>();
         services.AddScoped<IMealPlanOrchestratorAgent, MealPlanOrchestratorAgent>();

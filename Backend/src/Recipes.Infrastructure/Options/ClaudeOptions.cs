@@ -15,4 +15,6 @@ public sealed class ClaudeOptions
     public string IngredientSubstitutionSchemaPath { get; init; } = "Docs/ingredient-substitution-schema.json";
     public string ExpenseInsightPromptPath { get; init; } = "Docs/Prompts/expense-insight-prompt.md";
     public string ExpenseInsightSchemaPath { get; init; } = "Docs/expense-insight-schema.json";
+    public int MaxContextMessages { get; init; } = 20;
+    public int TokenBudgetWarningThreshold { get; init; } = 80_000;
 }

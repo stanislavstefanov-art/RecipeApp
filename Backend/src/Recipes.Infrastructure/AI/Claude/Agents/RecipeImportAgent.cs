@@ -14,6 +14,7 @@ using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Infrastructure.AI.Claude.Models;
+using Recipes.Infrastructure.AI;
 using Recipes.Infrastructure.Options;
 
 namespace Recipes.Infrastructure.AI.Claude.Agents;
@@ -65,18 +66,21 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
     private readonly ClaudeOptions _options;
     private readonly ILogger<RecipeImportAgent> _logger;
     private readonly IToolCallTelemetry _telemetry;
+    private readonly IContextWindowManager _contextManager;
 
     public RecipeImportAgent(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
         ILogger<RecipeImportAgent> logger,
-        IToolCallTelemetry telemetry)
+        IToolCallTelemetry telemetry,
+        IContextWindowManager contextManager)
     {
-        _claudeClient = httpClientFactory.CreateClient("ClaudeAgent");
-        _urlFetcher   = httpClientFactory.CreateClient("RecipeUrlFetcher");
-        _options      = options.Value;
-        _logger       = logger;
-        _telemetry    = telemetry;
+        _claudeClient   = httpClientFactory.CreateClient("ClaudeAgent");
+        _urlFetcher     = httpClientFactory.CreateClient("RecipeUrlFetcher");
+        _options        = options.Value;
+        _logger         = logger;
+        _telemetry      = telemetry;
+        _contextManager = contextManager;
     }
 
     public async Task<ErrorOr<ImportedRecipeDto>> RunAsync(
@@ -94,6 +98,8 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
         {
             _logger.LogInformation("RecipeImportAgent iteration {Iteration}", iteration + 1);
 
+            _contextManager.Trim(messages, _options.MaxContextMessages);
+
             var response = await CallClaudeAsync(messages, cancellationToken);
 
             _logger.LogInformation(
@@ -101,6 +107,11 @@ public sealed class RecipeImportAgent : IRecipeImportAgent
                 response.StopReason,
                 response.Usage?.InputTokens,
                 response.Usage?.OutputTokens);
+
+            if ((response.Usage?.InputTokens ?? 0) > _options.TokenBudgetWarningThreshold)
+                _logger.LogWarning(
+                    "RecipeImportAgent context approaching budget: {InputTokens}/{Threshold} tokens.",
+                    response.Usage!.InputTokens, _options.TokenBudgetWarningThreshold);
 
             messages.Add(new("assistant", response.Content));
 
