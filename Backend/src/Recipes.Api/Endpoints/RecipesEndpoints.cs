@@ -12,6 +12,7 @@ using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
+using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 
@@ -91,6 +92,12 @@ public static class RecipesEndpoints
         group.MapPost("/{id:guid}/analyse-nutrition", async (Guid id, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new AnalyseRecipeNutritionCommand(id), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
+        group.MapPost("/{id:guid}/critique", async (Guid id, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new CritiqueRecipeCommand(id), ct);
             return result.ToHttpResult(dto => Results.Ok(dto));
         });
 

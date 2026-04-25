@@ -6,6 +6,7 @@ using Recipes.Application.Common.AI;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.MealPlans.PlanningWorkflow;
+using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.AnalyseRecipeNutrition;
@@ -113,6 +114,8 @@ public static class DependencyInjection
         services.AddScoped<ClaudeExpenseInsightService>();
 
         services.AddScoped<IExpenseInsightService>(_ => _.GetRequiredService<StubExpenseInsightService>());
+
+        services.AddScoped<IRecipeCritiqueService, ClaudeRecipeCritiqueService>();
 
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
         services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();
