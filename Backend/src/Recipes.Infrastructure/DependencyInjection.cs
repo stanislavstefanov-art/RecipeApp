@@ -5,6 +5,7 @@ using Recipes.Application.Abstractions;
 using Recipes.Application.Common.AI;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
+using Recipes.Application.MealPlans.PlanningWorkflow;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.AnalyseRecipeNutrition;
@@ -12,6 +13,7 @@ using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
+using Recipes.Infrastructure.AI.Claude.Workflow;
 using Recipes.Infrastructure.Mcp;
 using Recipes.Infrastructure.Telemetry;
 using Recipes.Infrastructure.AI.Claude.Assets;
@@ -120,6 +122,10 @@ public static class DependencyInjection
         services.AddScoped<RecipeDiscoverySubAgent>();
         services.AddScoped<MealAssignmentSubAgent>();
         services.AddScoped<IMealPlanOrchestratorAgent, MealPlanOrchestratorAgent>();
+        services.AddScoped<IWorkflowGate, MinSlotsCoveredGate>();
+        services.AddScoped<IWorkflowGate, RecipeDiversityGate>();
+        services.AddScoped<IWorkflowGate, MemberCoverageGate>();
+        services.AddScoped<IMealPlanWorkflowEnforcer, MealPlanWorkflowEnforcer>();
 
         services.AddHttpClient("ClaudeAgent", client =>
         {

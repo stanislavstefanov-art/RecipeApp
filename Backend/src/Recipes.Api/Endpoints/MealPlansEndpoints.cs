@@ -8,6 +8,7 @@ using Recipes.Application.MealPlans.GetMealPlan;
 using Recipes.Application.MealPlans.ListMealPlans;
 using Recipes.Application.MealPlans.RegenerateShoppingListFromMealPlan;
 using Recipes.Application.MealPlans.SuggestMealPlan;
+using Recipes.Application.MealPlans.PlanningWorkflow;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.MealPlans.UpdateMealPlanPersonAssignment;
 
@@ -92,6 +93,32 @@ public static class MealPlansEndpoints
             return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
+        group.MapPost("/workflow/run", async (SuggestMealPlanRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new RunPlanningWorkflowCommand(
+                    request.Name,
+                    request.HouseholdId,
+                    request.StartDate,
+                    request.NumberOfDays,
+                    request.MealTypes),
+                ct);
+            return result.ToHttpResult(workflowResult => Results.Ok(workflowResult));
+        });
+
+        group.MapPost("/workflow/approve", async (ApproveWorkflowRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new ApprovePlanningWorkflowCommand(
+                    request.Draft,
+                    request.Approved,
+                    request.ReviewNotes,
+                    request.NumberOfDays,
+                    request.MealTypes),
+                ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
         group.MapPost("/accept-suggestion", async (AcceptMealPlanSuggestionRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(
@@ -166,3 +193,9 @@ public sealed record AcceptMealPlanSuggestionRequest(string Name, Guid Household
 public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AcceptMealPlanSuggestionAssignmentRequest> Assignments);
 public sealed record AcceptMealPlanSuggestionAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record UpdateMealPlanPersonAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
+public sealed record ApproveWorkflowRequest(
+    Recipes.Application.MealPlans.SuggestMealPlan.MealPlanSuggestionDto Draft,
+    bool Approved,
+    string? ReviewNotes,
+    int NumberOfDays,
+    IReadOnlyList<int> MealTypes);
