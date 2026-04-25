@@ -6,8 +6,10 @@ using Recipes.Application.Common.AI;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.Recipes.ImportRecipeFromText;
+using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
+using Recipes.Infrastructure.AI.Claude.Agents;
 using Recipes.Infrastructure.AI.Claude.Assets;
 using Recipes.Infrastructure.AI.Claude.Clients;
 using Recipes.Infrastructure.AI.Claude.Services;
@@ -106,7 +108,18 @@ public static class DependencyInjection
         services.AddScoped<IExpenseInsightService>(_ => _.GetRequiredService<StubExpenseInsightService>());
 
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
-        services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();        
+        services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();
+        services.AddScoped<IRecipeImportAgent, RecipeImportAgent>();
+
+        services.AddHttpClient("ClaudeAgent", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(90);
+        });
+        services.AddHttpClient("RecipeUrlFetcher", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("RecipeApp/1.0");
+        });
 
         services.AddHttpClient<IClaudeRecipeImportClient, ClaudeRecipeImportClient>(client =>
         {

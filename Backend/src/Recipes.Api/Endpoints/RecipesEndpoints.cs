@@ -7,6 +7,7 @@ using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Application.Recipes.ImportRecipeFromText;
+using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
@@ -31,6 +32,12 @@ public static class RecipesEndpoints
         group.MapPost("/import", async (ImportRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new ImportRecipeFromTextCommand(request.Text), ct);
+            return result.ToHttpResult(imported => Results.Ok(imported));
+        });
+
+        group.MapPost("/import/url", async (ImportRecipeFromUrlRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new ImportRecipeFromUrlCommand(request.SourceUrl), ct);
             return result.ToHttpResult(imported => Results.Ok(imported));
         });
 
@@ -133,6 +140,7 @@ public static class RecipesEndpoints
 public sealed record CreateRecipeRequest(string Name);
 
 public sealed record ImportRecipeRequest(string Text);
+public sealed record ImportRecipeFromUrlRequest(string SourceUrl);
 
 public sealed record UpdateRecipeRequest(string Name);
 
