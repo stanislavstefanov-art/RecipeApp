@@ -12,6 +12,7 @@ using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
+using Recipes.Application.Recipes.BatchAnalyseRecipes;
 using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
@@ -108,6 +109,18 @@ public static class RecipesEndpoints
             return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
+        group.MapPost("/batch-analyze", async (BatchAnalyzeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new SubmitRecipeBatchAnalysisCommand(request.RecipeIds), ct);
+            return result.ToHttpResult(dto => Results.Accepted($"/api/recipes/batch-analyze/{dto.BatchId}", dto));
+        });
+
+        group.MapGet("/batch-analyze/{batchId}", async (string batchId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new GetRecipeBatchAnalysisResultsQuery(batchId), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
         group.MapPost("/suggest-substitutions", async (SuggestIngredientSubstitutionsRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(
@@ -174,3 +187,5 @@ public sealed record UpdateRecipeVariationOverridesRequest(IReadOnlyList<RecipeV
 public sealed record RecipeVariationIngredientOverrideRequest(string IngredientName, decimal? Quantity, string? Unit, bool IsRemoved);
 
 public sealed record ScaleRecipeRequest(int FromServings, int ToServings);
+
+public sealed record BatchAnalyzeRequest(IReadOnlyList<Guid> RecipeIds);
