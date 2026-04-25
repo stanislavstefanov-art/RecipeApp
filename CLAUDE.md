@@ -78,6 +78,29 @@ Dependency direction: Api → Application ← Infrastructure, Domain at center.
 - Connection string in Backend/src/Recipes.Api/appsettings.Development.json under
   ConnectionStrings:RecipesDb (SQL Server / Azure SQL).
 
+## Using the RecipeApp agent
+
+The `recipe-assistant` sub-agent (`.claude/agents/recipe-assistant.md`) has direct
+access to the live RecipesApp API through the `recipes-app` MCP server. Use it for
+data queries — it has no code-editing tools.
+
+**Prerequisite:** the API must be running:
+```bash
+dotnet run --project Backend/src/Recipes.Api
+```
+
+Invoke with the `@recipe-assistant` prefix or just describe a data query:
+
+```
+@recipe-assistant What recipes contain chicken?
+@recipe-assistant Show me this week's meal plan
+@recipe-assistant What's still pending on the shopping list?
+@recipe-assistant What was last month's total spend?
+```
+
+Claude Code routes the request to the agent automatically based on context. The MCP
+server subprocess is started on first use — allow a few seconds on the first query.
+
 ## Claude Code workflow guidance
 
 - Use PLAN MODE for: new aggregates, adding AI features, any change touching 3+ files,
