@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "recipes-app": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project", "Backend/src/Recipes.McpServer",
+        "--no-launch-profile"
+      ],
+      "env": {
+        "RECIPES_API_BASE_URL": "http://localhost:5000"
+      }
+    }
+  }
+}
