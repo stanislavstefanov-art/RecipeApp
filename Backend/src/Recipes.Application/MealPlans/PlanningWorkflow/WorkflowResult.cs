@@ -7,6 +7,7 @@ public sealed record WorkflowResult(
     string CurrentStage,
     MealPlanSuggestionDto? Draft,
     IReadOnlyList<GateCheckResult> GateResults,
-    string? BlockedReason = null);
+    string? BlockedReason = null,
+    string Confidence = "medium");
 
 public sealed record GateCheckResult(string GateName, bool Passed, string Message);

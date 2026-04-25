@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common.AI;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
@@ -20,17 +21,20 @@ public sealed class RunPlanningWorkflowHandler
     private readonly IPersonRepository _personRepository;
     private readonly IMealPlanWorkflowEnforcer _enforcer;
     private readonly IWorkflowSessionStore _sessionStore;
+    private readonly IConfidenceCalibrationStore _calibration;
 
     public RunPlanningWorkflowHandler(
         IHouseholdRepository householdRepository,
         IPersonRepository personRepository,
         IMealPlanWorkflowEnforcer enforcer,
-        IWorkflowSessionStore sessionStore)
+        IWorkflowSessionStore sessionStore,
+        IConfidenceCalibrationStore calibration)
     {
         _householdRepository = householdRepository;
         _personRepository    = personRepository;
         _enforcer            = enforcer;
         _sessionStore        = sessionStore;
+        _calibration         = calibration;
     }
 
     public async Task<ErrorOr<WorkflowSessionResult>> Handle(
@@ -62,6 +66,9 @@ public sealed class RunPlanningWorkflowHandler
 
         var workflowResult = await _enforcer.RunAsync(request, householdProfile, cancellationToken);
         var sessionId      = _sessionStore.Save(workflowResult, request.NumberOfDays, request.MealTypes);
+
+        if (workflowResult.Status == "pending_approval")
+            _calibration.RecordPrediction(sessionId, "workflow", workflowResult.Confidence);
 
         return new WorkflowSessionResult(sessionId, workflowResult);
     }

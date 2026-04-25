@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common.AI;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 
 namespace Recipes.Application.MealPlans.PlanningWorkflow;
@@ -17,13 +18,16 @@ public sealed class ApprovePlanningWorkflowHandler
 {
     private readonly IEnumerable<IWorkflowGate> _gates;
     private readonly IWorkflowSessionStore _sessionStore;
+    private readonly IConfidenceCalibrationStore _calibration;
 
     public ApprovePlanningWorkflowHandler(
         IEnumerable<IWorkflowGate> gates,
-        IWorkflowSessionStore sessionStore)
+        IWorkflowSessionStore sessionStore,
+        IConfidenceCalibrationStore calibration)
     {
         _gates        = gates;
         _sessionStore = sessionStore;
+        _calibration  = calibration;
     }
 
     public Task<ErrorOr<MealPlanSuggestionDto>> Handle(
@@ -31,8 +35,12 @@ public sealed class ApprovePlanningWorkflowHandler
         CancellationToken cancellationToken)
     {
         if (!request.Approved)
+        {
+            if (request.SessionId.HasValue)
+                _calibration.RecordOutcome(request.SessionId.Value, false);
             return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(
                 Error.Validation("Workflow.Rejected", request.ReviewNotes ?? "Plan was rejected."));
+        }
 
         MealPlanSuggestionDto draft;
         int numberOfDays;
@@ -71,6 +79,9 @@ public sealed class ApprovePlanningWorkflowHandler
                 return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(
                     Error.Validation("Workflow.GateFailed", gr.Message));
         }
+
+        if (request.SessionId.HasValue)
+            _calibration.RecordOutcome(request.SessionId.Value, true);
 
         return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(draft);
     }
