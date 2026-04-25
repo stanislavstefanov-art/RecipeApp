@@ -5,6 +5,7 @@ using Recipes.Application.Abstractions;
 using Recipes.Application.Common.AI;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
+using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.AnalyseRecipeNutrition;
 using Recipes.Application.Recipes.ImportRecipeFromUrl;
@@ -116,6 +117,9 @@ public static class DependencyInjection
         services.AddScoped<IRecipeImportAgent, RecipeImportAgent>();
         services.AddScoped<IMcpClientHost, NutritionMcpClient>();
         services.AddScoped<INutritionAnalysisAgent, NutritionAnalysisAgent>();
+        services.AddScoped<RecipeDiscoverySubAgent>();
+        services.AddScoped<MealAssignmentSubAgent>();
+        services.AddScoped<IMealPlanOrchestratorAgent, MealPlanOrchestratorAgent>();
 
         services.AddHttpClient("ClaudeAgent", client =>
         {

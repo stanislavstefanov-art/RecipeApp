@@ -35,6 +35,13 @@ public sealed record ClaudeToolChoiceAuto(
     [property: JsonPropertyName("type")] string Type = "auto"
 );
 
+public sealed record ClaudeToolChoiceForced(
+    [property: JsonPropertyName("type")] string Type,
+    [property: JsonPropertyName("name")] string Name)
+{
+    public ClaudeToolChoiceForced(string toolName) : this("tool", toolName) { }
+}
+
 public sealed record ClaudeAgentRequest(
     [property: JsonPropertyName("model")]       string                             Model,
     [property: JsonPropertyName("max_tokens")]  int                                MaxTokens,

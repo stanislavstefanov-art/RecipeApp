@@ -8,6 +8,7 @@ using Recipes.Application.MealPlans.GetMealPlan;
 using Recipes.Application.MealPlans.ListMealPlans;
 using Recipes.Application.MealPlans.RegenerateShoppingListFromMealPlan;
 using Recipes.Application.MealPlans.SuggestMealPlan;
+using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.MealPlans.UpdateMealPlanPersonAssignment;
 
 namespace Recipes.Api.Endpoints;
@@ -76,6 +77,19 @@ public static class MealPlansEndpoints
                 ct);
 
             return result.ToHttpResult(response => Results.Ok(response));
+        });
+
+        group.MapPost("/suggest/multi-agent", async (SuggestMealPlanRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(
+                new SuggestMealPlanMultiAgentCommand(
+                    request.Name,
+                    request.HouseholdId,
+                    request.StartDate,
+                    request.NumberOfDays,
+                    request.MealTypes),
+                ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
         group.MapPost("/accept-suggestion", async (AcceptMealPlanSuggestionRequest request, ISender sender, CancellationToken ct) =>
