@@ -13,6 +13,7 @@ using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Application.Recipes.BatchAnalyseRecipes;
+using Recipes.Application.Recipes.ReviewRecipeDraft;
 using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
@@ -106,6 +107,12 @@ public static class RecipesEndpoints
         group.MapPost("/{id:guid}/scale", async (Guid id, ScaleRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new ScaleRecipeCommand(id, request.FromServings, request.ToServings), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
+        group.MapPost("/import/with-jury", async (ImportRecipeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new ReviewRecipeDraftCommand(request.Text), ct);
             return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
