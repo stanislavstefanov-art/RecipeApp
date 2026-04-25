@@ -126,6 +126,7 @@ public static class DependencyInjection
         services.AddScoped<IAgentHook, LoggingAgentHook>();
         services.AddScoped<IAgentHook, SlotCapacityHook>();
         services.AddScoped<IAgentHookRunner, AgentHookRunner>();
+        services.AddSingleton<IWorkflowSessionStore, InMemoryWorkflowSessionStore>();
         services.AddScoped<IWorkflowGate, MinSlotsCoveredGate>();
         services.AddScoped<IWorkflowGate, RecipeDiversityGate>();
         services.AddScoped<IWorkflowGate, MemberCoverageGate>();

@@ -110,13 +110,20 @@ public static class MealPlansEndpoints
         {
             var result = await sender.Send(
                 new ApprovePlanningWorkflowCommand(
+                    request.SessionId,
                     request.Draft,
                     request.Approved,
                     request.ReviewNotes,
-                    request.NumberOfDays,
-                    request.MealTypes),
+                    request.NumberOfDays ?? 0,
+                    request.MealTypes ?? []),
                 ct);
             return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
+        group.MapGet("/workflow/sessions/{sessionId:guid}", async (Guid sessionId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new GetWorkflowSessionQuery(sessionId), ct);
+            return result.ToHttpResult(session => Results.Ok(session));
         });
 
         group.MapPost("/accept-suggestion", async (AcceptMealPlanSuggestionRequest request, ISender sender, CancellationToken ct) =>
@@ -194,8 +201,9 @@ public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, Dat
 public sealed record AcceptMealPlanSuggestionAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record UpdateMealPlanPersonAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record ApproveWorkflowRequest(
-    Recipes.Application.MealPlans.SuggestMealPlan.MealPlanSuggestionDto Draft,
+    Guid? SessionId,
+    Recipes.Application.MealPlans.SuggestMealPlan.MealPlanSuggestionDto? Draft,
     bool Approved,
     string? ReviewNotes,
-    int NumberOfDays,
-    IReadOnlyList<int> MealTypes);
+    int? NumberOfDays,
+    IReadOnlyList<int>? MealTypes);
