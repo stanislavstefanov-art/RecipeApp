@@ -22,19 +22,22 @@ public sealed class RunPlanningWorkflowHandler
     private readonly IMealPlanWorkflowEnforcer _enforcer;
     private readonly IWorkflowSessionStore _sessionStore;
     private readonly IConfidenceCalibrationStore _calibration;
+    private readonly IEscalationStore _escalationStore;
 
     public RunPlanningWorkflowHandler(
         IHouseholdRepository householdRepository,
         IPersonRepository personRepository,
         IMealPlanWorkflowEnforcer enforcer,
         IWorkflowSessionStore sessionStore,
-        IConfidenceCalibrationStore calibration)
+        IConfidenceCalibrationStore calibration,
+        IEscalationStore escalationStore)
     {
         _householdRepository = householdRepository;
         _personRepository    = personRepository;
         _enforcer            = enforcer;
         _sessionStore        = sessionStore;
         _calibration         = calibration;
+        _escalationStore     = escalationStore;
     }
 
     public async Task<ErrorOr<WorkflowSessionResult>> Handle(
@@ -67,9 +70,17 @@ public sealed class RunPlanningWorkflowHandler
         var workflowResult = await _enforcer.RunAsync(request, householdProfile, cancellationToken);
         var sessionId      = _sessionStore.Save(workflowResult, request.NumberOfDays, request.MealTypes);
 
+        var isEscalated = false;
         if (workflowResult.Status == "pending_approval")
+        {
             _calibration.RecordPrediction(sessionId, "workflow", workflowResult.Confidence);
+            if (workflowResult.Confidence == "low")
+            {
+                _escalationStore.Create(sessionId, "low_confidence");
+                isEscalated = true;
+            }
+        }
 
-        return new WorkflowSessionResult(sessionId, workflowResult);
+        return new WorkflowSessionResult(sessionId, workflowResult, isEscalated);
     }
 }

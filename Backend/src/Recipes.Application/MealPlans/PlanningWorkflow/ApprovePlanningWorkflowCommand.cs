@@ -19,15 +19,18 @@ public sealed class ApprovePlanningWorkflowHandler
     private readonly IEnumerable<IWorkflowGate> _gates;
     private readonly IWorkflowSessionStore _sessionStore;
     private readonly IConfidenceCalibrationStore _calibration;
+    private readonly IEscalationStore _escalationStore;
 
     public ApprovePlanningWorkflowHandler(
         IEnumerable<IWorkflowGate> gates,
         IWorkflowSessionStore sessionStore,
-        IConfidenceCalibrationStore calibration)
+        IConfidenceCalibrationStore calibration,
+        IEscalationStore escalationStore)
     {
-        _gates        = gates;
-        _sessionStore = sessionStore;
-        _calibration  = calibration;
+        _gates           = gates;
+        _sessionStore    = sessionStore;
+        _calibration     = calibration;
+        _escalationStore = escalationStore;
     }
 
     public Task<ErrorOr<MealPlanSuggestionDto>> Handle(
@@ -37,7 +40,10 @@ public sealed class ApprovePlanningWorkflowHandler
         if (!request.Approved)
         {
             if (request.SessionId.HasValue)
+            {
                 _calibration.RecordOutcome(request.SessionId.Value, false);
+                _escalationStore.Resolve(request.SessionId.Value, request.ReviewNotes);
+            }
             return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(
                 Error.Validation("Workflow.Rejected", request.ReviewNotes ?? "Plan was rejected."));
         }
@@ -70,6 +76,15 @@ public sealed class ApprovePlanningWorkflowHandler
             mealTypes    = request.MealTypes;
         }
 
+        if (request.SessionId.HasValue &&
+            _escalationStore.HasPending(request.SessionId.Value) &&
+            string.IsNullOrWhiteSpace(request.ReviewNotes))
+        {
+            return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(
+                Error.Validation("Workflow.EscalationRequiresReviewNotes",
+                    "A review note is required to approve an escalated plan."));
+        }
+
         var ctx = new WorkflowGateContext(draft, numberOfDays, mealTypes, MemberCount: 0);
 
         foreach (var gate in _gates)
@@ -81,7 +96,10 @@ public sealed class ApprovePlanningWorkflowHandler
         }
 
         if (request.SessionId.HasValue)
+        {
             _calibration.RecordOutcome(request.SessionId.Value, true);
+            _escalationStore.Resolve(request.SessionId.Value, request.ReviewNotes);
+        }
 
         return Task.FromResult<ErrorOr<MealPlanSuggestionDto>>(draft);
     }

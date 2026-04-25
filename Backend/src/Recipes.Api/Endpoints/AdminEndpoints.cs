@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Application.Admin;
 using Recipes.Application.Admin.GetCalibrationReport;
+using Recipes.Application.Admin.GetEscalations;
 using Recipes.Application.Admin.GetProvenance;
 
 namespace Recipes.Api.Endpoints;
@@ -37,6 +38,16 @@ public static class AdminEndpoints
             return Results.Ok(records);
         })
         .WithSummary("Return recent AI output provenance records (newest first, default 100, max 1000).");
+
+        group.MapGet("/escalations", async (
+            string status = "all",
+            ISender sender = default!,
+            CancellationToken ct = default) =>
+        {
+            var records = await sender.Send(new GetEscalationsQuery(status), ct);
+            return Results.Ok(records);
+        })
+        .WithSummary("Return escalation records. status=all|pending|resolved (default: all).");
 
         return app;
     }

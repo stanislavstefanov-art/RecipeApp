@@ -10,4 +10,5 @@ public sealed record WorkflowSession(
 
 public sealed record WorkflowSessionResult(
     Guid SessionId,
-    WorkflowResult WorkflowResult);
+    WorkflowResult WorkflowResult,
+    bool IsEscalated = false);
