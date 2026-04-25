@@ -43,17 +43,20 @@ public sealed class MealAssignmentSubAgent
     private readonly ClaudeOptions _options;
     private readonly ILogger<MealAssignmentSubAgent> _logger;
     private readonly IToolCallTelemetry _telemetry;
+    private readonly IAgentHookRunner _hookRunner;
 
     public MealAssignmentSubAgent(
         IHttpClientFactory httpClientFactory,
         IOptions<ClaudeOptions> options,
         ILogger<MealAssignmentSubAgent> logger,
-        IToolCallTelemetry telemetry)
+        IToolCallTelemetry telemetry,
+        IAgentHookRunner hookRunner)
     {
         _claudeClient = httpClientFactory.CreateClient("ClaudeAgent");
         _options      = options.Value;
         _logger       = logger;
         _telemetry    = telemetry;
+        _hookRunner   = hookRunner;
     }
 
     internal async Task<MealPlanSuggestionDto> RunAsync(
@@ -102,7 +105,7 @@ public sealed class MealAssignmentSubAgent
             var toolUseBlocks = response.Content.Where(b => b.Type == "tool_use").ToList();
 
             var toolResults = await Task.WhenAll(
-                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, response.Usage, ct)));
+                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, response.Usage, iteration, ct)));
 
             if (state.Complete)
                 return BuildDto(planName, state.Entries);
@@ -122,11 +125,28 @@ public sealed class MealAssignmentSubAgent
         ClaudeAgentContentBlock toolUse,
         AgentState state,
         ClaudeUsage? usage,
+        int iteration,
         CancellationToken ct)
     {
-        var sw = Stopwatch.StartNew();
+        var hookCtx  = new AgentHookContext("MealAssignmentSubAgent", toolUse.Name ?? "unknown", toolUse.Input, iteration);
+        var decision = await _hookRunner.RunBeforeAsync(hookCtx, ct);
+
+        if (decision is HookDecision.BlockDecision block)
+        {
+            _telemetry.Record(new ToolCallRecord
+            {
+                AgentName = "MealAssignmentSubAgent", ToolName = toolUse.Name ?? "unknown",
+                InputBytes = toolUse.Input?.GetRawText().Length ?? 0, IsError = true,
+                InputTokens = usage?.InputTokens, OutputTokens = usage?.OutputTokens,
+                CacheReadTokens = usage?.CacheReadInputTokens, CacheCreationTokens = usage?.CacheCreationInputTokens,
+            });
+            return ErrorResult(toolUse.Id!, block.Reason);
+        }
+
+        var sw     = Stopwatch.StartNew();
         var result = await DispatchToolAsync(toolUse, state, ct);
         sw.Stop();
+
         _telemetry.Record(new ToolCallRecord
         {
             AgentName           = "MealAssignmentSubAgent",
@@ -140,6 +160,10 @@ public sealed class MealAssignmentSubAgent
             CacheReadTokens     = usage?.CacheReadInputTokens,
             CacheCreationTokens = usage?.CacheCreationInputTokens,
         });
+
+        var outcome = new ToolCallOutcome(result.IsError ?? false, result.Content, sw.ElapsedMilliseconds);
+        await _hookRunner.RunAfterAsync(hookCtx, outcome, ct);
+
         return result;
     }
 

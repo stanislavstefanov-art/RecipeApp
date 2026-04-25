@@ -13,6 +13,7 @@ using Recipes.Application.Recipes.ImportRecipeFromUrl;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Domain.Repositories;
 using Recipes.Infrastructure.AI.Claude.Agents;
+using Recipes.Infrastructure.AI.Claude.Hooks;
 using Recipes.Infrastructure.AI.Claude.Workflow;
 using Recipes.Infrastructure.Mcp;
 using Recipes.Infrastructure.Telemetry;
@@ -122,6 +123,9 @@ public static class DependencyInjection
         services.AddScoped<RecipeDiscoverySubAgent>();
         services.AddScoped<MealAssignmentSubAgent>();
         services.AddScoped<IMealPlanOrchestratorAgent, MealPlanOrchestratorAgent>();
+        services.AddScoped<IAgentHook, LoggingAgentHook>();
+        services.AddScoped<IAgentHook, SlotCapacityHook>();
+        services.AddScoped<IAgentHookRunner, AgentHookRunner>();
         services.AddScoped<IWorkflowGate, MinSlotsCoveredGate>();
         services.AddScoped<IWorkflowGate, RecipeDiversityGate>();
         services.AddScoped<IWorkflowGate, MemberCoverageGate>();

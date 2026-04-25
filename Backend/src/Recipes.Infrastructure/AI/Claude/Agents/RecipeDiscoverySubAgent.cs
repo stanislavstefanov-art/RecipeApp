@@ -44,6 +44,7 @@ public sealed class RecipeDiscoverySubAgent
     private readonly ClaudeOptions _options;
     private readonly ILogger<RecipeDiscoverySubAgent> _logger;
     private readonly IToolCallTelemetry _telemetry;
+    private readonly IAgentHookRunner _hookRunner;
 
     public RecipeDiscoverySubAgent(
         IHttpClientFactory httpClientFactory,
@@ -51,7 +52,8 @@ public sealed class RecipeDiscoverySubAgent
         IMealPlanRepository mealPlanRepository,
         IOptions<ClaudeOptions> options,
         ILogger<RecipeDiscoverySubAgent> logger,
-        IToolCallTelemetry telemetry)
+        IToolCallTelemetry telemetry,
+        IAgentHookRunner hookRunner)
     {
         _claudeClient      = httpClientFactory.CreateClient("ClaudeAgent");
         _recipeRepository  = recipeRepository;
@@ -59,6 +61,7 @@ public sealed class RecipeDiscoverySubAgent
         _options           = options.Value;
         _logger            = logger;
         _telemetry         = telemetry;
+        _hookRunner        = hookRunner;
     }
 
     internal async Task<IReadOnlyList<RecipeCandidate>> RunAsync(
@@ -107,7 +110,7 @@ public sealed class RecipeDiscoverySubAgent
             var toolUseBlocks = response.Content.Where(b => b.Type == "tool_use").ToList();
 
             var toolResults = await Task.WhenAll(
-                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, ctx, response.Usage, ct)));
+                toolUseBlocks.Select(b => InstrumentedDispatchAsync(b, state, ctx, response.Usage, iteration, ct)));
 
             if (state.Complete)
                 return state.Candidates;
@@ -128,11 +131,28 @@ public sealed class RecipeDiscoverySubAgent
         AgentState state,
         RecipeDiscoveryContext ctx,
         ClaudeUsage? usage,
+        int iteration,
         CancellationToken ct)
     {
-        var sw = Stopwatch.StartNew();
+        var hookCtx  = new AgentHookContext("RecipeDiscoverySubAgent", toolUse.Name ?? "unknown", toolUse.Input, iteration);
+        var decision = await _hookRunner.RunBeforeAsync(hookCtx, ct);
+
+        if (decision is HookDecision.BlockDecision block)
+        {
+            _telemetry.Record(new ToolCallRecord
+            {
+                AgentName = "RecipeDiscoverySubAgent", ToolName = toolUse.Name ?? "unknown",
+                InputBytes = toolUse.Input?.GetRawText().Length ?? 0, IsError = true,
+                InputTokens = usage?.InputTokens, OutputTokens = usage?.OutputTokens,
+                CacheReadTokens = usage?.CacheReadInputTokens, CacheCreationTokens = usage?.CacheCreationInputTokens,
+            });
+            return ErrorResult(toolUse.Id!, block.Reason);
+        }
+
+        var sw     = Stopwatch.StartNew();
         var result = await DispatchToolAsync(toolUse, state, ctx, ct);
         sw.Stop();
+
         _telemetry.Record(new ToolCallRecord
         {
             AgentName           = "RecipeDiscoverySubAgent",
@@ -146,6 +166,10 @@ public sealed class RecipeDiscoverySubAgent
             CacheReadTokens     = usage?.CacheReadInputTokens,
             CacheCreationTokens = usage?.CacheCreationInputTokens,
         });
+
+        var outcome = new ToolCallOutcome(result.IsError ?? false, result.Content, sw.ElapsedMilliseconds);
+        await _hookRunner.RunAfterAsync(hookCtx, outcome, ct);
+
         return result;
     }
 
