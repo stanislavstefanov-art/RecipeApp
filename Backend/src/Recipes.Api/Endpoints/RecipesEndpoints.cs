@@ -13,6 +13,7 @@ using Recipes.Application.Recipes.ListRecipes;
 using Recipes.Application.Recipes.SearchRecipesByIngredient;
 using Recipes.Application.Recipes.SuggestIngredientSubstitutions;
 using Recipes.Application.Recipes.CritiqueRecipe;
+using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 
@@ -101,6 +102,12 @@ public static class RecipesEndpoints
             return result.ToHttpResult(dto => Results.Ok(dto));
         });
 
+        group.MapPost("/{id:guid}/scale", async (Guid id, ScaleRecipeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new ScaleRecipeCommand(id, request.FromServings, request.ToServings), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
         group.MapPost("/suggest-substitutions", async (SuggestIngredientSubstitutionsRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(
@@ -165,3 +172,5 @@ public sealed record AddRecipeVariationRequest(string Name, string? Notes, strin
 public sealed record UpdateRecipeVariationOverridesRequest(IReadOnlyList<RecipeVariationIngredientOverrideRequest> Overrides);
 
 public sealed record RecipeVariationIngredientOverrideRequest(string IngredientName, decimal? Quantity, string? Unit, bool IsRemoved);
+
+public sealed record ScaleRecipeRequest(int FromServings, int ToServings);
