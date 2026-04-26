@@ -1,5 +1,6 @@
 using MediatR;
 using Recipes.Application.Admin;
+using Recipes.Application.Admin.GetAiErrors;
 using Recipes.Application.Admin.GetCalibrationReport;
 using Recipes.Application.Admin.GetEscalations;
 using Recipes.Application.Admin.GetProvenance;
@@ -48,6 +49,16 @@ public static class AdminEndpoints
             return Results.Ok(records);
         })
         .WithSummary("Return escalation records. status=all|pending|resolved (default: all).");
+
+        group.MapGet("/ai-errors", async (
+            int limit = 100,
+            ISender sender = default!,
+            CancellationToken ct = default) =>
+        {
+            var records = await sender.Send(new GetAiErrorsQuery(limit), ct);
+            return Results.Ok(records);
+        })
+        .WithSummary("Return recent AI error envelopes (newest first, default 100, max 1000).");
 
         return app;
     }

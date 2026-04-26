@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
@@ -14,13 +15,16 @@ public sealed class SubmitRecipeBatchAnalysisHandler
 {
     private readonly IRecipeRepository _repository;
     private readonly IRecipeBatchAnalysisService _batchService;
+    private readonly IAiErrorStore _aiErrorStore;
 
     public SubmitRecipeBatchAnalysisHandler(
         IRecipeRepository repository,
-        IRecipeBatchAnalysisService batchService)
+        IRecipeBatchAnalysisService batchService,
+        IAiErrorStore aiErrorStore)
     {
         _repository   = repository;
         _batchService = batchService;
+        _aiErrorStore = aiErrorStore;
     }
 
     public async Task<ErrorOr<BatchSubmissionDto>> Handle(
@@ -47,7 +51,16 @@ public sealed class SubmitRecipeBatchAnalysisHandler
                 recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList()));
         }
 
-        var submission = await _batchService.SubmitBatchAsync(recipes, cancellationToken);
-        return submission;
+        try
+        {
+            var submission = await _batchService.SubmitBatchAsync(recipes, cancellationToken);
+            return submission;
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or HttpRequestException)
+        {
+            var envelope = AiErrorClassifier.Classify(ex, "recipe-batch");
+            _aiErrorStore.Record(envelope);
+            return Error.Failure($"AI.{envelope.Code}", envelope.Message);
+        }
     }
 }

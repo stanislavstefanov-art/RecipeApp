@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common.AI;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 
 namespace Recipes.Application.Recipes.ReviewRecipeDraft;
@@ -11,13 +12,16 @@ public sealed class ReviewRecipeDraftHandler
 {
     private readonly IRecipeImportOrchestrator _importer;
     private readonly IRecipeDraftReviewService _reviewer;
+    private readonly IAiErrorStore _aiErrorStore;
 
     public ReviewRecipeDraftHandler(
         IRecipeImportOrchestrator importer,
-        IRecipeDraftReviewService reviewer)
+        IRecipeDraftReviewService reviewer,
+        IAiErrorStore aiErrorStore)
     {
-        _importer = importer;
-        _reviewer = reviewer;
+        _importer     = importer;
+        _reviewer     = reviewer;
+        _aiErrorStore = aiErrorStore;
     }
 
     public async Task<ErrorOr<RecipeDraftReviewDto>> Handle(
@@ -31,7 +35,16 @@ public sealed class ReviewRecipeDraftHandler
         if (importResult.IsError)
             return importResult.FirstError;
 
-        var review = await _reviewer.ReviewAsync(importResult.Value, cancellationToken);
-        return review;
+        try
+        {
+            var review = await _reviewer.ReviewAsync(importResult.Value, cancellationToken);
+            return review;
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or HttpRequestException)
+        {
+            var envelope = AiErrorClassifier.Classify(ex, "recipe-jury");
+            _aiErrorStore.Record(envelope);
+            return Error.Failure($"AI.{envelope.Code}", envelope.Message);
+        }
     }
 }
