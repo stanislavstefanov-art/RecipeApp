@@ -4,7 +4,7 @@ public sealed class ClaudeOptions
 {
     public const string SectionName = "Claude";
 
-    public string Model { get; init; } = "claude-sonnet-4-20250514";
+    public string Model { get; init; } = "claude-haiku-4-5-20251001";
     public string ApiKey { get; init; } = string.Empty;
     public int MaxTokens { get; init; } = 2000;
     public string RecipeImportPromptPath { get; init; } = "Docs/Prompts/recipe-import-prompt.md";

@@ -32,9 +32,6 @@ public sealed class ScaleRecipeHandler : IRequestHandler<ScaleRecipeCommand, Err
         ScaleRecipeCommand request,
         CancellationToken cancellationToken)
     {
-        if (request.FromServings <= 0 || request.ToServings <= 0)
-            return Error.Validation("ScaleRecipe.InvalidServings", "Servings must be greater than zero.");
-
         var recipeId = RecipeId.From(request.RecipeId);
         var recipe   = await _repository.GetByIdAsync(recipeId, cancellationToken);
 

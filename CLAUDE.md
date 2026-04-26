@@ -185,13 +185,14 @@ Use claude-haiku-4-5 for all runtime app calls. Use claude-sonnet-4-5 only for
 Claude Code sessions. Never call claude-sonnet-4-5 from application code — cost.
 
 ## Recipe import
-The recipe import flow is being prepared for Claude-backed structured extraction.
+The recipe import flow uses Claude-backed structured extraction by default.
 
 Current state:
 - `IRecipeImportService` returns raw extraction results
 - `RecipeImportOrchestrator` handles validation/retry/mapping
-- `StubRecipeImportService` is the active implementation
-- schema and prompt files live under `Docs/`
+- `ClaudeRecipeImportService` is the active implementation (via `RecipeImport:Provider=Claude` in appsettings)
+- `StubRecipeImportService` is selected only when `RecipeImport:Provider=Stub` (used in tests)
+- schema and prompt files live under `Backend/Docs/`
 
 Guidance:
 - keep extraction concerns in Infrastructure

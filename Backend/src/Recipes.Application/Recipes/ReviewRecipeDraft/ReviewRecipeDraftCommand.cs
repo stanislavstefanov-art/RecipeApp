@@ -28,9 +28,6 @@ public sealed class ReviewRecipeDraftHandler
         ReviewRecipeDraftCommand request,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.RecipeText))
-            return Error.Validation("ReviewDraft.Empty", "Recipe text is required.");
-
         var importResult = await _importer.ImportAsync(request.RecipeText, cancellationToken);
         if (importResult.IsError)
             return importResult.FirstError;
