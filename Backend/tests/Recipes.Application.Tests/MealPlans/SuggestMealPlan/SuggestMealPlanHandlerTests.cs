@@ -82,6 +82,11 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult(_persons.SingleOrDefault(x => x.Id == id));
         public Task<IReadOnlyList<Person>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Person>)_persons);
+        public Task<IReadOnlyList<Person>> GetByIdsAsync(IEnumerable<PersonId> ids, CancellationToken cancellationToken = default)
+        {
+            var idSet = ids.ToHashSet();
+            return Task.FromResult((IReadOnlyList<Person>)_persons.Where(x => idSet.Contains(x.Id)).ToList());
+        }
         public Task AddAsync(Person person, CancellationToken cancellationToken = default) { _persons.Add(person); return Task.CompletedTask; }
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }

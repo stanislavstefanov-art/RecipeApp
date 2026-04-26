@@ -20,6 +20,15 @@ public sealed class PersonRepository : IPersonRepository
     public async Task<IReadOnlyList<Person>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _dbContext.Persons.OrderBy(x => x.Name).ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Person>> GetByIdsAsync(IEnumerable<PersonId> ids, CancellationToken cancellationToken = default)
+    {
+        var idList = ids.ToList();
+        return await _dbContext.Persons
+            .Where(x => idList.Contains(x.Id))
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public Task AddAsync(Person person, CancellationToken cancellationToken = default)
         => _dbContext.Persons.AddAsync(person, cancellationToken).AsTask();
 

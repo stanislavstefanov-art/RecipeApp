@@ -48,10 +48,7 @@ public sealed class SuggestMealPlanHandler
                 "The selected household has no members.");
         }
 
-        var allPersons = await _personRepository.GetAllAsync(cancellationToken);
-        var persons = allPersons
-            .Where(x => memberIds.Contains(x.Id))
-            .ToList();
+        var persons = await _personRepository.GetByIdsAsync(memberIds, cancellationToken);
 
         var recipes = await _recipeRepository.GetAllAsync(cancellationToken);
         if (recipes.Count == 0)
