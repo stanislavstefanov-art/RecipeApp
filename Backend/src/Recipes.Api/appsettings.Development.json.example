@@ -1,6 +1,8 @@
 {
   "_comment": "Copy this file to appsettings.Development.json on first clone. The real file is gitignored. Defaults below put every AI service into Stub mode so the API runs end-to-end without an Anthropic API key.",
 
+  "Seed":                  { "Enabled": true },
+
   "RecipeImport":          { "Provider": "Stub" },
   "MealPlanSuggestion":    { "Provider": "Stub" },
   "IngredientSubstitution":{ "Provider": "Stub" },

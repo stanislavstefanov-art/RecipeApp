@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Recipes.Api.Endpoints;
 using Recipes.Application;
 using Recipes.Application.Behaviors;
 using Recipes.Infrastructure;
+using Recipes.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,18 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    if (app.Configuration.GetValue("Seed:Enabled", false))
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
+        await db.Database.MigrateAsync();
+        if (!await db.Recipes.AnyAsync())
+        {
+            var seeder = new DemoDataSeeder(db);
+            await seeder.SeedAsync(default);
+        }
+    }
 }
 
 app.UseCors("Frontend");
