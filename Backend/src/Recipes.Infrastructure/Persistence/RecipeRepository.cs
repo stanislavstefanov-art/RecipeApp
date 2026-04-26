@@ -23,7 +23,7 @@ public sealed class RecipeRepository : IRecipeRepository
     public async Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _db.Recipes
             .AsNoTracking()
-            .OrderBy(r => r.Name)
+            .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(
@@ -31,7 +31,7 @@ public sealed class RecipeRepository : IRecipeRepository
         => await _db.Recipes
             .AsNoTracking()
             .Where(r => r.Ingredients.Any(i => EF.Functions.Like(i.Name, $"%{ingredientName}%")))
-            .OrderBy(r => r.Name)
+            .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
 
     public void Add(Recipe recipe) => _db.Recipes.Add(recipe);

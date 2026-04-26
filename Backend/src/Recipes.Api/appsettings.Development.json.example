@@ -1,6 +1,7 @@
 {
-  "_comment": "Copy this file to appsettings.Development.json on first clone. The real file is gitignored. Defaults below put every AI service into Stub mode so the API runs end-to-end without an Anthropic API key.",
+  "_comment": "Copy this file to appsettings.Development.json on first clone. The real file is gitignored. Defaults below put every AI service into Stub mode AND the database into in-memory mode, so the API runs end-to-end without an Anthropic API key and without a local SQL Server / LocalDB.",
 
+  "Database":              { "Provider": "InMemory" },
   "Seed":                  { "Enabled": true },
 
   "RecipeImport":          { "Provider": "Stub" },

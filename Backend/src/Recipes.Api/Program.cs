@@ -20,7 +20,12 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddApplicationInsightsTelemetry();
+var appInsightsConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+    ?? builder.Configuration["ApplicationInsights:ConnectionString"];
+if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -47,7 +52,14 @@ if (app.Environment.IsDevelopment())
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
-        await db.Database.MigrateAsync();
+        if (db.Database.IsRelational())
+        {
+            await db.Database.MigrateAsync();
+        }
+        else
+        {
+            await db.Database.EnsureCreatedAsync();
+        }
         if (!await db.Recipes.AnyAsync())
         {
             var seeder = new DemoDataSeeder(db);

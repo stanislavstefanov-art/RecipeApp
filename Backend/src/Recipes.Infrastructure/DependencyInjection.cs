@@ -78,10 +78,18 @@ public static class DependencyInjection
             configuration.GetSection(ExpenseInsightOptions.SectionName).Bind(options);
         });
 
+        var dbProvider = configuration["Database:Provider"] ?? "SqlServer";
         services.AddDbContext<RecipesDbContext>(options =>
         {
-            var connectionString = configuration.GetConnectionString("RecipesDb");
-            options.UseSqlServer(connectionString);
+            if (string.Equals(dbProvider, "InMemory", StringComparison.OrdinalIgnoreCase))
+            {
+                options.UseInMemoryDatabase("RecipesDb");
+            }
+            else
+            {
+                var connectionString = configuration.GetConnectionString("RecipesDb");
+                options.UseSqlServer(connectionString);
+            }
         });
 
         services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
