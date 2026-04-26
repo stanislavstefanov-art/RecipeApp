@@ -5,12 +5,12 @@ import { ExpenseReportQueryForm } from "../../features/expenses/components/Expen
 import { ExpenseReportSummary } from "../../features/expenses/components/ExpenseReportSummary";
 import { useExpenseInsights } from "../../features/expenses/hooks/useExpenseInsights";
 import { useMonthlyExpenseReport } from "../../features/expenses/hooks/useMonthlyExpenseReport";
-import type { MonthlyExpenseQueryInput } from "../../features/expenses/schemas";
+import type { MonthlyExpenseQueryData } from "../../features/expenses/schemas";
 
 export function ExpenseReportPage() {
   const now = new Date();
 
-  const [query, setQuery] = useState<MonthlyExpenseQueryInput>({
+  const [query, setQuery] = useState<MonthlyExpenseQueryData>({
     year: now.getFullYear(),
     month: now.getMonth() + 1,
   });

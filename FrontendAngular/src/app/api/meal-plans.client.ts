@@ -14,7 +14,9 @@ import {
   UpdateMealPlanPersonAssignmentRequest,
 } from './meal-plans.dto';
 
-const API_BASE_URL = 'http://localhost:5117';
+import { environment } from '../../environments/environment';
+
+const API_BASE_URL = environment.apiBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class MealPlansClient {
