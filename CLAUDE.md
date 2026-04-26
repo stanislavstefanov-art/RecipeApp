@@ -184,6 +184,44 @@ The app integrates Claude for:
 Use claude-haiku-4-5 for all runtime app calls. Use claude-sonnet-4-5 only for
 Claude Code sessions. Never call claude-sonnet-4-5 from application code — cost.
 
+## Local mock mode (no Anthropic API key required)
+
+Default `dotnet run` (Development environment) routes every AI service to a
+synthetic stub and seeds demo data on first launch — no Anthropic API key
+needed. Useful for end-to-end demos without spending tokens.
+
+First-time setup on a fresh clone:
+
+```bash
+cp Backend/src/Recipes.Api/appsettings.Development.json.example \
+   Backend/src/Recipes.Api/appsettings.Development.json
+dotnet run --project Backend/src/Recipes.Api
+```
+
+The example file flips every `*:Provider` switch to `Stub`, leaves `Claude:ApiKey`
+blank, and sets `Seed:Enabled=true`. The seeder runs once when the `Recipes`
+table is empty and inserts ~10 recipes, 2 households with 5 members, a weekly
+meal plan, a half-purchased shopping list, and 10 expenses across the current
+and previous month.
+
+Flip a single feature back to live Claude during dev (env var, no file edit):
+
+```bash
+RecipeImport__Provider=Claude   Claude__ApiKey=sk-ant-... \
+dotnet run --project Backend/src/Recipes.Api
+```
+
+Reset demo data: `dotnet ef database drop --startup-project Backend/src/Recipes.Api -f`
+then re-run.
+
+What stubs do **not** exercise:
+- Anthropic SDK validation, real-model latency, prompt-token accounting
+- Batch-API polling lifecycle (the stub returns `ended` immediately)
+- Provenance and confidence-calibration paths that depend on real model output
+
+If you need to test those paths specifically, set `Claude__ApiKey` and flip the
+relevant `*:Provider` to `Claude`.
+
 ## Recipe import
 The recipe import flow uses Claude-backed structured extraction by default.
 
