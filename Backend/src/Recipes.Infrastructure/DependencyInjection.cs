@@ -57,6 +57,26 @@ public static class DependencyInjection
         {
             configuration.GetSection(MealPlanSuggestionOptions.SectionName).Bind(options);
         });
+        services.Configure<RecipeCritiqueOptions>(options =>
+        {
+            configuration.GetSection(RecipeCritiqueOptions.SectionName).Bind(options);
+        });
+        services.Configure<RecipeScalingOptions>(options =>
+        {
+            configuration.GetSection(RecipeScalingOptions.SectionName).Bind(options);
+        });
+        services.Configure<RecipeBatchAnalysisOptions>(options =>
+        {
+            configuration.GetSection(RecipeBatchAnalysisOptions.SectionName).Bind(options);
+        });
+        services.Configure<RecipeDraftReviewOptions>(options =>
+        {
+            configuration.GetSection(RecipeDraftReviewOptions.SectionName).Bind(options);
+        });
+        services.Configure<ExpenseInsightOptions>(options =>
+        {
+            configuration.GetSection(ExpenseInsightOptions.SectionName).Bind(options);
+        });
 
         services.AddDbContext<RecipesDbContext>(options =>
         {
@@ -121,12 +141,73 @@ public static class DependencyInjection
         services.AddScoped<StubExpenseInsightService>();
         services.AddScoped<ClaudeExpenseInsightService>();
 
-        services.AddScoped<IExpenseInsightService>(_ => _.GetRequiredService<StubExpenseInsightService>());
+        services.AddScoped<IExpenseInsightService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<ExpenseInsightOptions>>().Value;
 
-        services.AddScoped<IRecipeCritiqueService, ClaudeRecipeCritiqueService>();
-        services.AddScoped<IRecipeScalingService, ClaudeRecipeScalingService>();
-        services.AddScoped<IRecipeBatchAnalysisService, ClaudeRecipeBatchAnalysisService>();
-        services.AddScoped<IRecipeDraftReviewService, ClaudeRecipeDraftReviewService>();
+            return options.Provider switch
+            {
+                "Claude" => sp.GetRequiredService<ClaudeExpenseInsightService>(),
+                _ => sp.GetRequiredService<StubExpenseInsightService>()
+            };
+        });
+
+        services.AddScoped<StubRecipeCritiqueService>();
+        services.AddScoped<ClaudeRecipeCritiqueService>();
+        services.AddScoped<IRecipeCritiqueService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<RecipeCritiqueOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "Claude" => sp.GetRequiredService<ClaudeRecipeCritiqueService>(),
+                _ => sp.GetRequiredService<StubRecipeCritiqueService>()
+            };
+        });
+
+        services.AddScoped<StubRecipeScalingService>();
+        services.AddScoped<ClaudeRecipeScalingService>();
+        services.AddScoped<IRecipeScalingService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<RecipeScalingOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "Claude" => sp.GetRequiredService<ClaudeRecipeScalingService>(),
+                _ => sp.GetRequiredService<StubRecipeScalingService>()
+            };
+        });
+
+        services.AddScoped<StubRecipeBatchAnalysisService>();
+        services.AddScoped<ClaudeRecipeBatchAnalysisService>();
+        services.AddScoped<IRecipeBatchAnalysisService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<RecipeBatchAnalysisOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "Claude" => sp.GetRequiredService<ClaudeRecipeBatchAnalysisService>(),
+                _ => sp.GetRequiredService<StubRecipeBatchAnalysisService>()
+            };
+        });
+
+        services.AddScoped<StubRecipeDraftReviewService>();
+        services.AddScoped<ClaudeRecipeDraftReviewService>();
+        services.AddScoped<IRecipeDraftReviewService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<RecipeDraftReviewOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "Claude" => sp.GetRequiredService<ClaudeRecipeDraftReviewService>(),
+                _ => sp.GetRequiredService<StubRecipeDraftReviewService>()
+            };
+        });
 
         services.AddScoped<IClaudeAssetProvider, FileSystemClaudeAssetProvider>();
         services.AddScoped<IRecipeImportOrchestrator, RecipeImportOrchestrator>();
