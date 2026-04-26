@@ -1,0 +1,49 @@
+name: claude-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run architecture review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-haiku-4-5-20251001
+          max_turns: '5'
+          allowed_tools: 'Bash,Read,Grep,Glob'
+          prompt: |
+            You are reviewing pull request #${{ github.event.pull_request.number }}.
+            Base branch: ${{ github.base_ref }}
+
+            Read CLAUDE.md and the matching .claude/rules/*.md files for any
+            paths changed in this PR. Then run the review logic from
+            .claude/commands/review.md against:
+
+              git diff origin/${{ github.base_ref }}...HEAD
+
+            For each finding, output it in this exact format (one per line):
+              FINDING|<file>|<line>|<severity>|<issue>|<suggested fix>
+
+            After all findings, output:
+              REVIEW_DONE|<N> findings
+
+            where N is the total count (0 if clean).
+
+            Only report genuine architecture/convention violations.
+            Do not flag style preferences or idioms local to the project.

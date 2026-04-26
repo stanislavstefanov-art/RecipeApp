@@ -111,6 +111,41 @@ server subprocess is started on first use — allow a few seconds on the first q
 - Use the scaffold-slice skill for scaffolding vertical slices — it runs in an
   isolated context via context:fork, keeping scaffolding output out of the main
   session. Invoke it by asking Claude Code to scaffold a feature by name.
+- Use `/refine <path>` to run a three-pass critique → revise → re-critique loop on a
+  single source file under 500 lines. Runs in a forked context.
+- Use `/spec-from-issue <number>` to draft a `Docs/specs/<n>-*.md` from a GitHub issue.
+  The command writes the spec only — drafting the plan is a separate step so you can
+  review the spec first.
+- Use `/architecture-check` to run the four-rule architecture invariant check locally
+  (same rules enforced by the `architecture-guard` CI workflow).
+
+## Architecture invariants (CI-enforced)
+
+The `architecture-guard` workflow (`.github/workflows/architecture-guard.yml`)
+fails the PR check on any of these violations:
+
+1. `IRecipesDbContext` referenced in `Recipes.Application/**`.
+2. Cross-aggregate access (`Ingredient`, `RecipeStep` outside a `Recipe` traversal)
+   in `Recipes.Application/**`.
+3. New `*Command.cs` accepting user input without a matching `*Validator.cs`.
+4. New AI-using slice without a `Backend/Docs/CCAF/<id>-*.md` entry.
+
+The full rule definitions live in `.claude/commands/architecture-check.md`,
+invokable locally as `/architecture-check`.
+
+## Automated PR review
+
+Every non-draft pull request gets an automated advisory review from Claude
+(claude-haiku-4-5) running the `/review` slash command. Findings are posted as
+review comments. The review is advisory — it never blocks merge. Blocking
+enforcement is handled by the `architecture-guard` workflow.
+
+## Mention bot
+
+Comment `@claude <question>` on any issue or pull-request thread to ask Claude
+(claude-haiku-4-5) about the codebase. The bot is read-only — it can inspect
+files and git history but cannot push commits or open PRs. Disable temporarily
+by setting the repo variable `CLAUDE_BOT_ENABLED=false`.
 
 ## Frontend implementation guidance
 

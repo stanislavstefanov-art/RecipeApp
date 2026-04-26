@@ -1,0 +1,44 @@
+name: frontend-angular-ci
+
+on:
+  pull_request:
+    paths:
+      - 'FrontendAngular/**'
+      - '.github/workflows/frontend-angular-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'FrontendAngular/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: |
+          if [ -f FrontendAngular/package.json ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: FrontendAngular/package-lock.json
+
+      - if: steps.check.outputs.ready == 'true'
+        run: npm ci
+        working-directory: FrontendAngular
+
+      - if: steps.check.outputs.ready == 'true'
+        run: npm run lint
+        working-directory: FrontendAngular
+
+      - if: steps.check.outputs.ready == 'true'
+        run: npm run build
+        working-directory: FrontendAngular

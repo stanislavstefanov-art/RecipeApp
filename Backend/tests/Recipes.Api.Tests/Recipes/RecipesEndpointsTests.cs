@@ -6,6 +6,7 @@ using Recipes.Application.Recipes.CreateRecipe;
 
 namespace Recipes.Api.Tests.Recipes;
 
+[Trait("Category", "Docker")]
 public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory factory)
     : IClassFixture<IntegrationTestWebApplicationFactory>
 {

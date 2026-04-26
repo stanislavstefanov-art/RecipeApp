@@ -1,0 +1,45 @@
+name: backend-ci
+
+on:
+  pull_request:
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/backend-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'Backend/**'
+
+jobs:
+  unit:
+    name: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - run: dotnet restore Backend/Recipes.sln
+
+      - run: dotnet build Backend/Recipes.sln --no-restore --configuration Release
+
+      - run: dotnet test Backend/Recipes.sln --no-build --configuration Release --filter "Category!=Docker"
+
+  integration:
+    name: integration
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - run: dotnet restore Backend/Recipes.sln
+
+      - run: dotnet build Backend/Recipes.sln --no-restore --configuration Release
+
+      - run: dotnet test Backend/Recipes.sln --no-build --configuration Release --filter "Category=Docker"

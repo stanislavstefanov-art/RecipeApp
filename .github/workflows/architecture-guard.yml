@@ -1,0 +1,60 @@
+name: architecture-guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'Backend/src/Recipes.Application/**'
+      - 'Backend/src/Recipes.Domain/**'
+      - 'Backend/src/Recipes.Infrastructure/**'
+      - '.claude/commands/architecture-check.md'
+      - '.github/workflows/architecture-guard.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run architecture check
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-haiku-4-5-20251001
+          max_turns: '6'
+          allowed_tools: 'Bash,Read,Grep,Glob'
+          prompt: |
+            Run the architecture check defined in
+            .claude/commands/architecture-check.md against the diff:
+
+              git diff origin/${{ github.base_ref }}...HEAD
+
+            Follow the command's instructions exactly, including posting
+            one FINDING line per violation and ending with:
+              GUARD_RESULT: {"violations": <N>}
+
+      - name: Fail if violations found
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `${{ steps.claude.outputs.result || '' }}`;
+            const m = output.match(/GUARD_RESULT:\s*(\{[^}]+\})/);
+            if (!m) {
+              core.setFailed('Architecture guard did not emit a GUARD_RESULT line.');
+              return;
+            }
+            const { violations } = JSON.parse(m[1]);
+            if (violations > 0) {
+              core.setFailed(`Architecture guard: ${violations} violation(s) found. See run log for details.`);
+            } else {
+              core.info('Architecture guard: clean.');
+            }
