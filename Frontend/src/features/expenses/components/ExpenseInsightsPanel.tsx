@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ExpenseInsight } from "../schemas";
 
 type Props = {
@@ -5,13 +6,14 @@ type Props = {
 };
 
 export function ExpenseInsightsPanel({ insight }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border bg-white p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-medium">Insights</h3>
+          <h3 className="text-lg font-medium">{t('expenses.insights')}</h3>
           <p className="mt-1 text-sm text-slate-500">
-            Confidence: {insight.confidence} · Needs review: {insight.needsReview ? "Yes" : "No"}
+            {t('mealPlans.confidence')}: {insight.confidence} · {t('mealPlans.needsReview')}: {insight.needsReview ? t('common.yes') : t('common.no')}
           </p>
         </div>
       </div>
@@ -20,7 +22,7 @@ export function ExpenseInsightsPanel({ insight }: Props) {
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div>
-          <h4 className="font-medium">Key findings</h4>
+          <h4 className="font-medium">{t('expenses.keyFindings')}</h4>
           <ul className="mt-3 list-disc pl-5 text-sm text-slate-700">
             {insight.keyFindings.map((item, index) => (
               <li key={`${item}-${index}`}>{item}</li>
@@ -29,7 +31,7 @@ export function ExpenseInsightsPanel({ insight }: Props) {
         </div>
 
         <div>
-          <h4 className="font-medium">Recommendations</h4>
+          <h4 className="font-medium">{t('expenses.recommendations')}</h4>
           <ul className="mt-3 list-disc pl-5 text-sm text-slate-700">
             {insight.recommendations.map((item, index) => (
               <li key={`${item}-${index}`}>{item}</li>

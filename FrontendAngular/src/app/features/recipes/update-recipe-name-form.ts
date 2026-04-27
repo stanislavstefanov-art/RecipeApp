@@ -13,6 +13,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { RecipesClient } from '../../api/recipes.client';
 
 type SubmitState =
@@ -22,7 +24,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-update-recipe-name-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './update-recipe-name-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

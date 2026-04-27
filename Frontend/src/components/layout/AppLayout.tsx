@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useUiStore } from "../../stores/uiStore";
 import { ToastViewport } from "../ui/ToastViewport";
+import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   isActive
@@ -9,6 +11,7 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 export function AppLayout() {
   const { isNavOpen, toggleNav, setNavOpen } = useUiStore();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen">
@@ -23,38 +26,42 @@ export function AppLayout() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={toggleNav}
-            className="rounded-lg border px-3 py-2 text-sm md:hidden"
-          >
-            {isNavOpen ? "Close" : "Menu"}
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+
+            <button
+              type="button"
+              onClick={toggleNav}
+              className="rounded-lg border px-3 py-2 text-sm md:hidden"
+            >
+              {isNavOpen ? t('common.close') : t('common.menu')}
+            </button>
+          </div>
 
           <nav className="hidden gap-4 text-sm md:flex">
             <NavLink to="/" className={navClass}>
-              Home
+              {t('nav.home')}
             </NavLink>
             <NavLink to="/recipes" className={navClass}>
-              Recipes
+              {t('nav.recipes')}
             </NavLink>
             <NavLink to="/persons" className={navClass}>
-              Persons
+              {t('nav.persons')}
             </NavLink>
             <NavLink to="/households" className={navClass}>
-              Households
+              {t('nav.households')}
             </NavLink>
             <NavLink to="/meal-plans" className={navClass}>
-              Meal plans
+              {t('nav.mealPlans')}
             </NavLink>
             <NavLink to="/shopping-lists" className={navClass}>
-              Shopping lists
+              {t('nav.shoppingLists')}
             </NavLink>
             <NavLink to="/expenses" className={navClass}>
-              Expenses
+              {t('nav.expenses')}
             </NavLink>
             <NavLink to="/expenses/report" className={navClass}>
-              Reports
+              {t('nav.reports')}
             </NavLink>
           </nav>
         </div>
@@ -63,28 +70,28 @@ export function AppLayout() {
           <nav className="border-t bg-white px-4 py-3 md:hidden sm:px-6">
             <div className="flex flex-col gap-2 text-sm">
               <NavLink to="/" className={navClass} onClick={() => setNavOpen(false)}>
-                Home
+                {t('nav.home')}
               </NavLink>
               <NavLink to="/recipes" className={navClass} onClick={() => setNavOpen(false)}>
-                Recipes
+                {t('nav.recipes')}
               </NavLink>
               <NavLink to="/persons" className={navClass} onClick={() => setNavOpen(false)}>
-                Persons
+                {t('nav.persons')}
               </NavLink>
               <NavLink to="/households" className={navClass} onClick={() => setNavOpen(false)}>
-                Households
+                {t('nav.households')}
               </NavLink>
               <NavLink to="/meal-plans" className={navClass} onClick={() => setNavOpen(false)}>
-                Meal plans
+                {t('nav.mealPlans')}
               </NavLink>
               <NavLink to="/shopping-lists" className={navClass} onClick={() => setNavOpen(false)}>
-                Shopping lists
+                {t('nav.shoppingLists')}
               </NavLink>
               <NavLink to="/expenses" className={navClass} onClick={() => setNavOpen(false)}>
-                Expenses
+                {t('nav.expenses')}
               </NavLink>
               <NavLink to="/expenses/report" className={navClass} onClick={() => setNavOpen(false)}>
-                Reports
+                {t('nav.reports')}
               </NavLink>
             </div>
           </nav>

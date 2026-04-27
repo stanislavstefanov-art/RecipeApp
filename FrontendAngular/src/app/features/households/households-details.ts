@@ -11,10 +11,11 @@ import {
 import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { HouseholdsClient } from '../../api/households.client';
 import { PersonsClient } from '../../api/persons.client';
-import { CONCERN_LABELS, DIETARY_LABELS } from '../persons/persons-list';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type AddMemberState =
   | { readonly kind: 'idle' }
@@ -23,7 +24,7 @@ type AddMemberState =
 
 @Component({
   selector: 'app-households-details',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './households-details.html',
   styleUrl: './households-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +33,7 @@ export class HouseholdsDetails {
   private readonly householdsClient = inject(HouseholdsClient);
   private readonly personsClient = inject(PersonsClient);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   readonly id = input.required<string>();
 
@@ -51,21 +53,11 @@ export class HouseholdsDetails {
 
   protected readonly householdErrorMessage = computed(() => {
     const err = this.household.error();
-    if (!err) {
+    if (!err || (err instanceof HttpErrorResponse && err.status === 404)) {
       return '';
     }
-    if (err instanceof HttpErrorResponse) {
-      if (err.status === 404) {
-        return '';
-      }
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return getErrorMessage(err, this.translate);
   });
-
-  protected readonly dietaryLabels = DIETARY_LABELS;
-  protected readonly concernLabels = CONCERN_LABELS;
 
   protected readonly selectedPersonId = new FormControl('', { nonNullable: true });
 
@@ -102,13 +94,6 @@ export class HouseholdsDetails {
   }
 
   private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to add member.';
+    return getErrorMessage(err, this.translate, 'Failed to add member.');
   }
 }

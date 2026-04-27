@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { GenerateFromMealPlanForm } from "../../features/shoppingLists/components/GenerateFromMealPlanForm";
 import { PurchaseShoppingListItemModal } from "../../features/shoppingLists/components/PurchaseShoppingListItemModal";
@@ -14,6 +15,7 @@ import { useToastStore } from "../../stores/toastStore";
 import { SectionHeader } from "../../components/ui/SectionHeader";
 
 export function ShoppingListDetailsPage() {
+  const { t } = useTranslation();
   const { shoppingListId = "" } = useParams();
   const { data, isLoading, isError, error } = useShoppingList(shoppingListId);
   const pendingMutation = useMarkShoppingListItemPending(shoppingListId);
@@ -22,25 +24,25 @@ export function ShoppingListDetailsPage() {
   const pushToast = useToastStore((s) => s.pushToast);
   const [mealPlanIdForRegeneration, setMealPlanIdForRegeneration] = useState("");
 
-  if (isLoading) return <LoadingState title="Loading shopping list" />;
+  if (isLoading) return <LoadingState title={t('shoppingLists.title')} />;
 
   if (isError) {
     return (
       <ErrorState
-        title="Failed to load shopping list"
-        message={error instanceof Error ? error.message : "Unknown error"}
+        title={t('shoppingLists.title')}
+        message={error instanceof Error ? error.message : undefined}
       />
     );
   }
 
-  if (!data) return <EmptyState title="Shopping list not found" />;
+  if (!data) return <EmptyState title={t('shoppingLists.noShoppingLists')} />;
 
   const onMarkPending = async (shoppingListItemId: string) => {
     try {
       await pendingMutation.mutateAsync(shoppingListItemId);
-      pushToast("success", "Item marked as pending.");
+      pushToast("success", t('shoppingLists.itemMarkedPending'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to update item."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
@@ -52,9 +54,9 @@ export function ShoppingListDetailsPage() {
         mealPlanId: mealPlanIdForRegeneration,
         shoppingListId: data.id,
       });
-      pushToast("success", "Shopping list regenerated.");
+      pushToast("success", t('shoppingLists.listRegenerated'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to regenerate shopping list."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
@@ -63,20 +65,20 @@ export function ShoppingListDetailsPage() {
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <div className="space-y-5 sm:space-y-6">
           <Link to="/shopping-lists" className="text-sm text-slate-500">
-            ← Back
+            ← {t('common.back')}
           </Link>
 
           <div className="rounded-xl border bg-white p-5 sm:p-6">
             <SectionHeader
               title={data.name}
-              description={`Items: ${data.items.length}`}
+              description={t('shoppingLists.itemCountLabel', { count: data.items.length })}
             />
           </div>
 
           {data.items.length === 0 ? (
             <EmptyState
-              title="No shopping list items"
-              message="Generate from a meal plan or add items later."
+              title={t('shoppingLists.noItems')}
+              message={t('shoppingLists.noItemsDesc')}
             />
           ) : (
             <div className="grid gap-3 sm:gap-4">
@@ -95,16 +97,16 @@ export function ShoppingListDetailsPage() {
           <GenerateFromMealPlanForm shoppingListId={data.id} />
 
           <div className="rounded-xl border bg-white p-5 sm:p-6 space-y-3">
-            <h3 className="text-base font-medium sm:text-lg">Regenerate from meal plan</h3>
+            <h3 className="text-base font-medium sm:text-lg">{t('shoppingLists.regenerateFromMealPlan')}</h3>
 
             <div>
-              <label className="text-sm font-medium">Meal plan</label>
+              <label className="text-sm font-medium">{t('mealPlans.title')}</label>
               <select
                 value={mealPlanIdForRegeneration}
                 onChange={(e) => setMealPlanIdForRegeneration(e.target.value)}
                 className="mt-1 w-full rounded-lg border px-3 py-2"
               >
-                <option value="">Select meal plan</option>
+                <option value="">{t('shoppingLists.selectMealPlan')}</option>
                 {mealPlans.map((mealPlan) => (
                   <option key={mealPlan.id} value={mealPlan.id}>
                     {mealPlan.name} ({mealPlan.householdName})
@@ -118,10 +120,10 @@ export function ShoppingListDetailsPage() {
               onClick={onRegenerate}
               disabled={!mealPlanIdForRegeneration}
               isLoading={regenerateMutation.isPending}
-              loadingText="Regenerating..."
+              loadingText={t('shoppingLists.regenerating')}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60"
             >
-              Regenerate
+              {t('shoppingLists.regenerate')}
             </LoadingButton>
           </div>
         </div>

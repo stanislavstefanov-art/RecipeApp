@@ -1,38 +1,21 @@
+import i18n from '../../i18n';
+import { getCurrentIntlLocale } from '../../i18n';
+
 export function getExpenseCategoryLabel(value: number) {
-  switch (value) {
-    case 1:
-      return "Food";
-    case 2:
-      return "Transport";
-    case 3:
-      return "Utilities";
-    case 4:
-      return "Entertainment";
-    case 5:
-      return "Health";
-    case 6:
-      return "Other";
-    default:
-      return `Category ${value}`;
-  }
+  const key = `enums.expenseCategory.${value}`;
+  const translated = i18n.t(key);
+  return translated !== key ? translated : `Category ${value}`;
 }
 
 export function getExpenseSourceTypeLabel(value: number) {
-  switch (value) {
-    case 1:
-      return "Manual";
-    case 2:
-      return "Shopping list item";
-    case 3:
-      return "Meal plan";
-    default:
-      return `Source ${value}`;
-  }
+  const key = `enums.expenseSourceType.${value}`;
+  const translated = i18n.t(key);
+  return translated !== key ? translated : `Source ${value}`;
 }
 
 export function formatCurrency(amount: number, currency: string) {
   try {
-    return new Intl.NumberFormat("en-GB", {
+    return new Intl.NumberFormat(getCurrentIntlLocale(), {
       style: "currency",
       currency,
     }).format(amount);
@@ -48,7 +31,7 @@ export function formatDate(value: string) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(getCurrentIntlLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",

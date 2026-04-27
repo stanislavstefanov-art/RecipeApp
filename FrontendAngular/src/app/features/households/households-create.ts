@@ -11,6 +11,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { HouseholdsClient } from '../../api/households.client';
 
 type SubmitState =
@@ -20,7 +22,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-households-create',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './households-create.html',
   styleUrl: './households-create.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

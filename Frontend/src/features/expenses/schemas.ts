@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
 export const expenseSchema = z.object({
   id: z.string().uuid(),
@@ -46,15 +47,16 @@ export const expenseInsightSchema = z.object({
   notes: z.string().nullable().optional(),
 });
 
-export const createExpenseSchema = z.object({
-  amount: z.coerce.number().gt(0, "Amount must be greater than 0"),
-  currency: z.string().min(1, "Currency is required").max(10),
-  expenseDate: z.string().min(1, "Expense date is required"),
-  category: z.coerce.number().int().min(1, "Category is required"),
-  description: z.string().min(1, "Description is required").max(500),
-  sourceType: z.coerce.number().int().min(1),
-  sourceReferenceId: z.string().uuid().nullable().optional(),
-});
+export const createExpenseSchema = (t: TFunction) =>
+  z.object({
+    amount: z.coerce.number().gt(0, t("validation.greaterThan", { min: 0 })),
+    currency: z.string().min(1, t("validation.required")).max(10, t("validation.maxLength", { max: 10 })),
+    expenseDate: z.string().min(1, t("validation.required")),
+    category: z.coerce.number().int().min(1, t("validation.required")),
+    description: z.string().min(1, t("validation.required")).max(500, t("validation.maxLength", { max: 500 })),
+    sourceType: z.coerce.number().int().min(1),
+    sourceReferenceId: z.string().uuid().nullable().optional(),
+  });
 
 export const monthlyExpenseQuerySchema = z.object({
   year: z.coerce.number().int().min(2000).max(3000),
@@ -65,8 +67,8 @@ export type Expense = z.infer<typeof expenseSchema>;
 export type MonthlyExpenseReport = z.infer<typeof monthlyExpenseReportSchema>;
 export type ExpenseInsight = z.infer<typeof expenseInsightSchema>;
 
-export type CreateExpenseInput = z.input<typeof createExpenseSchema>;
-export type CreateExpenseData = z.output<typeof createExpenseSchema>;
+export type CreateExpenseInput = z.input<ReturnType<typeof createExpenseSchema>>;
+export type CreateExpenseData = z.output<ReturnType<typeof createExpenseSchema>>;
 
 export type MonthlyExpenseQueryInput = z.input<typeof monthlyExpenseQuerySchema>;
 export type MonthlyExpenseQueryData = z.output<typeof monthlyExpenseQuerySchema>;

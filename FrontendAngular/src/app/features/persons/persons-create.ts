@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { PersonsClient } from '../../api/persons.client';
 
@@ -20,7 +21,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-persons-create',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './persons-create.html',
   styleUrl: './persons-create.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

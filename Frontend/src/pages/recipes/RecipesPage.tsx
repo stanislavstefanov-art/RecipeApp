@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useRecipes } from "../../features/recipes/hooks/useRecipes";
 import {
   LoadingState,
@@ -8,37 +9,38 @@ import {
 import { SectionHeader } from "../../components/ui/SectionHeader";
 
 export function RecipesPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, error } = useRecipes();
 
-  if (isLoading) return <LoadingState title="Loading recipes" />;
+  if (isLoading) return <LoadingState title={t('recipes.title')} />;
 
   if (isError)
     return (
       <ErrorState
-        title="Failed to load recipes"
-        message={error instanceof Error ? error.message : "Unknown error"}
+        title={t('recipes.title')}
+        message={error instanceof Error ? error.message : undefined}
       />
     );
 
   if (!data || data.length === 0)
     return (
       <EmptyState
-        title="No recipes yet"
-        message="Create your first recipe."
+        title={t('recipes.noRecipes')}
+        message={t('recipes.noRecipesDesc')}
       />
     );
 
   return (
     <div className="space-y-6">
       <SectionHeader
-        title="Recipes"
-        description="Browse recipes and open details."
+        title={t('recipes.title')}
+        description={t('recipes.descriptionBrowse')}
         action={
             <Link
             to="/recipes/new"
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
             >
-            New recipe
+            {t('recipes.newRecipe')}
             </Link>
         }
       />

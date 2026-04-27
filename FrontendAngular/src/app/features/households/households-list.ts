@@ -1,19 +1,22 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { HouseholdsClient } from '../../api/households.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 @Component({
   selector: 'app-households-list',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslateModule],
   templateUrl: './households-list.html',
   styleUrl: './households-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HouseholdsList {
   private readonly client = inject(HouseholdsClient);
+  private readonly translate = inject(TranslateService);
 
   protected readonly households = rxResource({
     stream: () => this.client.list(),
@@ -21,14 +24,7 @@ export class HouseholdsList {
 
   protected readonly errorMessage = computed(() => {
     const err = this.households.error();
-    if (!err) {
-      return '';
-    }
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return err ? getErrorMessage(err, this.translate) : '';
   });
 
   protected readonly isEmpty = computed(() => {

@@ -12,11 +12,13 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
 import { ShoppingListDetailsItemDto } from '../../api/shopping-lists.dto';
-import { SOURCE_TYPE_LABELS } from './shopping-lists-list';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type ItemActionState =
   | { readonly kind: 'idle' }
@@ -32,19 +34,18 @@ type GenerateState =
   selector: 'app-shopping-lists-details',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, TranslateModule],
   templateUrl: './shopping-lists-details.html',
   styleUrl: './shopping-lists-details.css',
 })
 export class ShoppingListsDetails {
-  protected readonly sourceTypeLabels = SOURCE_TYPE_LABELS;
-
   readonly id = input.required<string>();
 
   private readonly client = inject(ShoppingListsClient);
   private readonly mealPlansClient = inject(MealPlansClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   protected readonly shoppingList = rxResource({
     params: () => this.id(),
@@ -60,9 +61,10 @@ export class ShoppingListsDetails {
     return err?.status === 404;
   });
 
-  protected readonly errorMessage = computed(
-    () => (this.shoppingList.error() as Error)?.message ?? 'Unknown error',
-  );
+  protected readonly errorMessage = computed(() => {
+    const err = this.shoppingList.error();
+    return err ? getErrorMessage(err, this.translate) : '';
+  });
 
   protected readonly markPendingState = signal<ItemActionState>({ kind: 'idle' });
   protected readonly generateState = signal<GenerateState>({ kind: 'idle' });
@@ -92,11 +94,11 @@ export class ShoppingListsDetails {
           this.shoppingList.reload();
           this.toast.show('success', `"${item.name}" marked as pending`);
         },
-        error: (err: Error) => {
+        error: (err: unknown) => {
           this.markPendingState.set({
             kind: 'error',
             itemId: item.id,
-            message: err.message ?? 'Failed',
+            message: getErrorMessage(err, this.translate, 'Failed'),
           });
         },
       });
@@ -134,8 +136,8 @@ export class ShoppingListsDetails {
           this.shoppingList.reload();
           this.toast.show('success', 'Item purchased and expense recorded');
         },
-        error: (err: Error) => {
-          this.purchaseState.set({ kind: 'error', message: err.message ?? 'Failed' });
+        error: (err: unknown) => {
+          this.purchaseState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
         },
       });
   }
@@ -154,8 +156,8 @@ export class ShoppingListsDetails {
           this.shoppingList.reload();
           this.toast.show('success', 'Shopping list generated from meal plan');
         },
-        error: (err: Error) => {
-          this.generateState.set({ kind: 'error', message: err.message ?? 'Failed' });
+        error: (err: unknown) => {
+          this.generateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
         },
       });
   }
@@ -174,8 +176,8 @@ export class ShoppingListsDetails {
           this.shoppingList.reload();
           this.toast.show('success', 'Shopping list regenerated');
         },
-        error: (err: Error) => {
-          this.regenerateState.set({ kind: 'error', message: err.message ?? 'Failed' });
+        error: (err: unknown) => {
+          this.regenerateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
         },
       });
   }

@@ -2,19 +2,21 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { PersonsClient } from '../../api/persons.client';
-import { CONCERN_LABELS, DIETARY_LABELS } from './persons-list';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 @Component({
   selector: 'app-persons-details',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslateModule],
   templateUrl: './persons-details.html',
   styleUrl: './persons-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PersonsDetails {
   private readonly client = inject(PersonsClient);
+  private readonly translate = inject(TranslateService);
 
   readonly id = input.required<string>();
 
@@ -33,13 +35,6 @@ export class PersonsDetails {
     if (!err || this.is404()) {
       return '';
     }
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return getErrorMessage(err, this.translate);
   });
-
-  protected readonly dietaryLabels = DIETARY_LABELS;
-  protected readonly concernLabels = CONCERN_LABELS;
 }

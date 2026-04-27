@@ -1,29 +1,31 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { CreatePersonForm } from "../../features/persons/components/CreatePersonForm";
 import { usePersons } from "../../features/persons/hooks/usePersons";
 import { SectionHeader } from "../../components/ui/SectionHeader";
 
 export function PersonsPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, error } = usePersons();
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
       <div className="space-y-6">
         <SectionHeader
-          title="Persons"
-          description="Define household members, dietary preferences, and health concerns."
+          title={t('persons.title')}
+          description={t('persons.dietaryPreferencesPlaceholder')}
         />
 
         {isLoading ? (
-          <LoadingState title="Loading persons" />
+          <LoadingState title={t('persons.title')} />
         ) : isError ? (
           <ErrorState
-            title="Failed to load persons"
-            message={error instanceof Error ? error.message : "Unknown error"}
+            title={t('persons.title')}
+            message={error instanceof Error ? error.message : undefined}
           />
         ) : !data || data.length === 0 ? (
-          <EmptyState title="No persons yet" message="Create your first person profile." />
+          <EmptyState title={t('persons.noPersons')} />
         ) : (
           <div className="grid gap-4">
             {data.map((person) => (
@@ -34,7 +36,10 @@ export function PersonsPage() {
               >
                 <h3 className="font-medium">{person.name}</h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  Dietary: {person.dietaryPreferences.length} · Health: {person.healthConcerns.length}
+                  {t('persons.dietaryHealthCount', {
+                    dietary: person.dietaryPreferences.length,
+                    health: person.healthConcerns.length,
+                  })}
                 </p>
               </Link>
             ))}

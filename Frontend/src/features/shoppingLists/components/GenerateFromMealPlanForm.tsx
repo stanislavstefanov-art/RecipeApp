@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { useMealPlans } from "../../mealPlans/hooks/useMealPlans";
 import {
   generateShoppingListFromMealPlanSchema,
@@ -14,12 +16,14 @@ type Props = {
 };
 
 export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
+  const { t } = useTranslation();
   const { data: mealPlans = [] } = useMealPlans();
   const mutation = useGenerateShoppingListFromMealPlan();
   const pushToast = useToastStore((s) => s.pushToast);
 
+  const schema = useMemo(() => generateShoppingListFromMealPlanSchema(t), [t]);
   const form = useForm<GenerateShoppingListFromMealPlanInput>({
-    resolver: zodResolver(generateShoppingListFromMealPlanSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       mealPlanId: "",
       shoppingListId,
@@ -29,23 +33,23 @@ export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
   const onSubmit = async (values: GenerateShoppingListFromMealPlanInput) => {
     try {
       await mutation.mutateAsync(values);
-      pushToast("success", "Shopping list generated from meal plan.");
+      pushToast("success", t('shoppingLists.generate'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to generate shopping list."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 rounded-xl border bg-white p-6">
-      <h3 className="text-lg font-medium">Generate from meal plan</h3>
+      <h3 className="text-lg font-medium">{t('shoppingLists.generate')}</h3>
 
       <div>
-        <label className="text-sm font-medium">Meal plan</label>
+        <label className="text-sm font-medium">{t('mealPlans.title')}</label>
         <select
           {...form.register("mealPlanId")}
           className="mt-1 w-full rounded-lg border px-3 py-2"
         >
-          <option value="">Select meal plan</option>
+          <option value="">{t('shoppingLists.selectMealPlan')}</option>
           {mealPlans.map((mealPlan) => (
             <option key={mealPlan.id} value={mealPlan.id}>
               {mealPlan.name} ({mealPlan.householdName})
@@ -60,7 +64,7 @@ export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
       </div>
 
       {mutation.isError ? (
-        <p className="text-sm text-red-600">Failed to generate shopping list.</p>
+        <p className="text-sm text-red-600">{t('common.error')}</p>
       ) : null}
 
       <button
@@ -68,7 +72,7 @@ export function GenerateFromMealPlanForm({ shoppingListId }: Props) {
         disabled={mutation.isPending}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
       >
-        {mutation.isPending ? "Generating..." : "Generate"}
+        {mutation.isPending ? t('common.generate') + '…' : t('common.generate')}
       </button>
     </form>
   );

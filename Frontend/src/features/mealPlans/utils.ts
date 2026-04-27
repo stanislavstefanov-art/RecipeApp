@@ -1,27 +1,16 @@
+import i18n from '../../i18n';
+import { getCurrentIntlLocale } from '../../i18n';
+
 export function getMealTypeLabel(value: number) {
-  switch (value) {
-    case 1:
-      return "Breakfast";
-    case 2:
-      return "Lunch";
-    case 3:
-      return "Dinner";
-    default:
-      return `Meal type ${value}`;
-  }
+  const key = `enums.mealType.${value}`;
+  const translated = i18n.t(key);
+  return translated !== key ? translated : `Meal type ${value}`;
 }
 
 export function getMealScopeLabel(value: number) {
-  switch (value) {
-    case 1:
-      return "Shared";
-    case 2:
-      return "Shared with variations";
-    case 3:
-      return "Individual";
-    default:
-      return `Scope ${value}`;
-  }
+  const key = `enums.mealScope.${value}`;
+  const translated = i18n.t(key);
+  return translated !== key ? translated : `Scope ${value}`;
 }
 
 export function formatPlannedDate(value: string) {
@@ -31,7 +20,7 @@ export function formatPlannedDate(value: string) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(getCurrentIntlLocale(), {
     weekday: "long",
     day: "numeric",
     month: "short",

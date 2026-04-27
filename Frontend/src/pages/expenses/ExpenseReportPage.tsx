@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { ExpenseInsightsPanel } from "../../features/expenses/components/ExpenseInsightsPanel";
 import { ExpenseReportQueryForm } from "../../features/expenses/components/ExpenseReportQueryForm";
@@ -8,6 +9,7 @@ import { useMonthlyExpenseReport } from "../../features/expenses/hooks/useMonthl
 import type { MonthlyExpenseQueryData } from "../../features/expenses/schemas";
 
 export function ExpenseReportPage() {
+  const { t } = useTranslation();
   const now = new Date();
 
   const [query, setQuery] = useState<MonthlyExpenseQueryData>({
@@ -21,32 +23,32 @@ export function ExpenseReportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Monthly expense report</h2>
+        <h2 className="text-2xl font-semibold">{t('expenses.monthly')}</h2>
         <p className="text-sm text-slate-500">
-          Review monthly totals, category breakdowns, and AI-generated insights.
+          {t('expenses.monthlyDesc')}
         </p>
       </div>
 
       <ExpenseReportQueryForm initialValues={query} onSubmit={setQuery} />
 
       {reportQuery.isLoading ? (
-        <LoadingState title="Loading expense report" />
+        <LoadingState title={t('expenses.report')} />
       ) : reportQuery.isError ? (
         <ErrorState
-          title="Failed to load expense report"
-          message={reportQuery.error instanceof Error ? reportQuery.error.message : "Unknown error"}
+          title={t('expenses.report')}
+          message={reportQuery.error instanceof Error ? reportQuery.error.message : undefined}
         />
       ) : !reportQuery.data ? (
-        <EmptyState title="No report data" />
+        <EmptyState title={t('expenses.noExpenses')} />
       ) : (
         <>
           <ExpenseReportSummary report={reportQuery.data} />
 
           <div className="rounded-xl border bg-white p-6">
-            <h3 className="text-lg font-medium">Category breakdown</h3>
+            <h3 className="text-lg font-medium">{t('expenses.byCategory')}</h3>
 
             {reportQuery.data.categories.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-500">No categories found.</p>
+              <p className="mt-4 text-sm text-slate-500">{t('expenses.noCategories')}</p>
             ) : (
               <div className="mt-4 grid gap-3">
                 {reportQuery.data.categories.map((category) => (
@@ -70,11 +72,11 @@ export function ExpenseReportPage() {
       )}
 
       {insightsQuery.isLoading ? (
-        <LoadingState title="Loading insights" />
+        <LoadingState title={t('expenses.insights')} />
       ) : insightsQuery.isError ? (
         <ErrorState
-          title="Failed to load insights"
-          message={insightsQuery.error instanceof Error ? insightsQuery.error.message : "Unknown error"}
+          title={t('expenses.insights')}
+          message={insightsQuery.error instanceof Error ? insightsQuery.error.message : undefined}
         />
       ) : insightsQuery.data ? (
         <ExpenseInsightsPanel insight={insightsQuery.data} />

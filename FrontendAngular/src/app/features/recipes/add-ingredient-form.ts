@@ -19,6 +19,8 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { RecipesClient } from '../../api/recipes.client';
 
 type SubmitState =
@@ -38,7 +40,7 @@ const INITIAL_VALUES = { name: '', quantity: 1, unit: '' };
 
 @Component({
   selector: 'app-add-ingredient-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './add-ingredient-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

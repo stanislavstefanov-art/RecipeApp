@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useHouseholds } from "../../households/hooks/useHouseholds";
 import {
   suggestMealPlanInputSchema,
@@ -13,21 +15,19 @@ import { LoadingButton } from "../../../components/ui/LoadingButton";
 import { getErrorMessage } from "../../../lib/getErrorMessage";
 import { useToastStore } from "../../../stores/toastStore";
 
-const mealTypeOptions = [
-  { value: 1, label: "Breakfast" },
-  { value: 2, label: "Lunch" },
-  { value: 3, label: "Dinner" },
-];
+const MEAL_TYPE_VALUES = [1, 2, 3];
 
 export function SuggestMealPlanForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: households = [] } = useHouseholds();
   const mutation = useSuggestMealPlan();
   const setSuggestion = useMealPlanSuggestionStore((s) => s.setSuggestion);
   const pushToast = useToastStore((s) => s.pushToast);
 
+  const schema = useMemo(() => suggestMealPlanInputSchema(t), [t]);
   const form = useForm<SuggestMealPlanInput, unknown, SuggestMealPlanData>({
-    resolver: zodResolver(suggestMealPlanInputSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       householdId: "",
@@ -41,10 +41,10 @@ export function SuggestMealPlanForm() {
     try {
       const suggestion = await mutation.mutateAsync(values);
       setSuggestion(values, suggestion);
-      pushToast("success", "Meal plan suggestion generated.");
+      pushToast("success", t('mealPlans.suggest'));
       navigate("/meal-plans/suggest/review");
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to generate meal plan suggestion."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
@@ -54,7 +54,7 @@ export function SuggestMealPlanForm() {
       className="space-y-4 rounded-xl border bg-white p-6"
     >
       <div>
-        <label className="text-sm font-medium">Plan name</label>
+        <label className="text-sm font-medium">{t('mealPlans.planName')}</label>
         <input
           {...form.register("name")}
           className="mt-1 w-full rounded-lg border px-3 py-2"
@@ -67,12 +67,12 @@ export function SuggestMealPlanForm() {
       </div>
 
       <div>
-        <label className="text-sm font-medium">Household</label>
+        <label className="text-sm font-medium">{t('mealPlans.householdId')}</label>
         <select
           {...form.register("householdId")}
           className="mt-1 w-full rounded-lg border px-3 py-2"
         >
-          <option value="">Select household</option>
+          <option value="">{t('mealPlans.selectHousehold')}</option>
           {households.map((household) => (
             <option key={household.id} value={household.id}>
               {household.name}
@@ -88,7 +88,7 @@ export function SuggestMealPlanForm() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="text-sm font-medium">Start date</label>
+          <label className="text-sm font-medium">{t('mealPlans.startDate')}</label>
           <input
             type="date"
             {...form.register("startDate")}
@@ -102,7 +102,7 @@ export function SuggestMealPlanForm() {
         </div>
 
         <div>
-          <label className="text-sm font-medium">Number of days</label>
+          <label className="text-sm font-medium">{t('mealPlans.numberOfDays')}</label>
           <input
             type="number"
             {...form.register("numberOfDays")}
@@ -117,16 +117,16 @@ export function SuggestMealPlanForm() {
       </div>
 
       <div>
-        <label className="text-sm font-medium">Meal types</label>
+        <label className="text-sm font-medium">{t('mealPlans.mealTypesLabel')}</label>
         <div className="mt-2 grid gap-2">
-          {mealTypeOptions.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm">
+          {MEAL_TYPE_VALUES.map((value) => (
+            <label key={value} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                value={option.value}
+                value={value}
                 {...form.register("mealTypes")}
               />
-              {option.label}
+              {t('enums.mealType.' + value)}
             </label>
           ))}
         </div>
@@ -139,17 +139,17 @@ export function SuggestMealPlanForm() {
 
       {mutation.isError ? (
         <p className="text-sm text-red-600">
-          Failed to generate meal plan suggestion.
+          {t('common.error')}
         </p>
       ) : null}
 
       <LoadingButton
         type="submit"
         isLoading={mutation.isPending}
-        loadingText="Generating..."
+        loadingText={t('mealPlans.generatingPlan')}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
       >
-        Suggest meal plan
+        {t('mealPlans.suggest')}
       </LoadingButton>
     </form>
   );

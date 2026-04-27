@@ -1,29 +1,31 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { CreateHouseholdForm } from "../../features/households/components/CreateHouseholdForm";
 import { useHouseholds } from "../../features/households/hooks/useHouseholds";
 import { SectionHeader } from "../../components/ui/SectionHeader";
 
 export function HouseholdsPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, error } = useHouseholds();
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
       <div className="space-y-6">
         <SectionHeader
-          title="Households"
-          description="Create households and group persons for meal planning."
+          title={t('households.title')}
+          description={t('households.planningContext')}
         />
 
         {isLoading ? (
-          <LoadingState title="Loading households" />
+          <LoadingState title={t('households.title')} />
         ) : isError ? (
           <ErrorState
-            title="Failed to load households"
-            message={error instanceof Error ? error.message : "Unknown error"}
+            title={t('households.title')}
+            message={error instanceof Error ? error.message : undefined}
           />
         ) : !data || data.length === 0 ? (
-          <EmptyState title="No households yet" message="Create your first household." />
+          <EmptyState title={t('households.noHouseholds')} />
         ) : (
           <div className="grid gap-4">
             {data.map((household) => (
@@ -34,7 +36,7 @@ export function HouseholdsPage() {
               >
                 <h3 className="font-medium">{household.name}</h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  Members: {household.memberCount}
+                  {t('households.memberCountLabel', { count: household.memberCount })}
                 </p>
               </Link>
             ))}

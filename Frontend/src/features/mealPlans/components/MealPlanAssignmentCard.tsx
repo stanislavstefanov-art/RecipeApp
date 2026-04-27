@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { MealPlanAssignment } from "../schemas";
 import { useMealPlanUiStore } from "../store/useMealPlanUiStore";
 
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export function MealPlanAssignmentCard({ mealPlanEntryId, assignment }: Props) {
+  const { t } = useTranslation();
   const openEditAssignment = useMealPlanUiStore((s) => s.openEditAssignment);
 
   return (
@@ -15,17 +17,17 @@ export function MealPlanAssignmentCard({ mealPlanEntryId, assignment }: Props) {
         <div>
           <h5 className="font-medium">{assignment.personName}</h5>
           <p className="mt-1 text-sm text-slate-600">
-            Recipe: {assignment.assignedRecipeName}
+            {t('mealPlans.recipe')}: {assignment.assignedRecipeName}
           </p>
 
           {assignment.recipeVariationName ? (
             <p className="mt-1 text-sm text-slate-600">
-              Variation: {assignment.recipeVariationName}
+              {t('mealPlans.variation')}: {assignment.recipeVariationName}
             </p>
           ) : null}
 
           <p className="mt-1 text-sm text-slate-600">
-            Portion: {assignment.portionMultiplier}
+            {t('mealPlans.portions')}: {assignment.portionMultiplier}
           </p>
 
           {assignment.notes ? (
@@ -38,7 +40,7 @@ export function MealPlanAssignmentCard({ mealPlanEntryId, assignment }: Props) {
           onClick={() => openEditAssignment(mealPlanEntryId, assignment)}
           className="rounded-lg border px-3 py-2 text-sm text-slate-700 hover:bg-white"
         >
-          Edit
+          {t('common.edit')}
         </button>
       </div>
     </div>

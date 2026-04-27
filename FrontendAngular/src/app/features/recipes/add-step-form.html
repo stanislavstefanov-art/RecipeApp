@@ -9,7 +9,7 @@
   }
 
   <div>
-    <label for="step-instruction" class="block text-sm font-medium">Instruction</label>
+    <label for="step-instruction" class="block text-sm font-medium">{{ 'recipes.instruction' | translate }}</label>
     <textarea
       id="step-instruction"
       formControlName="instruction"
@@ -18,11 +18,9 @@
     ></textarea>
     @if (form.controls.instruction.touched && form.controls.instruction.errors; as errors) {
       @if (errors['required']) {
-        <p class="mt-1 text-sm text-red-600">Instruction is required.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
       } @else if (errors['maxlength']) {
-        <p class="mt-1 text-sm text-red-600">
-          Instruction must be 1000 characters or fewer.
-        </p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 1000} }}</p>
       }
     }
   </div>
@@ -32,6 +30,6 @@
     [disabled]="isSubmitting()"
     class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
   >
-    {{ isSubmitting() ? 'Adding…' : 'Add step' }}
+    {{ isSubmitting() ? ('recipes.adding' | translate) : ('recipes.addStep' | translate) }}
   </button>
 </form>

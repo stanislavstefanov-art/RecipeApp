@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import {
   createPersonSchema,
   type CreatePersonInput,
@@ -10,25 +12,17 @@ import { LoadingButton } from "../../../components/ui/LoadingButton";
 import { getErrorMessage } from "../../../lib/getErrorMessage";
 import { useToastStore } from "../../../stores/toastStore";
 
-const dietaryOptions = [
-  { value: 1, label: "Vegetarian" },
-  { value: 2, label: "Pescatarian" },
-  { value: 3, label: "Vegan" },
-  { value: 4, label: "High protein" },
-];
-
-const healthOptions = [
-  { value: 1, label: "Diabetes" },
-  { value: 2, label: "High blood pressure" },
-  { value: 3, label: "Gluten intolerance" },
-];
+const DIETARY_VALUES = [1, 2, 3, 4];
+const HEALTH_VALUES = [1, 2, 3];
 
 export function CreatePersonForm() {
+  const { t } = useTranslation();
   const mutation = useCreatePerson();
   const pushToast = useToastStore((s) => s.pushToast);
 
+  const schema = useMemo(() => createPersonSchema(t), [t]);
   const form = useForm<CreatePersonInput, unknown, CreatePersonData>({
-    resolver: zodResolver(createPersonSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       dietaryPreferences: [],
@@ -46,70 +40,74 @@ export function CreatePersonForm() {
         healthConcerns: [],
         notes: "",
       });
-      pushToast("success", "Person created.");
+      pushToast("success", t('persons.createPerson'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to create person."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 rounded-xl border bg-white p-6">
       <div>
-        <label className="text-sm font-medium">Name</label>
-        <input {...form.register("name")} className="mt-1 w-full rounded-lg border px-3 py-2" />
+        <label className="text-sm font-medium">{t('persons.name')}</label>
+        <input
+          {...form.register("name")}
+          placeholder={t('persons.namePlaceholder')}
+          className="mt-1 w-full rounded-lg border px-3 py-2"
+        />
         {form.formState.errors.name ? (
           <p className="mt-1 text-sm text-red-600">{form.formState.errors.name.message}</p>
         ) : null}
       </div>
 
       <div>
-        <label className="text-sm font-medium">Dietary preferences</label>
+        <label className="text-sm font-medium">{t('persons.dietaryPreferences')}</label>
         <div className="mt-2 grid gap-2">
-          {dietaryOptions.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm">
+          {DIETARY_VALUES.map((value) => (
+            <label key={value} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                value={option.value}
+                value={value}
                 {...form.register("dietaryPreferences")}
               />
-              {option.label}
+              {t('enums.dietaryPreference.' + value)}
             </label>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium">Health concerns</label>
+        <label className="text-sm font-medium">{t('persons.healthConcerns')}</label>
         <div className="mt-2 grid gap-2">
-          {healthOptions.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-sm">
+          {HEALTH_VALUES.map((value) => (
+            <label key={value} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                value={option.value}
+                value={value}
                 {...form.register("healthConcerns")}
               />
-              {option.label}
+              {t('enums.healthConcern.' + value)}
             </label>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium">Notes</label>
+        <label className="text-sm font-medium">{t('persons.notes')}</label>
         <textarea {...form.register("notes")} rows={3} className="mt-1 w-full rounded-lg border px-3 py-2" />
       </div>
 
       {mutation.isError ? (
-        <p className="text-sm text-red-600">Failed to create person.</p>
+        <p className="text-sm text-red-600">{t('common.error')}</p>
       ) : null}
 
       <LoadingButton
         type="submit"
         isLoading={mutation.isPending}
-        loadingText="Creating..."
+        loadingText={t('common.create') + '…'}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
       >
-        Create person
+        {t('persons.createPerson')}
       </LoadingButton>
     </form>
   );

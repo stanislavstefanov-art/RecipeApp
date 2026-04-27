@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
 export const mealPlanAssignmentSchema = z.object({
   personId: z.string().uuid(),
@@ -37,21 +38,23 @@ export const mealPlanListItemSchema = z.object({
   entryCount: z.number(),
 });
 
-export const updateMealPlanAssignmentSchema = z.object({
-  personId: z.string().uuid(),
-  assignedRecipeId: z.string().uuid(),
-  recipeVariationId: z.string().uuid().nullable(),
-  portionMultiplier: z.coerce.number().gt(0, "Portion must be greater than 0"),
-  notes: z.string().max(1000).nullable().optional(),
-});
+export const updateMealPlanAssignmentSchema = (t: TFunction) =>
+  z.object({
+    personId: z.string().uuid(),
+    assignedRecipeId: z.string().uuid(),
+    recipeVariationId: z.string().uuid().nullable(),
+    portionMultiplier: z.coerce.number().gt(0, t("validation.greaterThan", { min: 0 })),
+    notes: z.string().max(1000, t("validation.maxLength", { max: 1000 })).nullable().optional(),
+  });
 
-export const suggestMealPlanInputSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200),
-  householdId: z.string().uuid("Household is required"),
-  startDate: z.string().min(1, "Start date is required"),
-  numberOfDays: z.coerce.number().int().min(1).max(31),
-  mealTypes: z.array(z.coerce.number()).min(1, "Select at least one meal type"),
-});
+export const suggestMealPlanInputSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t("validation.required")).max(200, t("validation.maxLength", { max: 200 })),
+    householdId: z.string().uuid(t("validation.required")),
+    startDate: z.string().min(1, t("validation.required")),
+    numberOfDays: z.coerce.number().int().min(1).max(31),
+    mealTypes: z.array(z.coerce.number()).min(1, t("mealPlans.noMealTypeError")),
+  });
 
 export const suggestMealPlanAssignmentSchema = z.object({
   personId: z.string().uuid(),
@@ -109,11 +112,11 @@ export type MealPlanEntry = z.infer<typeof mealPlanEntrySchema>;
 export type MealPlanDetails = z.infer<typeof mealPlanDetailsSchema>;
 export type MealPlanListItem = z.infer<typeof mealPlanListItemSchema>;
 
-export type UpdateMealPlanAssignmentInput = z.input<typeof updateMealPlanAssignmentSchema>;
-export type UpdateMealPlanAssignmentData = z.output<typeof updateMealPlanAssignmentSchema>;
+export type UpdateMealPlanAssignmentInput = z.input<ReturnType<typeof updateMealPlanAssignmentSchema>>;
+export type UpdateMealPlanAssignmentData = z.output<ReturnType<typeof updateMealPlanAssignmentSchema>>;
 
-export type SuggestMealPlanInput = z.input<typeof suggestMealPlanInputSchema>;
-export type SuggestMealPlanData = z.output<typeof suggestMealPlanInputSchema>;
+export type SuggestMealPlanInput = z.input<ReturnType<typeof suggestMealPlanInputSchema>>;
+export type SuggestMealPlanData = z.output<ReturnType<typeof suggestMealPlanInputSchema>>;
 
 export type MealPlanSuggestion = z.infer<typeof mealPlanSuggestionSchema>;
 export type AcceptMealPlanSuggestionInput = z.infer<typeof acceptMealPlanSuggestionInputSchema>;

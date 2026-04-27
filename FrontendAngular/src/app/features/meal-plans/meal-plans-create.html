@@ -1,10 +1,10 @@
 <section class="mx-auto max-w-xl p-6">
   <a routerLink="/meal-plans" class="text-sm text-gray-500 hover:text-gray-800">
-    &larr; Back to meal plans
+    &larr; {{ 'mealPlans.title' | translate }}
   </a>
 
   <header class="mt-6 mb-6">
-    <h1 class="text-2xl font-semibold">New meal plan</h1>
+    <h1 class="text-2xl font-semibold">{{ 'mealPlans.newMealPlan' | translate }}</h1>
   </header>
 
   <form
@@ -20,7 +20,7 @@
     }
 
     <div>
-      <label for="name" class="block text-sm font-medium">Name</label>
+      <label for="name" class="block text-sm font-medium">{{ 'mealPlans.planName' | translate }}</label>
       <input
         id="name"
         type="text"
@@ -29,15 +29,15 @@
       />
       @if (form.controls.name.touched && form.controls.name.errors; as errors) {
         @if (errors['required']) {
-          <p class="mt-1 text-sm text-red-600">Name is required.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
         } @else if (errors['maxlength']) {
-          <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 200} }}</p>
         }
       }
     </div>
 
     <div>
-      <label for="household" class="block text-sm font-medium">Household</label>
+      <label for="household" class="block text-sm font-medium">{{ 'mealPlans.householdId' | translate }}</label>
       <select
         id="household"
         formControlName="householdId"
@@ -46,9 +46,9 @@
       >
         <option value="">
           @if (households.isLoading()) {
-            Loading households…
+            {{ 'mealPlans.loadingHouseholds' | translate }}
           } @else {
-            Select a household…
+            {{ 'mealPlans.selectHouseholdPlaceholder' | translate }}
           }
         </option>
         @for (household of households.value() ?? []; track household.id) {
@@ -56,7 +56,7 @@
         }
       </select>
       @if (form.controls.householdId.touched && form.controls.householdId.hasError('required')) {
-        <p class="mt-1 text-sm text-red-600">Household is required.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
       }
     </div>
 
@@ -65,7 +65,7 @@
       [disabled]="isSubmitting()"
       class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
     >
-      {{ isSubmitting() ? 'Creating…' : 'Create' }}
+      {{ isSubmitting() ? ('mealPlans.creating' | translate) : ('common.create' | translate) }}
     </button>
   </form>
 </section>

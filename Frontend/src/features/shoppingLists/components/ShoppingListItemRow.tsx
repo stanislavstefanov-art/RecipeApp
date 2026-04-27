@@ -1,25 +1,21 @@
+import { useTranslation } from "react-i18next";
 import type { ShoppingListItem } from "../schemas";
 import { useShoppingListUiStore } from "../store/useShoppingListUiStore";
+import i18n from "../../../i18n";
+
+function getSourceTypeLabel(sourceType: number) {
+  const key = `enums.expenseSourceType.${sourceType}`;
+  const translated = i18n.t(key);
+  return translated !== key ? translated : `Source ${sourceType}`;
+}
 
 type Props = {
   item: ShoppingListItem;
   onMarkPending: (shoppingListItemId: string) => void;
 };
 
-function getSourceTypeLabel(sourceType: number) {
-  switch (sourceType) {
-    case 1:
-      return "Manual";
-    case 2:
-      return "Recipe";
-    case 3:
-      return "Meal plan";
-    default:
-      return `Source ${sourceType}`;
-  }
-}
-
 export function ShoppingListItemRow({ item, onMarkPending }: Props) {
+  const { t } = useTranslation();
   const openPurchaseModal = useShoppingListUiStore((s) => s.openPurchaseModal);
 
   return (
@@ -35,7 +31,7 @@ export function ShoppingListItemRow({ item, onMarkPending }: Props) {
           </p>
 
           <p className="mt-1 text-sm text-slate-500">
-            Source: {getSourceTypeLabel(item.sourceType)}
+            {t('shoppingLists.source')}: {getSourceTypeLabel(item.sourceType)}
           </p>
 
           {item.notes ? (
@@ -50,7 +46,7 @@ export function ShoppingListItemRow({ item, onMarkPending }: Props) {
               onClick={() => onMarkPending(item.id)}
               className="w-full rounded-lg border px-3 py-2 text-sm md:w-auto"
             >
-              Mark pending
+              {t('shoppingLists.markPending')}
             </button>
           ) : (
             <button
@@ -58,7 +54,7 @@ export function ShoppingListItemRow({ item, onMarkPending }: Props) {
               onClick={() => openPurchaseModal(item)}
               className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white md:w-auto"
             >
-              Purchase
+              {t('shoppingLists.markPurchased')}
             </button>
           )}
         </div>

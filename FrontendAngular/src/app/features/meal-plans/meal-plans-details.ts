@@ -14,32 +14,22 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { MealPlanEntryAssignmentDto } from '../../api/meal-plans.dto';
 import { RecipesClient } from '../../api/recipes.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type EditSubmitState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'busy' }
   | { readonly kind: 'error'; readonly message: string };
 
-export const MEAL_TYPE_LABELS: Readonly<Record<number, string>> = {
-  1: 'Breakfast',
-  2: 'Lunch',
-  3: 'Dinner',
-  4: 'Snack',
-};
-
-export const MEAL_SCOPE_LABELS: Readonly<Record<number, string>> = {
-  1: 'Shared',
-  2: 'Shared with variations',
-  3: 'Individual',
-};
-
 @Component({
   selector: 'app-meal-plans-details',
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, TranslateModule],
   templateUrl: './meal-plans-details.html',
   styleUrl: './meal-plans-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +39,7 @@ export class MealPlansDetails {
   private readonly recipesClient = inject(RecipesClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   readonly id = input.required<string>();
 
@@ -78,15 +69,8 @@ export class MealPlansDetails {
     if (!err || this.is404()) {
       return '';
     }
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return getErrorMessage(err, this.translate);
   });
-
-  protected readonly mealTypeLabels = MEAL_TYPE_LABELS;
-  protected readonly mealScopeLabels = MEAL_SCOPE_LABELS;
 
   protected readonly editingAssignment = signal<{
     readonly mealPlanEntryId: string;
@@ -158,8 +142,8 @@ export class MealPlansDetails {
           this.mealPlan.reload();
           this.toast.show('success', `Assignment updated for ${ea.assignment.personName}`);
         },
-        error: (err: Error) => {
-          this.editSubmitState.set({ kind: 'error', message: err.message ?? 'Failed to update' });
+        error: (err: unknown) => {
+          this.editSubmitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to update') });
         },
       });
   }

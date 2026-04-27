@@ -11,6 +11,8 @@ import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { HouseholdsClient } from '../../api/households.client';
 import { MealPlansClient } from '../../api/meal-plans.client';
 
@@ -21,7 +23,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-meal-plans-create',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './meal-plans-create.html',
   styleUrl: './meal-plans-create.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

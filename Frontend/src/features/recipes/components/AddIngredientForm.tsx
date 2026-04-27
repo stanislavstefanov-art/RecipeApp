@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import {
   addIngredientSchema,
   type AddIngredientInput,
@@ -15,11 +17,13 @@ type Props = {
 };
 
 export function AddIngredientForm({ recipeId }: Props) {
+  const { t } = useTranslation();
   const mutation = useAddIngredient(recipeId);
   const pushToast = useToastStore((s) => s.pushToast);
 
+  const schema = useMemo(() => addIngredientSchema(t), [t]);
   const form = useForm<AddIngredientInput, unknown, AddIngredientData>({
-    resolver: zodResolver(addIngredientSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       quantity: 1,
@@ -31,16 +35,16 @@ export function AddIngredientForm({ recipeId }: Props) {
     try {
       await mutation.mutateAsync(values);
       form.reset({ name: "", quantity: 1, unit: "" });
-      pushToast("success", "Ingredient added.");
+      pushToast("success", t('recipes.addIngredient'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to add ingredient."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
       <div>
-        <label className="text-sm font-medium">Ingredient name</label>
+        <label className="text-sm font-medium">{t('recipes.ingredientName')}</label>
         <input {...form.register("name")} className="mt-1 w-full rounded-lg border px-3 py-2" />
         {form.formState.errors.name ? (
           <p className="mt-1 text-sm text-red-600">{form.formState.errors.name.message}</p>
@@ -49,7 +53,7 @@ export function AddIngredientForm({ recipeId }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-sm font-medium">Quantity</label>
+          <label className="text-sm font-medium">{t('recipes.quantity')}</label>
           <input
             type="number"
             step="0.01"
@@ -62,7 +66,7 @@ export function AddIngredientForm({ recipeId }: Props) {
         </div>
 
         <div>
-          <label className="text-sm font-medium">Unit</label>
+          <label className="text-sm font-medium">{t('recipes.unit')}</label>
           <input {...form.register("unit")} className="mt-1 w-full rounded-lg border px-3 py-2" />
           {form.formState.errors.unit ? (
             <p className="mt-1 text-sm text-red-600">{form.formState.errors.unit.message}</p>
@@ -71,16 +75,16 @@ export function AddIngredientForm({ recipeId }: Props) {
       </div>
 
       {mutation.isError ? (
-        <p className="text-sm text-red-600">Failed to add ingredient.</p>
+        <p className="text-sm text-red-600">{t('common.error')}</p>
       ) : null}
 
       <LoadingButton
         type="submit"
         isLoading={mutation.isPending}
-        loadingText="Adding..."
+        loadingText={t('recipes.adding')}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
       >
-        Add ingredient
+        {t('recipes.addIngredient')}
       </LoadingButton>
     </form>
   );

@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 
@@ -20,7 +21,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-recipes-create',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './recipes-create.html',
   styleUrl: './recipes-create.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

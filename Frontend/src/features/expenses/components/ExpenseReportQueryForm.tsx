@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   monthlyExpenseQuerySchema,
   type MonthlyExpenseQueryInput,
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function ExpenseReportQueryForm({ initialValues, onSubmit }: Props) {
+  const { t } = useTranslation();
   const form = useForm<MonthlyExpenseQueryInput, unknown, MonthlyExpenseQueryData>({
     resolver: zodResolver(monthlyExpenseQuerySchema),
     values: initialValues,
@@ -21,7 +23,7 @@ export function ExpenseReportQueryForm({ initialValues, onSubmit }: Props) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 rounded-xl border bg-white p-6 md:grid-cols-[1fr_1fr_auto]">
       <div>
-        <label className="text-sm font-medium">Year</label>
+        <label className="text-sm font-medium">{t('expenses.year')}</label>
         <input
           type="number"
           {...form.register("year")}
@@ -33,7 +35,7 @@ export function ExpenseReportQueryForm({ initialValues, onSubmit }: Props) {
       </div>
 
       <div>
-        <label className="text-sm font-medium">Month</label>
+        <label className="text-sm font-medium">{t('expenses.month')}</label>
         <input
           type="number"
           {...form.register("month")}
@@ -49,7 +51,7 @@ export function ExpenseReportQueryForm({ initialValues, onSubmit }: Props) {
           type="submit"
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
         >
-          Load report
+          {t('expenses.loadReport')}
         </LoadingButton>
       </div>
     </form>

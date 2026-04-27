@@ -10,6 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { ImportedRecipeDto } from '../../api/recipes.dto';
@@ -22,7 +23,7 @@ type ImportState =
 
 @Component({
   selector: 'app-recipes-import',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './recipes-import.html',
   styleUrl: './recipes-import.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

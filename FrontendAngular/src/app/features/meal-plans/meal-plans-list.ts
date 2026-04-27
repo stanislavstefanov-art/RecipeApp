@@ -1,19 +1,22 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { MealPlansClient } from '../../api/meal-plans.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 @Component({
   selector: 'app-meal-plans-list',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslateModule],
   templateUrl: './meal-plans-list.html',
   styleUrl: './meal-plans-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlansList {
   private readonly client = inject(MealPlansClient);
+  private readonly translate = inject(TranslateService);
 
   protected readonly mealPlans = rxResource({
     stream: () => this.client.list(),
@@ -21,14 +24,7 @@ export class MealPlansList {
 
   protected readonly errorMessage = computed(() => {
     const err = this.mealPlans.error();
-    if (!err) {
-      return '';
-    }
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return err ? getErrorMessage(err, this.translate) : '';
   });
 
   protected readonly isEmpty = computed(() => {

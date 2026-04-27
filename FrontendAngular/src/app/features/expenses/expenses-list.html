@@ -1,20 +1,20 @@
 <section class="mx-auto max-w-3xl p-6">
   <header class="mb-6 flex items-center justify-between">
-    <h1 class="text-2xl font-semibold">Expenses</h1>
+    <h1 class="text-2xl font-semibold">{{ 'expenses.title' | translate }}</h1>
     <a
       routerLink="/expenses/report"
       class="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
     >
-      Monthly report
+      {{ 'expenses.monthlyReport' | translate }}
     </a>
   </header>
 
   <div class="mb-6 rounded-xl border border-gray-200 bg-white p-5">
-    <h2 class="mb-4 text-base font-semibold">Add expense</h2>
+    <h2 class="mb-4 text-base font-semibold">{{ 'expenses.addExpenseTitle' | translate }}</h2>
     <form (ngSubmit)="onSubmit()" class="space-y-3">
       <div class="flex gap-3">
         <div class="flex-1">
-          <label for="expense-amount" class="mb-1 block text-sm font-medium text-gray-700">Amount</label>
+          <label for="expense-amount" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.amount' | translate }}</label>
           <input
             id="expense-amount"
             [formControl]="createForm.controls.amount"
@@ -26,7 +26,7 @@
           />
         </div>
         <div>
-          <label for="expense-currency" class="mb-1 block text-sm font-medium text-gray-700">Currency</label>
+          <label for="expense-currency" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.currency' | translate }}</label>
           <input
             id="expense-currency"
             [formControl]="createForm.controls.currency"
@@ -38,7 +38,7 @@
       </div>
       <div class="flex gap-3">
         <div class="flex-1">
-          <label for="expense-date" class="mb-1 block text-sm font-medium text-gray-700">Date</label>
+          <label for="expense-date" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.date' | translate }}</label>
           <input
             id="expense-date"
             [formControl]="createForm.controls.expenseDate"
@@ -47,29 +47,29 @@
           />
         </div>
         <div class="flex-1">
-          <label for="expense-category" class="mb-1 block text-sm font-medium text-gray-700">Category</label>
+          <label for="expense-category" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.category' | translate }}</label>
           <select
             id="expense-category"
             [formControl]="createForm.controls.category"
             class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
           >
-            <option value="">Select…</option>
-            <option value="1">Food</option>
-            <option value="2">Transport</option>
-            <option value="3">Utilities</option>
-            <option value="4">Entertainment</option>
-            <option value="5">Health</option>
-            <option value="6">Other</option>
+            <option value="">{{ 'expenses.selectCategory' | translate }}</option>
+            <option value="1">{{ 'enums.expenseCategory.1' | translate }}</option>
+            <option value="2">{{ 'enums.expenseCategory.2' | translate }}</option>
+            <option value="3">{{ 'enums.expenseCategory.3' | translate }}</option>
+            <option value="4">{{ 'enums.expenseCategory.4' | translate }}</option>
+            <option value="5">{{ 'enums.expenseCategory.5' | translate }}</option>
+            <option value="6">{{ 'enums.expenseCategory.6' | translate }}</option>
           </select>
         </div>
       </div>
       <div>
-        <label for="expense-description" class="mb-1 block text-sm font-medium text-gray-700">Description (optional)</label>
+        <label for="expense-description" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.descriptionOptional' | translate }}</label>
         <textarea
           id="expense-description"
           [formControl]="createForm.controls.description"
           rows="2"
-          placeholder="Optional note…"
+          [placeholder]="'expenses.optionalNote' | translate"
           class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
         ></textarea>
       </div>
@@ -81,22 +81,22 @@
         [disabled]="createForm.invalid || submitState().kind === 'submitting'"
         class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
       >
-        {{ submitState().kind === 'submitting' ? 'Saving…' : 'Add expense' }}
+        {{ submitState().kind === 'submitting' ? ('expenses.saving' | translate) : ('expenses.createExpense' | translate) }}
       </button>
     </form>
   </div>
 
   @if (expenses.isLoading()) {
-    <p class="text-gray-500">Loading expenses…</p>
+    <p class="text-gray-500">{{ 'expenses.loading' | translate }}</p>
   } @else if (expenses.error()) {
     <div class="rounded border border-red-300 bg-red-50 p-4 text-red-900" role="alert">
-      <p class="font-semibold">Failed to load expenses</p>
+      <p class="font-semibold">{{ 'expenses.failedToLoad' | translate }}</p>
       <p class="text-sm">{{ errorMessage() }}</p>
     </div>
   } @else if (isEmpty()) {
     <div class="rounded border border-gray-200 bg-white p-6 text-center">
-      <p class="font-semibold">No expenses yet</p>
-      <p class="mt-1 text-sm text-gray-500">Add an expense to get started.</p>
+      <p class="font-semibold">{{ 'expenses.noExpenses' | translate }}</p>
+      <p class="mt-1 text-sm text-gray-500">{{ 'expenses.noExpensesDesc' | translate }}</p>
     </div>
   } @else {
     <ul class="space-y-3">
@@ -111,7 +111,7 @@
               }
             </div>
             <span class="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-              {{ categoryLabels[expense.category] }}
+              {{ 'enums.expenseCategory.' + expense.category | translate }}
             </span>
           </div>
         </li>

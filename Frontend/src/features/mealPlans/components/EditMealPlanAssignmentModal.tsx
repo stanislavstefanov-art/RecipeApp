@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useRecipes } from "../../recipes/hooks/useRecipes";
 import { useRecipe } from "../../recipes/hooks/useRecipe";
 import {
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
+  const { t } = useTranslation();
   const editingAssignment = useMealPlanUiStore((s) => s.editingAssignment);
   const closeEditAssignment = useMealPlanUiStore((s) => s.closeEditAssignment);
   const mutation = useUpdateMealPlanAssignment(mealPlanId);
@@ -28,8 +30,9 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
   const selectedAssignedRecipeId = editingAssignment?.assignment.assignedRecipeId ?? "";
   const { data: selectedRecipe } = useRecipe(selectedAssignedRecipeId);
 
+  const schema = useMemo(() => updateMealPlanAssignmentSchema(t), [t]);
   const form = useForm<UpdateMealPlanAssignmentInput, unknown, UpdateMealPlanAssignmentData>({
-    resolver: zodResolver(updateMealPlanAssignmentSchema),
+    resolver: zodResolver(schema),
     values: editingAssignment
       ? {
           personId: editingAssignment.assignment.personId,
@@ -71,10 +74,10 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
         },
       });
 
-      pushToast("success", "Meal plan assignment updated.");
+      pushToast("success", t('mealPlans.editAssignment'));
       closeEditAssignment();
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to update assignment."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
@@ -83,9 +86,9 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
       <div className="flex h-full w-full flex-col bg-white sm:h-auto sm:max-h-[90vh] sm:max-w-xl sm:rounded-2xl sm:shadow-xl">
         <div className="flex items-start justify-between gap-4 border-b p-4 sm:border-b-0 sm:p-6">
           <div>
-            <h3 className="text-lg font-semibold sm:text-xl">Edit assignment</h3>
+            <h3 className="text-lg font-semibold sm:text-xl">{t('mealPlans.editAssignment')}</h3>
             <p className="mt-1 text-sm text-slate-500">
-              Update recipe, variation, portion, and notes for {editingAssignment.assignment.personName}.
+              {editingAssignment.assignment.personName}
             </p>
           </div>
 
@@ -94,19 +97,19 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
             onClick={closeEditAssignment}
             className="rounded-lg border px-3 py-2 text-sm"
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Assigned recipe</label>
+              <label className="text-sm font-medium">{t('mealPlans.recipe')}</label>
               <select
                 {...form.register("assignedRecipeId")}
                 className="mt-1 w-full rounded-lg border px-3 py-2"
               >
-                <option value="">Select recipe</option>
+                <option value="">{t('recipes.title')}</option>
                 {recipes.map((recipe) => (
                   <option key={recipe.id} value={recipe.id}>
                     {recipe.name}
@@ -121,12 +124,12 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Variation</label>
+              <label className="text-sm font-medium">{t('mealPlans.variation')}</label>
               <select
                 {...form.register("recipeVariationId")}
                 className="mt-1 w-full rounded-lg border px-3 py-2"
               >
-                <option value="">No variation</option>
+                <option value="">{t('mealPlans.noVariation')}</option>
                 {variationOptions.map((variation) => (
                   <option key={variation.id} value={variation.id}>
                     {variation.name}
@@ -136,7 +139,7 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Portion multiplier</label>
+              <label className="text-sm font-medium">{t('mealPlans.portionMultiplier')}</label>
               <input
                 type="number"
                 step="0.01"
@@ -151,7 +154,7 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Notes</label>
+              <label className="text-sm font-medium">{t('mealPlans.reviewNotes')}</label>
               <textarea
                 rows={4}
                 {...form.register("notes")}
@@ -161,7 +164,7 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
 
             {mutation.isError ? (
               <p className="text-sm text-red-600">
-                Failed to update assignment.
+                {t('common.error')}
               </p>
             ) : null}
           </div>
@@ -170,10 +173,10 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
             <LoadingButton
               type="submit"
               isLoading={mutation.isPending}
-              loadingText="Saving..."
+              loadingText={t('recipes.saving')}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
             >
-              Save changes
+              {t('common.save')}
             </LoadingButton>
 
             <button
@@ -181,7 +184,7 @@ export function EditMealPlanAssignmentModal({ mealPlanId }: Props) {
               onClick={closeEditAssignment}
               className="rounded-lg border px-4 py-2 text-sm"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

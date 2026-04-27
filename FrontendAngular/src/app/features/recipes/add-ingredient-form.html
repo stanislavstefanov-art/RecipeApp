@@ -9,7 +9,7 @@
   }
 
   <div>
-    <label for="ingredient-name" class="block text-sm font-medium">Ingredient name</label>
+    <label for="ingredient-name" class="block text-sm font-medium">{{ 'recipes.ingredientName' | translate }}</label>
     <input
       id="ingredient-name"
       type="text"
@@ -18,16 +18,16 @@
     />
     @if (form.controls.name.touched && form.controls.name.errors; as errors) {
       @if (errors['required']) {
-        <p class="mt-1 text-sm text-red-600">Ingredient name is required.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
       } @else if (errors['maxlength']) {
-        <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 200} }}</p>
       }
     }
   </div>
 
   <div class="grid grid-cols-2 gap-3">
     <div>
-      <label for="ingredient-quantity" class="block text-sm font-medium">Quantity</label>
+      <label for="ingredient-quantity" class="block text-sm font-medium">{{ 'recipes.quantity' | translate }}</label>
       <input
         id="ingredient-quantity"
         type="number"
@@ -37,15 +37,15 @@
       />
       @if (form.controls.quantity.touched && form.controls.quantity.errors; as errors) {
         @if (errors['required']) {
-          <p class="mt-1 text-sm text-red-600">Quantity is required.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
         } @else if (errors['greaterThanZero']) {
-          <p class="mt-1 text-sm text-red-600">Quantity must be greater than 0.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.greaterThan' | translate:{min: 0} }}</p>
         }
       }
     </div>
 
     <div>
-      <label for="ingredient-unit" class="block text-sm font-medium">Unit</label>
+      <label for="ingredient-unit" class="block text-sm font-medium">{{ 'recipes.unit' | translate }}</label>
       <input
         id="ingredient-unit"
         type="text"
@@ -54,9 +54,9 @@
       />
       @if (form.controls.unit.touched && form.controls.unit.errors; as errors) {
         @if (errors['required']) {
-          <p class="mt-1 text-sm text-red-600">Unit is required.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
         } @else if (errors['maxlength']) {
-          <p class="mt-1 text-sm text-red-600">Unit must be 50 characters or fewer.</p>
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 50} }}</p>
         }
       }
     </div>
@@ -67,6 +67,6 @@
     [disabled]="isSubmitting()"
     class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
   >
-    {{ isSubmitting() ? 'Adding…' : 'Add ingredient' }}
+    {{ isSubmitting() ? ('recipes.adding' | translate) : ('recipes.addIngredient' | translate) }}
   </button>
 </form>

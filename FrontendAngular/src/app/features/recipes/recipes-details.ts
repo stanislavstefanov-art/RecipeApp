@@ -10,8 +10,10 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
 import { SuggestSubstitutionsForm } from './suggest-substitutions-form';
@@ -24,7 +26,7 @@ type DeleteState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm],
+  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm, TranslateModule],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +35,7 @@ export class RecipesDetails {
   private readonly client = inject(RecipesClient);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   readonly id = input.required<string>();
 
@@ -65,7 +68,7 @@ export class RecipesDetails {
   }
 
   protected onDelete(): void {
-    if (!window.confirm('Delete this recipe?')) {
+    if (!window.confirm(this.translate.instant('recipes.confirmDelete'))) {
       return;
     }
 
@@ -85,14 +88,7 @@ export class RecipesDetails {
   }
 
   private toDeleteMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to delete recipe.';
+    return getErrorMessage(err, this.translate, 'Failed to delete recipe.');
   }
 
   protected readonly isNotFound = computed(() => {
@@ -105,11 +101,7 @@ export class RecipesDetails {
     if (!err || this.isNotFound()) {
       return '';
     }
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    return err instanceof Error ? err.message : String(err);
+    return getErrorMessage(err, this.translate);
   });
 
   protected readonly hasIngredients = computed(() => {

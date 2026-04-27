@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
 export const recipeVariationSchema = z.object({
   id: z.string().uuid(),
@@ -31,36 +32,40 @@ export const recipeDetailsSchema = z.object({
   variations: z.array(recipeVariationSchema).default([]),
 });
 
-export const createRecipeSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200),
-});
+export const createRecipeSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t("validation.required")).max(200, t("validation.maxLength", { max: 200 })),
+  });
 
-export const updateRecipeSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200),
-});
+export const updateRecipeSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t("validation.required")).max(200, t("validation.maxLength", { max: 200 })),
+  });
 
-export const addIngredientSchema = z.object({
-  name: z.string().min(1, "Ingredient name is required").max(200),
-  quantity: z.coerce.number().gt(0, "Quantity must be greater than 0"),
-  unit: z.string().min(1, "Unit is required").max(50),
-});
+export const addIngredientSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t("validation.required")).max(200, t("validation.maxLength", { max: 200 })),
+    quantity: z.coerce.number().gt(0, t("validation.greaterThan", { min: 0 })),
+    unit: z.string().min(1, t("validation.required")).max(50, t("validation.maxLength", { max: 50 })),
+  });
 
-export const addStepSchema = z.object({
-  instruction: z.string().min(1, "Instruction is required").max(1000),
-});
+export const addStepSchema = (t: TFunction) =>
+  z.object({
+    instruction: z.string().min(1, t("validation.required")).max(1000, t("validation.maxLength", { max: 1000 })),
+  });
 
 export type RecipeVariation = z.infer<typeof recipeVariationSchema>;
 export type RecipeListItem = z.infer<typeof recipeListItemSchema>;
 export type RecipeDetails = z.infer<typeof recipeDetailsSchema>;
 
-export type CreateRecipeInput = z.input<typeof createRecipeSchema>;
-export type CreateRecipeData = z.output<typeof createRecipeSchema>;
+export type CreateRecipeInput = z.input<ReturnType<typeof createRecipeSchema>>;
+export type CreateRecipeData = z.output<ReturnType<typeof createRecipeSchema>>;
 
-export type UpdateRecipeInput = z.input<typeof updateRecipeSchema>;
-export type UpdateRecipeData = z.output<typeof updateRecipeSchema>;
+export type UpdateRecipeInput = z.input<ReturnType<typeof updateRecipeSchema>>;
+export type UpdateRecipeData = z.output<ReturnType<typeof updateRecipeSchema>>;
 
-export type AddIngredientInput = z.input<typeof addIngredientSchema>;
-export type AddIngredientData = z.output<typeof addIngredientSchema>;
+export type AddIngredientInput = z.input<ReturnType<typeof addIngredientSchema>>;
+export type AddIngredientData = z.output<ReturnType<typeof addIngredientSchema>>;
 
-export type AddStepInput = z.input<typeof addStepSchema>;
-export type AddStepData = z.output<typeof addStepSchema>;
+export type AddStepInput = z.input<ReturnType<typeof addStepSchema>>;
+export type AddStepData = z.output<ReturnType<typeof addStepSchema>>;

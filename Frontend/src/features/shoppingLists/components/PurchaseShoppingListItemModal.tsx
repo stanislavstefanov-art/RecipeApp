@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   purchaseShoppingListItemSchema,
   type PurchaseShoppingListItemInput,
@@ -16,6 +18,7 @@ type Props = {
 };
 
 export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
+  const { t } = useTranslation();
   const purchasingItem = useShoppingListUiStore((s) => s.purchasingItem);
   const closePurchaseModal = useShoppingListUiStore((s) => s.closePurchaseModal);
   const mutation = usePurchaseShoppingListItemWithExpense(shoppingListId);
@@ -23,8 +26,9 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
 
   const today = new Date().toISOString().slice(0, 10);
 
+  const schema = useMemo(() => purchaseShoppingListItemSchema(t), [t]);
   const form = useForm<PurchaseShoppingListItemInput, unknown, PurchaseShoppingListItemData>({
-    resolver: zodResolver(purchaseShoppingListItemSchema),
+    resolver: zodResolver(schema),
     values: purchasingItem
       ? {
           amount: 1,
@@ -54,10 +58,10 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
         },
       });
 
-      pushToast("success", "Item purchased and expense created.");
+      pushToast("success", t('shoppingLists.itemPurchased'));
       closePurchaseModal();
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to purchase item."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
@@ -66,9 +70,9 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
       <div className="flex h-full w-full flex-col bg-white sm:h-auto sm:max-h-[90vh] sm:max-w-lg sm:rounded-2xl sm:shadow-xl">
         <div className="flex items-start justify-between gap-4 border-b p-4 sm:border-b-0 sm:p-6">
           <div>
-            <h3 className="text-lg font-semibold sm:text-xl">Purchase item</h3>
+            <h3 className="text-lg font-semibold sm:text-xl">{t('shoppingLists.purchaseItem')}</h3>
             <p className="mt-1 text-sm text-slate-500">
-              Create an expense for {purchasingItem.item.productName}.
+              {t('shoppingLists.purchaseItemDesc', { name: purchasingItem.item.productName })}
             </p>
           </div>
 
@@ -77,14 +81,14 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             onClick={closePurchaseModal}
             className="rounded-lg border px-3 py-2 text-sm"
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Amount</label>
+              <label className="text-sm font-medium">{t('expenses.amount')}</label>
               <input
                 type="number"
                 step="0.01"
@@ -99,7 +103,7 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Currency</label>
+              <label className="text-sm font-medium">{t('expenses.currency')}</label>
               <input
                 {...form.register("currency")}
                 className="mt-1 w-full rounded-lg border px-3 py-2"
@@ -112,7 +116,7 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Expense date</label>
+              <label className="text-sm font-medium">{t('expenses.expenseDate')}</label>
               <input
                 type="date"
                 {...form.register("expenseDate")}
@@ -126,7 +130,7 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Description</label>
+              <label className="text-sm font-medium">{t('expenses.description')}</label>
               <textarea
                 rows={4}
                 {...form.register("description")}
@@ -135,7 +139,7 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             </div>
 
             {mutation.isError ? (
-              <p className="text-sm text-red-600">Failed to purchase item.</p>
+              <p className="text-sm text-red-600">{t('common.error')}</p>
             ) : null}
           </div>
 
@@ -143,10 +147,10 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
             <LoadingButton
               type="submit"
               isLoading={mutation.isPending}
-              loadingText="Saving..."
+              loadingText={t('recipes.saving')}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
             >
-              Purchase
+              {t('shoppingLists.markPurchased')}
             </LoadingButton>
 
             <button
@@ -154,7 +158,7 @@ export function PurchaseShoppingListItemModal({ shoppingListId }: Props) {
               onClick={closePurchaseModal}
               className="rounded-lg border px-4 py-2 text-sm"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

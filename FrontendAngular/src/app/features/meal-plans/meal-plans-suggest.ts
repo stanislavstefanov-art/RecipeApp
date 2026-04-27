@@ -11,11 +11,12 @@ import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { HouseholdsClient } from '../../api/households.client';
 import { MealPlanSuggestionDto } from '../../api/meal-plans.dto';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { RecipesClient } from '../../api/recipes.client';
-import { MEAL_SCOPE_LABELS, MEAL_TYPE_LABELS } from './meal-plans-details';
 
 type SuggestState =
   | { readonly kind: 'idle' }
@@ -30,7 +31,7 @@ type AcceptState =
 
 @Component({
   selector: 'app-meal-plans-suggest',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './meal-plans-suggest.html',
   styleUrl: './meal-plans-suggest.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -97,9 +98,6 @@ export class MealPlansSuggest {
     const s = this.acceptState();
     return s.kind === 'error' ? s.message : '';
   });
-
-  protected readonly mealTypeLabels = MEAL_TYPE_LABELS;
-  protected readonly mealScopeLabels = MEAL_SCOPE_LABELS;
 
   protected onSuggest(): void {
     if (this.form.invalid) {

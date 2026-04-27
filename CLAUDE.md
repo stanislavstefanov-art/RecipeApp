@@ -162,6 +162,33 @@ Cross-framework guidance (applies to both):
 - Do not share source code between the React and Angular apps — reimplement
   each slice idiomatically per framework.
 
+### Localization
+
+Both frontends support two locales: **`bg` (Bulgarian, default)** and **`en` (English)**.
+Translation files:
+- React: `Frontend/src/locales/{bg,en}.json`
+- Angular: `FrontendAngular/public/i18n/{bg,en}.json`
+
+Key structure is shared between both apps: `nav`, `common`, `recipes`, `households`,
+`persons`, `mealPlans`, `shoppingLists`, `expenses`, `validation`, `enums`, `errors`.
+
+**React** — use `useTranslation()` hook from `react-i18next`; wrap every JSX literal
+with `t('key')`. New string → new key in both JSON files.
+
+**Angular** — use the `translate` pipe (`{{ 'key' | translate }}`) in templates;
+`TranslateService.instant('key')` for imperative strings (e.g. `window.confirm`).
+`TranslateModule` must be listed in the `imports` array of every standalone component
+that uses the pipe.
+
+**Enum labels** — never create static label dictionaries. Use translation key lookups:
+React: `t('enums.mealType.' + value)` / Angular: `{{ 'enums.mealType.' + value | translate }}`.
+
+**Date / currency** — derive locale from i18n state; never hardcode `'en-GB'`.
+React helper: `getLocale()` in `features/*/utils.ts`. Angular: `LOCALE_ID` provider.
+
+**Backend errors** — known error codes are mapped under `errors.*` in both JSON files.
+Unknown server messages fall through to the raw text. No backend changes required.
+
 ## Azure deployment targets
 
 - API        → Azure App Service (F1 free tier, Linux, .NET 10)

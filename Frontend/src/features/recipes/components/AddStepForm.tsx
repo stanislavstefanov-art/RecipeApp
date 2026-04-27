@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
+import { useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import {
   addStepSchema,
   type AddStepInput,
@@ -15,11 +17,13 @@ type Props = {
 };
 
 export function AddStepForm({ recipeId }: Props) {
+  const { t } = useTranslation();
   const mutation = useAddStep(recipeId);
   const pushToast = useToastStore((s) => s.pushToast);
 
+  const schema = useMemo(() => addStepSchema(t), [t]);
   const form = useForm<AddStepInput, unknown, AddStepData>({
-    resolver: zodResolver(addStepSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       instruction: "",
     },
@@ -29,16 +33,16 @@ export function AddStepForm({ recipeId }: Props) {
     try {
       await mutation.mutateAsync(values);
       form.reset({ instruction: "" });
-      pushToast("success", "Step added.");
+      pushToast("success", t('recipes.addStep'));
     } catch (error) {
-      pushToast("error", getErrorMessage(error, "Failed to add step."));
+      pushToast("error", getErrorMessage(error, t));
     }
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
       <div>
-        <label className="text-sm font-medium">Instruction</label>
+        <label className="text-sm font-medium">{t('recipes.instruction')}</label>
         <textarea
           {...form.register("instruction")}
           rows={4}
@@ -52,16 +56,16 @@ export function AddStepForm({ recipeId }: Props) {
       </div>
 
       {mutation.isError ? (
-        <p className="text-sm text-red-600">Failed to add step.</p>
+        <p className="text-sm text-red-600">{t('common.error')}</p>
       ) : null}
 
       <LoadingButton
         type="submit"
         isLoading={mutation.isPending}
-        loadingText="Adding..."
+        loadingText={t('recipes.adding')}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white"
       >
-        Add step
+        {t('recipes.addStep')}
       </LoadingButton>
     </form>
   );

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useDeleteRecipe } from "../hooks/useDeleteRecipe";
 
 type Props = {
@@ -6,11 +7,12 @@ type Props = {
 };
 
 export function DeleteRecipeButton({ recipeId }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const mutation = useDeleteRecipe();
 
   const onDelete = async () => {
-    const confirmed = window.confirm("Delete this recipe?");
+    const confirmed = window.confirm(t('recipes.confirmDelete'));
     if (!confirmed) return;
 
     await mutation.mutateAsync(recipeId);
@@ -24,7 +26,7 @@ export function DeleteRecipeButton({ recipeId }: Props) {
       disabled={mutation.isPending}
       className="rounded-lg border border-red-300 px-4 py-2 text-sm text-red-700"
     >
-      {mutation.isPending ? "Deleting..." : "Delete recipe"}
+      {mutation.isPending ? t('recipes.deleting') : t('recipes.deleteRecipe')}
     </button>
   );
 }

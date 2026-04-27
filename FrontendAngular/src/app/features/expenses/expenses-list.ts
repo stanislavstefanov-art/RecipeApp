@@ -5,34 +5,22 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { ToastService } from '../../core/toast.service';
 import { ExpensesClient } from '../../api/expenses.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type SubmitState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'submitting' }
   | { readonly kind: 'error'; readonly message: string };
 
-export const CATEGORY_LABELS: Readonly<Record<number, string>> = {
-  1: 'Food',
-  2: 'Transport',
-  3: 'Utilities',
-  4: 'Entertainment',
-  5: 'Health',
-  6: 'Other',
-};
-
-export const EXPENSE_SOURCE_TYPE_LABELS: Readonly<Record<number, string>> = {
-  1: 'Manual',
-  2: 'Shopping list item',
-  3: 'Meal plan',
-};
-
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, DecimalPipe, DatePipe],
+  imports: [RouterLink, ReactiveFormsModule, DecimalPipe, DatePipe, TranslateModule],
   templateUrl: './expenses-list.html',
   styleUrl: './expenses-list.css',
 })
@@ -40,8 +28,7 @@ export class ExpensesList {
   private readonly client = inject(ExpensesClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
-
-  protected readonly categoryLabels = CATEGORY_LABELS;
+  private readonly translate = inject(TranslateService);
 
   protected readonly expenses = rxResource({
     stream: () => this.client.list(),
@@ -51,9 +38,10 @@ export class ExpensesList {
     () => !this.expenses.isLoading() && (this.expenses.value()?.length ?? 0) === 0,
   );
 
-  protected readonly errorMessage = computed(
-    () => (this.expenses.error() as Error)?.message ?? 'Unknown error',
-  );
+  protected readonly errorMessage = computed(() => {
+    const err = this.expenses.error();
+    return err ? getErrorMessage(err, this.translate) : '';
+  });
 
   protected readonly createForm = new FormGroup({
     amount: new FormControl('', {
@@ -100,8 +88,8 @@ export class ExpensesList {
           this.expenses.reload();
           this.toast.show('success', 'Expense recorded');
         },
-        error: (err: Error) => {
-          this.submitState.set({ kind: 'error', message: err.message ?? 'Failed to create' });
+        error: (err: unknown) => {
+          this.submitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to create') });
         },
       });
   }

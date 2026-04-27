@@ -10,6 +10,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { RecipesClient } from '../../api/recipes.client';
 import { IngredientSubstitutionSuggestionDto } from '../../api/recipes.dto';
 
@@ -21,7 +23,7 @@ type SubstitutionState =
 
 @Component({
   selector: 'app-suggest-substitutions-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './suggest-substitutions-form.html',
   styleUrl: './suggest-substitutions-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

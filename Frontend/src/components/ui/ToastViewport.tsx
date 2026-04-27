@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useToastStore } from "../../stores/toastStore";
 
 function toastClass(kind: "success" | "error" | "info") {
@@ -12,6 +13,7 @@ function toastClass(kind: "success" | "error" | "info") {
 }
 
 export function ToastViewport() {
+  const { t } = useTranslation();
   const { toasts, removeToast } = useToastStore();
 
   if (toasts.length === 0) {
@@ -33,7 +35,7 @@ export function ToastViewport() {
               onClick={() => removeToast(toast.id)}
               className="shrink-0 text-xs opacity-70 hover:opacity-100"
             >
-              Close
+              {t('common.close')}
             </button>
           </div>
         </div>

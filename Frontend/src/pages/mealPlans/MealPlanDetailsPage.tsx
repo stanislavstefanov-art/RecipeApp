@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { EditMealPlanAssignmentModal } from "../../features/mealPlans/components/EditMealPlanAssignmentModal";
 import { MealPlanEntryCard } from "../../features/mealPlans/components/MealPlanEntryCard";
@@ -7,45 +8,46 @@ import { useMealPlan } from "../../features/mealPlans/hooks/useMealPlan";
 import { formatPlannedDate } from "../../features/mealPlans/utils";
 
 export function MealPlanDetailsPage() {
+  const { t } = useTranslation();
   const { mealPlanId = "" } = useParams();
   const { data, isLoading, isError, error } = useMealPlan(mealPlanId);
   const groupedEntries = useGroupedMealPlanEntries(data?.entries);
 
   if (isLoading) {
-    return <LoadingState title="Loading meal plan" />;
+    return <LoadingState title={t('mealPlans.title')} />;
   }
 
   if (isError) {
     return (
       <ErrorState
-        title="Failed to load meal plan"
-        message={error instanceof Error ? error.message : "Unknown error"}
+        title={t('mealPlans.title')}
+        message={error instanceof Error ? error.message : undefined}
       />
     );
   }
 
   if (!data) {
-    return <EmptyState title="Meal plan not found" />;
+    return <EmptyState title={t('mealPlans.noMealPlans')} />;
   }
 
   return (
     <>
       <div className="space-y-6">
         <Link to="/meal-plans" className="text-sm text-slate-500">
-          ← Back
+          ← {t('common.back')}
         </Link>
 
         <div className="rounded-xl border bg-white p-6">
           <h2 className="text-2xl font-semibold">{data.name}</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Household: {data.householdName}
+            {t('mealPlans.householdLabel', { name: data.householdName })}
           </p>
         </div>
 
         {groupedEntries.length === 0 ? (
           <EmptyState
-            title="No entries in this meal plan"
-            message="Meal plan entries will appear here once added."
+            title={t('mealPlans.noEntries')}
+            message={t('mealPlans.noEntriesDesc')}
           />
         ) : (
           <div className="space-y-8">

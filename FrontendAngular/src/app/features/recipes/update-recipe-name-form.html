@@ -9,7 +9,7 @@
   }
 
   <div>
-    <label for="recipe-name" class="block text-sm font-medium">Recipe name</label>
+    <label for="recipe-name" class="block text-sm font-medium">{{ 'recipes.recipeName' | translate }}</label>
     <input
       id="recipe-name"
       type="text"
@@ -18,9 +18,9 @@
     />
     @if (form.controls.name.touched && form.controls.name.errors; as errors) {
       @if (errors['required']) {
-        <p class="mt-1 text-sm text-red-600">Name is required.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
       } @else if (errors['maxlength']) {
-        <p class="mt-1 text-sm text-red-600">Name must be 200 characters or fewer.</p>
+        <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 200} }}</p>
       }
     }
   </div>
@@ -30,6 +30,6 @@
     [disabled]="isSubmitting()"
     class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
   >
-    {{ isSubmitting() ? 'Saving…' : 'Save name' }}
+    {{ isSubmitting() ? ('recipes.saving' | translate) : ('recipes.saveName' | translate) }}
   </button>
 </form>

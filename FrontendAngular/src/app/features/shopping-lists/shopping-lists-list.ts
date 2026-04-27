@@ -3,26 +3,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ToastService } from '../../core/toast.service';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type SubmitState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'submitting' }
   | { readonly kind: 'error'; readonly message: string };
 
-export const SOURCE_TYPE_LABELS: Readonly<Record<number, string>> = {
-  1: 'Manual',
-  2: 'Recipe',
-  3: 'Meal plan',
-};
-
 @Component({
   selector: 'app-shopping-lists-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, TranslateModule],
   templateUrl: './shopping-lists-list.html',
   styleUrl: './shopping-lists-list.css',
 })
@@ -30,6 +26,7 @@ export class ShoppingListsList {
   private readonly client = inject(ShoppingListsClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly translate = inject(TranslateService);
 
   protected readonly shoppingLists = rxResource({
     stream: () => this.client.list(),
@@ -39,9 +36,10 @@ export class ShoppingListsList {
     () => !this.shoppingLists.isLoading() && (this.shoppingLists.value()?.length ?? 0) === 0,
   );
 
-  protected readonly errorMessage = computed(
-    () => (this.shoppingLists.error() as Error)?.message ?? 'Unknown error',
-  );
+  protected readonly errorMessage = computed(() => {
+    const err = this.shoppingLists.error();
+    return err ? getErrorMessage(err, this.translate) : '';
+  });
 
   protected readonly nameControl = new FormControl('', {
     nonNullable: true,
@@ -64,8 +62,8 @@ export class ShoppingListsList {
           this.shoppingLists.reload();
           this.toast.show('success', 'Shopping list created');
         },
-        error: (err: Error) => {
-          this.submitState.set({ kind: 'error', message: err.message ?? 'Failed to create' });
+        error: (err: unknown) => {
+          this.submitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to create') });
         },
       });
   }

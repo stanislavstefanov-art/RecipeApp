@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { z } from "zod";
 import { mealPlanSuggestionSchema } from "../schemas";
 
@@ -8,21 +9,22 @@ type Props = {
 };
 
 export function MealPlanSuggestionAssignmentCard({ assignment }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-lg border bg-slate-50 p-4">
       <p className="text-sm text-slate-700">
-        Person ID: {assignment.personId}
+        {t('mealPlans.assignedTo')}: {assignment.personId}
       </p>
       <p className="mt-1 text-sm text-slate-700">
-        Assigned recipe ID: {assignment.assignedRecipeId}
+        {t('mealPlans.recipe')}: {assignment.assignedRecipeId}
       </p>
       {assignment.recipeVariationId ? (
         <p className="mt-1 text-sm text-slate-700">
-          Variation ID: {assignment.recipeVariationId}
+          {t('mealPlans.variation')}: {assignment.recipeVariationId}
         </p>
       ) : null}
       <p className="mt-1 text-sm text-slate-700">
-        Portion: {assignment.portionMultiplier}
+        {t('mealPlans.portions')}: {assignment.portionMultiplier}
       </p>
       {assignment.notes ? (
         <p className="mt-2 text-sm text-slate-700">{assignment.notes}</p>

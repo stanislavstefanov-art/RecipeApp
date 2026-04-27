@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
 export const shoppingListItemSchema = z.object({
   id: z.string().uuid(),
@@ -24,31 +25,34 @@ export const shoppingListListItemSchema = z.object({
   items: z.array(shoppingListItemSchema).optional().default([]),
 });
 
-export const createShoppingListSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200),
-});
+export const createShoppingListSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t("validation.required")).max(200, t("validation.maxLength", { max: 200 })),
+  });
 
-export const purchaseShoppingListItemSchema = z.object({
-  amount: z.coerce.number().gt(0, "Amount must be greater than 0"),
-  currency: z.string().min(1, "Currency is required").max(10),
-  expenseDate: z.string().min(1, "Expense date is required"),
-  description: z.string().max(500).nullable().optional(),
-});
+export const purchaseShoppingListItemSchema = (t: TFunction) =>
+  z.object({
+    amount: z.coerce.number().gt(0, t("validation.greaterThan", { min: 0 })),
+    currency: z.string().min(1, t("validation.required")).max(10, t("validation.maxLength", { max: 10 })),
+    expenseDate: z.string().min(1, t("validation.required")),
+    description: z.string().max(500, t("validation.maxLength", { max: 500 })).nullable().optional(),
+  });
 
-export const generateShoppingListFromMealPlanSchema = z.object({
-  mealPlanId: z.string().uuid("Meal plan is required"),
-  shoppingListId: z.string().uuid("Shopping list is required"),
-});
+export const generateShoppingListFromMealPlanSchema = (t: TFunction) =>
+  z.object({
+    mealPlanId: z.string().uuid(t("validation.required")),
+    shoppingListId: z.string().uuid(t("validation.required")),
+  });
 
 export type ShoppingListItem = z.infer<typeof shoppingListItemSchema>;
 export type ShoppingListDetails = z.infer<typeof shoppingListDetailsSchema>;
 export type ShoppingListListItem = z.infer<typeof shoppingListListItemSchema>;
 
-export type CreateShoppingListInput = z.input<typeof createShoppingListSchema>;
-export type CreateShoppingListData = z.output<typeof createShoppingListSchema>;
+export type CreateShoppingListInput = z.input<ReturnType<typeof createShoppingListSchema>>;
+export type CreateShoppingListData = z.output<ReturnType<typeof createShoppingListSchema>>;
 
-export type PurchaseShoppingListItemInput = z.input<typeof purchaseShoppingListItemSchema>;
-export type PurchaseShoppingListItemData = z.output<typeof purchaseShoppingListItemSchema>;
+export type PurchaseShoppingListItemInput = z.input<ReturnType<typeof purchaseShoppingListItemSchema>>;
+export type PurchaseShoppingListItemData = z.output<ReturnType<typeof purchaseShoppingListItemSchema>>;
 
-export type GenerateShoppingListFromMealPlanInput = z.input<typeof generateShoppingListFromMealPlanSchema>;
-export type GenerateShoppingListFromMealPlanData = z.output<typeof generateShoppingListFromMealPlanSchema>;
+export type GenerateShoppingListFromMealPlanInput = z.input<ReturnType<typeof generateShoppingListFromMealPlanSchema>>;
+export type GenerateShoppingListFromMealPlanData = z.output<ReturnType<typeof generateShoppingListFromMealPlanSchema>>;

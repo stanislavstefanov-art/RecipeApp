@@ -4,20 +4,20 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { TranslateModule } from '@ngx-translate/core';
+
 import { ExpensesClient } from '../../api/expenses.client';
-import { CATEGORY_LABELS } from './expenses-list';
 
 @Component({
   selector: 'app-expenses-report',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, DecimalPipe],
+  imports: [RouterLink, ReactiveFormsModule, DecimalPipe, TranslateModule],
   templateUrl: './expenses-report.html',
   styleUrl: './expenses-report.css',
 })
 export class ExpensesReport {
   private readonly client = inject(ExpensesClient);
-  protected readonly categoryLabels = CATEGORY_LABELS;
 
   private readonly now = new Date();
 

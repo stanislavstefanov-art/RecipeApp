@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { usePersons } from "../../persons/hooks/usePersons";
 import { useAddPersonToHousehold } from "../hooks/useAddPersonToHousehold";
 
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export function AddHouseholdMemberForm({ householdId, existingPersonIds }: Props) {
+  const { t } = useTranslation();
   const [selectedPersonId, setSelectedPersonId] = useState("");
   const { data: persons } = usePersons();
   const mutation = useAddPersonToHousehold(householdId);
@@ -27,14 +29,14 @@ export function AddHouseholdMemberForm({ householdId, existingPersonIds }: Props
 
   return (
     <form onSubmit={onSubmit} className="space-y-3 rounded-xl border bg-white p-6">
-      <h3 className="text-lg font-medium">Add member</h3>
+      <h3 className="text-lg font-medium">{t('households.addMember')}</h3>
 
       <select
         value={selectedPersonId}
         onChange={(e) => setSelectedPersonId(e.target.value)}
         className="w-full rounded-lg border px-3 py-2"
       >
-        <option value="">Select a person</option>
+        <option value="">{t('households.selectPerson')}</option>
         {availablePersons.map((person) => (
           <option key={person.id} value={person.id}>
             {person.name}
@@ -43,7 +45,7 @@ export function AddHouseholdMemberForm({ householdId, existingPersonIds }: Props
       </select>
 
       {mutation.isError ? (
-        <p className="text-sm text-red-600">Failed to add member.</p>
+        <p className="text-sm text-red-600">{t('common.error')}</p>
       ) : null}
 
       <button
@@ -51,7 +53,7 @@ export function AddHouseholdMemberForm({ householdId, existingPersonIds }: Props
         disabled={!selectedPersonId || mutation.isPending}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60"
       >
-        {mutation.isPending ? "Adding..." : "Add member"}
+        {mutation.isPending ? t('common.add') + '…' : t('households.addMember')}
       </button>
     </form>
   );
