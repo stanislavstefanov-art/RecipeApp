@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const EXPENSES_URL = 'http://localhost:5117/api/expenses';
+const EXPENSES_URL = 'http://localhost:5106/api/expenses';
 
 const EXPENSE_ID = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
 

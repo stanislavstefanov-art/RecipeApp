@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '88888888-8888-8888-8888-888888888888';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
-const DELETE = `http://localhost:5117/api/recipes/${ID}`;
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
+const DELETE = `http://localhost:5106/api/recipes/${ID}`;
 
 const RECIPE_BODY = JSON.stringify({
   id: ID,
@@ -55,7 +55,7 @@ test.describe('delete recipe', () => {
         await route.fulfill({ status: 204, body: '' });
       }
     });
-    await page.route('http://localhost:5117/api/recipes', async (route) => {
+    await page.route('http://localhost:5106/api/recipes', async (route) => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     });
 
@@ -82,7 +82,7 @@ test.describe('delete recipe', () => {
         await route.fulfill({ status: 204, body: '' });
       }
     });
-    await page.route('http://localhost:5117/api/recipes', async (route) => {
+    await page.route('http://localhost:5106/api/recipes', async (route) => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     });
 

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const MEAL_PLAN_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
-const MEAL_PLAN_URL = `http://localhost:5117/api/meal-plans/${MEAL_PLAN_ID}`;
+const MEAL_PLAN_URL = `http://localhost:5106/api/meal-plans/${MEAL_PLAN_ID}`;
 
 const mealPlanWithEntries = {
   id: MEAL_PLAN_ID,

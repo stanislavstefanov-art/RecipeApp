@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '66666666-6666-6666-6666-666666666666';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
-const INGREDIENTS = `http://localhost:5117/api/recipes/${ID}/ingredients`;
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
+const INGREDIENTS = `http://localhost:5106/api/recipes/${ID}/ingredients`;
 
 test.describe('add ingredient', () => {
   test('empty name shows inline error and issues no request', async ({ page }) => {

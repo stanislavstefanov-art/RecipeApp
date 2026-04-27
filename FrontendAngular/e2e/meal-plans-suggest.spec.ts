@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-const SUGGEST_URL = 'http://localhost:5117/api/meal-plans/suggest';
-const ACCEPT_URL = 'http://localhost:5117/api/meal-plans/accept-suggestion';
-const HOUSEHOLDS_URL = 'http://localhost:5117/api/households';
-const RECIPES_URL = 'http://localhost:5117/api/recipes';
+const SUGGEST_URL = 'http://localhost:5106/api/meal-plans/suggest';
+const ACCEPT_URL = 'http://localhost:5106/api/meal-plans/accept-suggestion';
+const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
+const RECIPES_URL = 'http://localhost:5106/api/recipes';
 const MEAL_PLAN_ID = 'mmmmmmmm-mmmm-mmmm-mmmm-mmmmmmmmmmmm';
 const HOUSEHOLD_ID = 'hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh';
 const RECIPE_ID = 'rrrrrrrr-rrrr-rrrr-rrrr-rrrrrrrrrrrr';
@@ -180,7 +180,7 @@ test.describe('meal plans suggest', () => {
         body: JSON.stringify({ mealPlanId: MEAL_PLAN_ID, name: 'Week of April 28' }),
       });
     });
-    await page.route(`http://localhost:5117/api/meal-plans/${MEAL_PLAN_ID}`, async (route) => {
+    await page.route(`http://localhost:5106/api/meal-plans/${MEAL_PLAN_ID}`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

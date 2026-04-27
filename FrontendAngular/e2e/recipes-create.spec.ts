@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const API = 'http://localhost:5117/api/recipes';
+const API = 'http://localhost:5106/api/recipes';
 const NEW_ID = '33333333-3333-3333-3333-333333333333';
 
 test.describe('recipes create', () => {

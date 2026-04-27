@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '44444444-4444-4444-4444-444444444444';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
 
 test.describe('recipe details', () => {
   test('renders name, ingredients, and steps on success', async ({ page }) => {
@@ -106,7 +106,7 @@ test.describe('recipe details', () => {
         }),
       });
     });
-    await page.route('http://localhost:5117/api/recipes', async (route) => {
+    await page.route('http://localhost:5106/api/recipes', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

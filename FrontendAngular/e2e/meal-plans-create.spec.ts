@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const MEAL_PLANS_URL = 'http://localhost:5117/api/meal-plans';
-const HOUSEHOLDS_URL = 'http://localhost:5117/api/households';
+const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
+const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
 const NEW_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 const HOUSEHOLD_ID = 'hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh';
 
@@ -72,7 +72,7 @@ test.describe('meal plans create', () => {
         body: JSON.stringify(householdsList),
       });
     });
-    await page.route(`http://localhost:5117/api/meal-plans/${NEW_ID}`, async (route) => {
+    await page.route(`http://localhost:5106/api/meal-plans/${NEW_ID}`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

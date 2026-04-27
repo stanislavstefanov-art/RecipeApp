@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const REPORT_URL = 'http://localhost:5117/api/expenses/monthly-report?year=2025&month=3';
-const INSIGHTS_URL = 'http://localhost:5117/api/expenses/insights?year=2025&month=3';
+const REPORT_URL = 'http://localhost:5106/api/expenses/monthly-report?year=2025&month=3';
+const INSIGHTS_URL = 'http://localhost:5106/api/expenses/insights?year=2025&month=3';
 
 test.describe('expenses report', () => {
   test('renders monthly totals and category breakdown', async ({ page }) => {

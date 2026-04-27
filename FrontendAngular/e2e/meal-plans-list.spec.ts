@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const MEAL_PLANS_URL = 'http://localhost:5117/api/meal-plans';
+const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
 
 test.describe('meal plans list', () => {
   test('renders meal plans with name, household, and entry count', async ({ page }) => {

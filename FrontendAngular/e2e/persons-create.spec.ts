@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const PERSONS_URL = 'http://localhost:5117/api/persons';
+const PERSONS_URL = 'http://localhost:5106/api/persons';
 const NEW_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 
 test.describe('persons create', () => {

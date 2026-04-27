@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 const LIST_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const ITEM_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
-const SHOPPING_LIST_URL = `http://localhost:5117/api/shopping-lists/${LIST_ID}`;
-const MEAL_PLANS_URL = 'http://localhost:5117/api/meal-plans';
+const SHOPPING_LIST_URL = `http://localhost:5106/api/shopping-lists/${LIST_ID}`;
+const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
 
 function stubShoppingList(page: import('@playwright/test').Page, items: object[]) {
   return page.route(SHOPPING_LIST_URL, async (route) => {

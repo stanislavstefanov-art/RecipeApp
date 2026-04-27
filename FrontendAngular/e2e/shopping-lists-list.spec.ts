@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const SHOPPING_LISTS_URL = 'http://localhost:5117/api/shopping-lists';
+const SHOPPING_LISTS_URL = 'http://localhost:5106/api/shopping-lists';
 
 const LIST_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 
@@ -90,7 +90,7 @@ test.describe('shopping lists list', () => {
         body: JSON.stringify({ id: LIST_ID, name: 'Weekly Groceries', items: [] }),
       });
     });
-    await page.route('http://localhost:5117/api/meal-plans', async (route) => {
+    await page.route('http://localhost:5106/api/meal-plans', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

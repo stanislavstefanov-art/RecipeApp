@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 const HOUSEHOLD_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
-const HOUSEHOLD_URL = `http://localhost:5117/api/households/${HOUSEHOLD_ID}`;
-const PERSONS_URL = 'http://localhost:5117/api/persons';
-const ADD_MEMBER_URL = `http://localhost:5117/api/households/${HOUSEHOLD_ID}/members/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`;
+const HOUSEHOLD_URL = `http://localhost:5106/api/households/${HOUSEHOLD_ID}`;
+const PERSONS_URL = 'http://localhost:5106/api/persons';
+const ADD_MEMBER_URL = `http://localhost:5106/api/households/${HOUSEHOLD_ID}/members/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`;
 
 const householdWithMembers = {
   id: HOUSEHOLD_ID,

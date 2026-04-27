@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const IMPORT_URL = 'http://localhost:5117/api/recipes/import';
-const LIST_URL = 'http://localhost:5117/api/recipes';
+const IMPORT_URL = 'http://localhost:5106/api/recipes/import';
+const LIST_URL = 'http://localhost:5106/api/recipes';
 
 function makeResult(overrides: object = {}) {
   return {

@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const PERSON_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
-const PERSON_URL = `http://localhost:5117/api/persons/${PERSON_ID}`;
-const PERSONS_URL = 'http://localhost:5117/api/persons';
+const PERSON_URL = `http://localhost:5106/api/persons/${PERSON_ID}`;
+const PERSONS_URL = 'http://localhost:5106/api/persons';
 
 test.describe('persons details', () => {
   test('renders name, dietary preferences, health concerns, and notes', async ({ page }) => {

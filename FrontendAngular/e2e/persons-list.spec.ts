@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const PERSONS_URL = 'http://localhost:5117/api/persons';
+const PERSONS_URL = 'http://localhost:5106/api/persons';
 
 test.describe('persons list', () => {
   test('renders a list of persons with dietary and health labels', async ({ page }) => {

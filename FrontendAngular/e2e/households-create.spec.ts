@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const HOUSEHOLDS_URL = 'http://localhost:5117/api/households';
+const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
 const NEW_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 
 test.describe('households create', () => {
@@ -41,7 +41,7 @@ test.describe('households create', () => {
       }
     });
 
-    await page.route(`http://localhost:5117/api/households/${NEW_ID}`, async (route) => {
+    await page.route(`http://localhost:5106/api/households/${NEW_ID}`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -49,7 +49,7 @@ test.describe('households create', () => {
       });
     });
 
-    await page.route('http://localhost:5117/api/persons', async (route) => {
+    await page.route('http://localhost:5106/api/persons', async (route) => {
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     });
 

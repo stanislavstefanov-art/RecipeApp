@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '55555555-5555-5555-5555-555555555555';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
 
 function stubDetail(body: unknown) {
   return async (route: import('@playwright/test').Route) => {

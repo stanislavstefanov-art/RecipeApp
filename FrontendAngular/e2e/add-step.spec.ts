@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '77777777-7777-7777-7777-777777777777';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
-const STEPS = `http://localhost:5117/api/recipes/${ID}/steps`;
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
+const STEPS = `http://localhost:5106/api/recipes/${ID}/steps`;
 
 test.describe('add step', () => {
   test('empty instruction shows inline error and issues no request', async ({ page }) => {

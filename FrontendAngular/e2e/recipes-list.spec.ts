@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const API = 'http://localhost:5117/api/recipes';
+const API = 'http://localhost:5106/api/recipes';
 
 test.describe('recipes list', () => {
   test('renders a list of recipes on success', async ({ page }) => {

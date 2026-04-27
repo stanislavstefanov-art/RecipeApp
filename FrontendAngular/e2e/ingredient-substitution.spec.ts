@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const ID = '99999999-9999-9999-9999-999999999999';
-const DETAIL = `http://localhost:5117/api/recipes/${ID}`;
-const SUGGEST = 'http://localhost:5117/api/recipes/suggest-substitutions';
+const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
+const SUGGEST = 'http://localhost:5106/api/recipes/suggest-substitutions';
 
 const RECIPE_BODY = JSON.stringify({
   id: ID,
