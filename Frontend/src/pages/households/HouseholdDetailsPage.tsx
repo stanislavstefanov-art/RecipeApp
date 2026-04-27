@@ -3,10 +3,6 @@ import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { AddHouseholdMemberForm } from "../../features/households/components/AddHouseholdMemberForm";
 import { useHousehold } from "../../features/households/hooks/useHousehold";
-import {
-  getDietaryPreferenceLabel,
-  getHealthConcernLabel,
-} from "../../features/persons/utils";
 
 export function HouseholdDetailsPage() {
   const { t } = useTranslation();
@@ -59,7 +55,7 @@ export function HouseholdDetailsPage() {
                         ) : (
                             <ul className="mt-1 list-disc pl-5 text-sm text-slate-700">
                             {member.dietaryPreferences.map((value, index) => (
-                                <li key={`${value}-${index}`}>{getDietaryPreferenceLabel(value)}</li>
+                                <li key={`${value}-${index}`}>{t('enums.dietaryPreference.' + value)}</li>
                             ))}
                             </ul>
                         )}
@@ -72,7 +68,7 @@ export function HouseholdDetailsPage() {
                         ) : (
                             <ul className="mt-1 list-disc pl-5 text-sm text-slate-700">
                             {member.healthConcerns.map((value, index) => (
-                                <li key={`${value}-${index}`}>{getHealthConcernLabel(value)}</li>
+                                <li key={`${value}-${index}`}>{t('enums.healthConcern.' + value)}</li>
                             ))}
                             </ul>
                         )}

@@ -140,7 +140,7 @@ export class MealPlansDetails {
           this.editingAssignment.set(null);
           this.editSubmitState.set({ kind: 'idle' });
           this.mealPlan.reload();
-          this.toast.show('success', `Assignment updated for ${ea.assignment.personName}`);
+          this.toast.show('success', this.translate.instant('mealPlans.assignmentUpdated', { name: ea.assignment.personName }));
         },
         error: (err: unknown) => {
           this.editSubmitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to update') });

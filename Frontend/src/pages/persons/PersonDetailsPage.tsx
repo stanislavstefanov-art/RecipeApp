@@ -2,10 +2,6 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LoadingState, ErrorState, EmptyState } from "../../components/ui/PageState";
 import { usePerson } from "../../features/persons/hooks/usePerson";
-import {
-  getDietaryPreferenceLabel,
-  getHealthConcernLabel,
-} from "../../features/persons/utils";
 
 export function PersonDetailsPage() {
   const { t } = useTranslation();
@@ -42,7 +38,7 @@ export function PersonDetailsPage() {
             ) : (
               <ul className="mt-2 list-disc pl-5 text-sm text-slate-700">
                 {data.dietaryPreferences.map((item, index) => (
-                <li key={`${item}-${index}`}>{getDietaryPreferenceLabel(item)}</li>
+                <li key={`${item}-${index}`}>{t('enums.dietaryPreference.' + item)}</li>
                 ))}
               </ul>
             )}
@@ -55,7 +51,7 @@ export function PersonDetailsPage() {
             ) : (
               <ul className="mt-2 list-disc pl-5 text-sm text-slate-700">
                 {data.healthConcerns.map((item, index) => (
-                <li key={`${item}-${index}`}>{getHealthConcernLabel(item)}</li>
+                <li key={`${item}-${index}`}>{t('enums.healthConcern.' + item)}</li>
                 ))}
               </ul>
             )}

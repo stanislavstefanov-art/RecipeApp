@@ -1,17 +1,4 @@
-import i18n from '../../i18n';
 import { getCurrentIntlLocale } from '../../i18n';
-
-export function getExpenseCategoryLabel(value: number) {
-  const key = `enums.expenseCategory.${value}`;
-  const translated = i18n.t(key);
-  return translated !== key ? translated : `Category ${value}`;
-}
-
-export function getExpenseSourceTypeLabel(value: number) {
-  const key = `enums.expenseSourceType.${value}`;
-  const translated = i18n.t(key);
-  return translated !== key ? translated : `Source ${value}`;
-}
 
 export function formatCurrency(amount: number, currency: string) {
   try {

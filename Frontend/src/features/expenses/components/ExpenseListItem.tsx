@@ -1,23 +1,20 @@
+import { useTranslation } from "react-i18next";
 import type { Expense } from "../schemas";
-import {
-  formatCurrency,
-  formatDate,
-  getExpenseCategoryLabel,
-  getExpenseSourceTypeLabel,
-} from "../utils";
+import { formatCurrency, formatDate } from "../utils";
 
 type Props = {
   expense: Expense;
 };
 
 export function ExpenseListItem({ expense }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border bg-white p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="font-medium">{expense.description}</h3>
           <p className="mt-1 text-sm text-slate-500">
-            {getExpenseCategoryLabel(expense.category)} · {getExpenseSourceTypeLabel(expense.sourceType)}
+            {t('enums.expenseCategory.' + expense.category)} · {t('enums.expenseSourceType.' + expense.sourceType)}
           </p>
           <p className="mt-1 text-sm text-slate-500">
             {formatDate(expense.expenseDate)}

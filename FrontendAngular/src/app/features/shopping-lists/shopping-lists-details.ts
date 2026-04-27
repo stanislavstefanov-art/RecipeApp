@@ -134,7 +134,7 @@ export class ShoppingListsDetails {
           this.purchasingItem.set(null);
           this.purchaseState.set({ kind: 'idle' });
           this.shoppingList.reload();
-          this.toast.show('success', 'Item purchased and expense recorded');
+          this.toast.show('success', this.translate.instant('shoppingLists.itemPurchased'));
         },
         error: (err: unknown) => {
           this.purchaseState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
@@ -154,7 +154,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.generateState.set({ kind: 'idle' });
           this.shoppingList.reload();
-          this.toast.show('success', 'Shopping list generated from meal plan');
+          this.toast.show('success', this.translate.instant('shoppingLists.listGenerated'));
         },
         error: (err: unknown) => {
           this.generateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
@@ -174,7 +174,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.regenerateState.set({ kind: 'idle' });
           this.shoppingList.reload();
-          this.toast.show('success', 'Shopping list regenerated');
+          this.toast.show('success', this.translate.instant('shoppingLists.listRegenerated'));
         },
         error: (err: unknown) => {
           this.regenerateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });

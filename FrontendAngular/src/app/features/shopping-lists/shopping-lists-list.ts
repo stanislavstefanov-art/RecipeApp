@@ -60,7 +60,7 @@ export class ShoppingListsList {
           this.nameControl.reset();
           this.submitState.set({ kind: 'idle' });
           this.shoppingLists.reload();
-          this.toast.show('success', 'Shopping list created');
+          this.toast.show('success', this.translate.instant('shoppingLists.listCreated'));
         },
         error: (err: unknown) => {
           this.submitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to create') });

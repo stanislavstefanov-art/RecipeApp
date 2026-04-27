@@ -114,6 +114,7 @@
   },
   "mealPlans": {
     "title": "Meal plans",
+    "baseRecipeId": "Base recipe ID: {{id}}",
     "newMealPlan": "New meal plan",
     "noMealPlans": "No meal plans yet.",
     "suggest": "Suggest plan",

@@ -86,7 +86,7 @@ export class ExpensesList {
           this.createForm.reset({ currency: 'USD' });
           this.submitState.set({ kind: 'idle' });
           this.expenses.reload();
-          this.toast.show('success', 'Expense recorded');
+          this.toast.show('success', this.translate.instant('expenses.expenseRecorded'));
         },
         error: (err: unknown) => {
           this.submitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to create') });
