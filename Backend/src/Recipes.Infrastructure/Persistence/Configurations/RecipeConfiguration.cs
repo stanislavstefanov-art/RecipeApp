@@ -49,6 +49,11 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .WithOne()
             .HasForeignKey(s => s.RecipeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(r => r.Ratings)
+            .WithOne()
+            .HasForeignKey(r => r.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

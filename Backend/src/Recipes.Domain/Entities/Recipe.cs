@@ -8,6 +8,7 @@ public sealed class Recipe : Entity
     private readonly List<RecipeIngredient> _ingredients = new();
     private readonly List<RecipeStep> _steps = new();
     private readonly List<RecipeVariation> _variations = new();
+    private readonly List<RecipeRating> _ratings = new();
 
     public RecipeId Id { get; private set; } = RecipeId.New();
     public RecipeName Name { get; private set; }
@@ -16,6 +17,11 @@ public sealed class Recipe : Entity
     public IReadOnlyCollection<RecipeIngredient> Ingredients => _ingredients.AsReadOnly();
     public IReadOnlyCollection<RecipeStep> Steps => _steps.AsReadOnly();
     public IReadOnlyCollection<RecipeVariation> Variations => _variations.AsReadOnly();
+    public IReadOnlyCollection<RecipeRating> Ratings => _ratings.AsReadOnly();
+
+    public double? AverageStars =>
+        _ratings.Count > 0 ? Math.Round(_ratings.Average(r => r.Stars), 1) : null;
+    public int RatingCount => _ratings.Count;
 
     private Recipe() { }
 
@@ -96,5 +102,30 @@ public sealed class Recipe : Entity
         _variations.Add(variation);
 
         return variation;
+    }
+
+    public RecipeRating Rate(UserId userId, int stars, string? comment, DateTimeOffset now)
+    {
+        if (stars < 1 || stars > 5)
+            throw new ArgumentOutOfRangeException(nameof(stars), "Stars must be between 1 and 5.");
+
+        var existing = _ratings.SingleOrDefault(r => r.UserId == userId);
+        if (existing is not null)
+        {
+            existing.Update(stars, comment, now);
+            return existing;
+        }
+
+        var rating = new RecipeRating(Id, userId, stars, comment, now);
+        _ratings.Add(rating);
+        return rating;
+    }
+
+    public bool RemoveRating(UserId userId)
+    {
+        var existing = _ratings.SingleOrDefault(r => r.UserId == userId);
+        if (existing is null) return false;
+        _ratings.Remove(existing);
+        return true;
     }
 }
