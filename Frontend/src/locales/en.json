@@ -226,13 +226,29 @@
     "creating": "Creating…",
     "createDesc": "Track food and household-related spending."
   },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Display name",
+    "signInWithMicrosoft": "Sign in with Microsoft",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "welcomeBack": "Welcome back",
+    "welcome": "Create your account",
+    "logout": "Log out"
+  },
   "validation": {
     "required": "This field is required.",
     "minLength": "Minimum length is {{min}} characters.",
     "maxLength": "Maximum length is {{max}} characters.",
     "greaterThan": "Value must be greater than {{min}}.",
     "positiveNumber": "Value must be a positive number.",
-    "invalidDate": "Invalid date."
+    "invalidDate": "Invalid date.",
+    "email": "Please enter a valid email address.",
+    "passwordLetter": "Password must contain at least one letter.",
+    "passwordDigit": "Password must contain at least one digit."
   },
   "enums": {
     "dietaryPreference": {
@@ -277,6 +293,12 @@
     "AI.output_validation": "Invalid response from the AI service.",
     "Recipe.NotFound": "Recipe not found.",
     "Household.NotFound": "Household not found.",
-    "MealPlanSuggestion.NoHouseholdMembers": "The household has no members."
+    "MealPlanSuggestion.NoHouseholdMembers": "The household has no members.",
+    "AuthRequired": "Please log in to continue.",
+    "InvalidCredentials": "Wrong email or password.",
+    "EmailExists": "An account with this email already exists.",
+    "AuthProviderMismatch": "This email is registered with a password — log in that way instead.",
+    "SessionExpired": "Your session has expired. Please log in again.",
+    "NotAMember": "You don't have access to this household."
   }
 }

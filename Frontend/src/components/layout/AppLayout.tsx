@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useUiStore } from "../../stores/uiStore";
 import { ToastViewport } from "../ui/ToastViewport";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
+import { UserMenu } from "../../features/auth/components/UserMenu";
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   isActive
@@ -28,6 +29,7 @@ export function AppLayout() {
 
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+            <UserMenu />
 
             <button
               type="button"
