@@ -95,6 +95,7 @@ public static class DependencyInjection
         services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
         services.AddScoped<IRecipesDbContext>(sp => sp.GetRequiredService<RecipesDbContext>());
         services.AddScoped<IRecipeRepository, RecipeRepository>();
+        services.AddScoped<ICookingLogRepository, CookingLogRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
         services.AddScoped<IMealPlanRepository, MealPlanRepository>();
