@@ -316,6 +316,19 @@
     "descriptionOptional": "Описание (незадължително)",
     "loadInsights": "Зареждане на анализ…"
   },
+  "auth": {
+    "signIn": "Вход",
+    "signUp": "Регистрация",
+    "email": "Имейл",
+    "password": "Парола",
+    "displayName": "Показвано име",
+    "signInWithMicrosoft": "Влез с Microsoft",
+    "noAccount": "Нямате акаунт?",
+    "haveAccount": "Вече имате акаунт?",
+    "welcomeBack": "Добре дошли обратно",
+    "welcome": "Създайте акаунт",
+    "logout": "Изход"
+  },
   "validation": {
     "required": "Полето е задължително.",
     "minLength": "Минималната дължина е {{min}} знака.",
@@ -323,7 +336,10 @@
     "greaterThan": "Стойността трябва да е по-голяма от {{min}}.",
     "range": "Стойността трябва да е между {{min}} и {{max}}.",
     "positiveNumber": "Стойността трябва да е положително число.",
-    "invalidDate": "Невалидна дата."
+    "invalidDate": "Невалидна дата.",
+    "email": "Моля, въведете валиден имейл адрес.",
+    "passwordLetter": "Паролата трябва да съдържа поне една буква.",
+    "passwordDigit": "Паролата трябва да съдържа поне една цифра."
   },
   "enums": {
     "dietaryPreference": {
@@ -369,6 +385,12 @@
     "AI.output_validation": "Невалиден отговор от AI услугата.",
     "Recipe.NotFound": "Рецептата не е намерена.",
     "Household.NotFound": "Домакинството не е намерено.",
-    "MealPlanSuggestion.NoHouseholdMembers": "Домакинството няма членове."
+    "MealPlanSuggestion.NoHouseholdMembers": "Домакинството няма членове.",
+    "AuthRequired": "Моля, влезте в системата, за да продължите.",
+    "InvalidCredentials": "Грешен имейл или парола.",
+    "EmailExists": "Акаунт с този имейл вече съществува.",
+    "AuthProviderMismatch": "Този имейл е регистриран с парола — влезте по този начин.",
+    "SessionExpired": "Сесията ви е изтекла. Моля, влезте отново.",
+    "NotAMember": "Нямате достъп до това домакинство."
   }
 }

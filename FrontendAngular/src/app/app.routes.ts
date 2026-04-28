@@ -1,100 +1,111 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register.component').then((m) => m.RegisterComponent),
+  },
+  {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'recipes',
-  },
-  {
-    path: 'recipes',
-    loadComponent: () => import('./features/recipes/recipes-list').then((m) => m.RecipesList),
-  },
-  {
-    path: 'recipes/new',
-    loadComponent: () =>
-      import('./features/recipes/recipes-create').then((m) => m.RecipesCreate),
-  },
-  {
-    path: 'recipes/import',
-    loadComponent: () =>
-      import('./features/recipes/recipes-import').then((m) => m.RecipesImport),
-  },
-  {
-    path: 'recipes/:id',
-    loadComponent: () =>
-      import('./features/recipes/recipes-details').then((m) => m.RecipesDetails),
-  },
-  {
-    path: 'persons',
-    loadComponent: () =>
-      import('./features/persons/persons-list').then((m) => m.PersonsList),
-  },
-  {
-    path: 'persons/new',
-    loadComponent: () =>
-      import('./features/persons/persons-create').then((m) => m.PersonsCreate),
-  },
-  {
-    path: 'persons/:id',
-    loadComponent: () =>
-      import('./features/persons/persons-details').then((m) => m.PersonsDetails),
-  },
-  {
-    path: 'households',
-    loadComponent: () =>
-      import('./features/households/households-list').then((m) => m.HouseholdsList),
-  },
-  {
-    path: 'households/new',
-    loadComponent: () =>
-      import('./features/households/households-create').then((m) => m.HouseholdsCreate),
-  },
-  {
-    path: 'households/:id',
-    loadComponent: () =>
-      import('./features/households/households-details').then((m) => m.HouseholdsDetails),
-  },
-  {
-    path: 'meal-plans',
-    loadComponent: () =>
-      import('./features/meal-plans/meal-plans-list').then((m) => m.MealPlansList),
-  },
-  {
-    path: 'meal-plans/new',
-    loadComponent: () =>
-      import('./features/meal-plans/meal-plans-create').then((m) => m.MealPlansCreate),
-  },
-  {
-    path: 'meal-plans/suggest',
-    loadComponent: () =>
-      import('./features/meal-plans/meal-plans-suggest').then((m) => m.MealPlansSuggest),
-  },
-  {
-    path: 'meal-plans/:id',
-    loadComponent: () =>
-      import('./features/meal-plans/meal-plans-details').then((m) => m.MealPlansDetails),
-  },
-  {
-    path: 'shopping-lists',
-    loadComponent: () =>
-      import('./features/shopping-lists/shopping-lists-list').then((m) => m.ShoppingListsList),
-  },
-  {
-    path: 'shopping-lists/:id',
-    loadComponent: () =>
-      import('./features/shopping-lists/shopping-lists-details').then(
-        (m) => m.ShoppingListsDetails,
-      ),
-  },
-  {
-    path: 'expenses',
-    loadComponent: () =>
-      import('./features/expenses/expenses-list').then((m) => m.ExpensesList),
-  },
-  {
-    path: 'expenses/report',
-    loadComponent: () =>
-      import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'recipes' },
+      {
+        path: 'recipes',
+        loadComponent: () => import('./features/recipes/recipes-list').then((m) => m.RecipesList),
+      },
+      {
+        path: 'recipes/new',
+        loadComponent: () =>
+          import('./features/recipes/recipes-create').then((m) => m.RecipesCreate),
+      },
+      {
+        path: 'recipes/import',
+        loadComponent: () =>
+          import('./features/recipes/recipes-import').then((m) => m.RecipesImport),
+      },
+      {
+        path: 'recipes/:id',
+        loadComponent: () =>
+          import('./features/recipes/recipes-details').then((m) => m.RecipesDetails),
+      },
+      {
+        path: 'persons',
+        loadComponent: () =>
+          import('./features/persons/persons-list').then((m) => m.PersonsList),
+      },
+      {
+        path: 'persons/new',
+        loadComponent: () =>
+          import('./features/persons/persons-create').then((m) => m.PersonsCreate),
+      },
+      {
+        path: 'persons/:id',
+        loadComponent: () =>
+          import('./features/persons/persons-details').then((m) => m.PersonsDetails),
+      },
+      {
+        path: 'households',
+        loadComponent: () =>
+          import('./features/households/households-list').then((m) => m.HouseholdsList),
+      },
+      {
+        path: 'households/new',
+        loadComponent: () =>
+          import('./features/households/households-create').then((m) => m.HouseholdsCreate),
+      },
+      {
+        path: 'households/:id',
+        loadComponent: () =>
+          import('./features/households/households-details').then((m) => m.HouseholdsDetails),
+      },
+      {
+        path: 'meal-plans',
+        loadComponent: () =>
+          import('./features/meal-plans/meal-plans-list').then((m) => m.MealPlansList),
+      },
+      {
+        path: 'meal-plans/new',
+        loadComponent: () =>
+          import('./features/meal-plans/meal-plans-create').then((m) => m.MealPlansCreate),
+      },
+      {
+        path: 'meal-plans/suggest',
+        loadComponent: () =>
+          import('./features/meal-plans/meal-plans-suggest').then((m) => m.MealPlansSuggest),
+      },
+      {
+        path: 'meal-plans/:id',
+        loadComponent: () =>
+          import('./features/meal-plans/meal-plans-details').then((m) => m.MealPlansDetails),
+      },
+      {
+        path: 'shopping-lists',
+        loadComponent: () =>
+          import('./features/shopping-lists/shopping-lists-list').then((m) => m.ShoppingListsList),
+      },
+      {
+        path: 'shopping-lists/:id',
+        loadComponent: () =>
+          import('./features/shopping-lists/shopping-lists-details').then(
+            (m) => m.ShoppingListsDetails,
+          ),
+      },
+      {
+        path: 'expenses',
+        loadComponent: () =>
+          import('./features/expenses/expenses-list').then((m) => m.ExpensesList),
+      },
+      {
+        path: 'expenses/report',
+        loadComponent: () =>
+          import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
+      },
+    ],
   },
 ];
