@@ -17,6 +17,8 @@ using Recipes.Application.Recipes.ReviewRecipeDraft;
 using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
+using Recipes.Application.Recipes.DeleteRecipeRating;
+using Recipes.Application.Recipes.RateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 
 namespace Recipes.Api.Endpoints;
@@ -90,6 +92,18 @@ public static class RecipesEndpoints
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new DeleteRecipeCommand(id), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{id:guid}/ratings", async (Guid id, RateRecipeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new RateRecipeCommand(id, request.Stars, request.Comment), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
+
+        group.MapDelete("/{id:guid}/ratings", async (Guid id, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteRecipeRatingCommand(id), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -197,3 +211,5 @@ public sealed record RecipeVariationIngredientOverrideRequest(string IngredientN
 public sealed record ScaleRecipeRequest(int FromServings, int ToServings);
 
 public sealed record BatchAnalyzeRequest(IReadOnlyList<Guid> RecipeIds);
+
+public sealed record RateRecipeRequest(int Stars, string? Comment);
