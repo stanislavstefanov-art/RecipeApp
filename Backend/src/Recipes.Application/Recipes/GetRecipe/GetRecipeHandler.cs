@@ -1,6 +1,7 @@
 using ErrorOr;
 using MediatR;
 using Recipes.Application.Common;
+using Recipes.Application.Recipes;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -36,10 +37,21 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<R
             }
         }
 
+        var myUserId = _currentUser.UserId;
+        var ratingDtos = recipe.Ratings
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new RecipeRatingDto(r.Id.Value, r.UserId.Value, r.Stars, r.Comment, r.CreatedAt, r.UpdatedAt))
+            .ToList();
+        var myRating = ratingDtos.FirstOrDefault(r => r.UserId == myUserId.Value);
+
         return new RecipeDto(
             recipe.Id.Value,
             recipe.Name.Value,
             recipe.Ingredients.Select(i => new IngredientDto(i.Name, i.Quantity, i.Unit)).ToList(),
-            recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList());
+            recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList(),
+            recipe.AverageStars,
+            recipe.RatingCount,
+            ratingDtos,
+            myRating);
     }
 }

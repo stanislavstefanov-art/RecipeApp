@@ -9,7 +9,11 @@ public sealed record RecipeDto(
     Guid Id,
     string Name,
     IReadOnlyList<IngredientDto> Ingredients,
-    IReadOnlyList<RecipeStepDto> Steps);
+    IReadOnlyList<RecipeStepDto> Steps,
+    double? AverageStars,
+    int RatingCount,
+    IReadOnlyList<RecipeRatingDto> Ratings,
+    RecipeRatingDto? MyRating);
 
 public sealed record IngredientDto(string Name, decimal Quantity, string Unit);
 

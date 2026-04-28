@@ -18,6 +18,7 @@ public sealed class RecipeRepository : IRecipeRepository
         => await _db.Recipes
             .Include(r => r.Ingredients)
             .Include(r => r.Steps)
+            .Include(r => r.Ratings)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
 
     public async Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -31,6 +32,7 @@ public sealed class RecipeRepository : IRecipeRepository
         CancellationToken cancellationToken = default)
         => await _db.Recipes
             .AsNoTracking()
+            .Include(r => r.Ratings)
             .Where(r => r.HouseholdId != null && householdIds.Contains(r.HouseholdId.Value))
             .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
