@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Recipes.Application.Common;
 using Recipes.Application.Expenses.CreateExpense;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Primitives;
@@ -8,11 +9,13 @@ namespace Recipes.Application.Tests.Expenses.CreateExpense;
 
 public sealed class CreateExpenseHandlerTests
 {
+    private static readonly Guid TestHouseholdId = Guid.NewGuid();
+
     [Fact]
     public async Task Should_Create_Expense()
     {
         var repository = new FakeExpenseRepository();
-        var handler = new CreateExpenseHandler(repository);
+        var handler = new CreateExpenseHandler(repository, new FakeCurrentUser());
 
         var result = await handler.Handle(
             new CreateExpenseCommand(
@@ -22,7 +25,8 @@ public sealed class CreateExpenseHandlerTests
                 1,
                 "Groceries",
                 1,
-                null),
+                null,
+                TestHouseholdId),
             CancellationToken.None);
 
         result.IsError.Should().BeFalse();
@@ -49,8 +53,24 @@ public sealed class CreateExpenseHandlerTests
             => Task.FromResult((IReadOnlyList<Expense>)Stored
                 .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
                 .ToList());
+        public Task<IReadOnlyList<Expense>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Expense>)Stored);
+
+        public Task<IReadOnlyList<Expense>> GetByMonthAndHouseholdIdsAsync(int year, int month, IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Expense>)Stored
+                .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
+                .ToList());
+
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+    }
+
+    private sealed class FakeCurrentUser : ICurrentUser
+    {
+        public UserId UserId { get; } = UserId.New();
+        public Task<IReadOnlyList<HouseholdId>> GetHouseholdIdsAsync(CancellationToken ct)
+            => Task.FromResult<IReadOnlyList<HouseholdId>>([HouseholdId.From(TestHouseholdId)]);
+        public void InvalidateHouseholdCache() { }
     }
 }

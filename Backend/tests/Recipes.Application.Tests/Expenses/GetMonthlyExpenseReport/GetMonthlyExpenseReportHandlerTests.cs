@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Recipes.Application.Common;
 using Recipes.Application.Expenses.GetMonthlyExpenseReport;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Enums;
@@ -19,7 +20,7 @@ public sealed class GetMonthlyExpenseReportHandlerTests
             new Expense(30m, "BGN", new DateOnly(2026, 4, 3), ExpenseCategory.Food, "More groceries", ExpenseSourceType.Manual)
         ]);
 
-        var handler = new GetMonthlyExpenseReportHandler(repository);
+        var handler = new GetMonthlyExpenseReportHandler(repository, new FakeCurrentUser());
 
         var result = await handler.Handle(new GetMonthlyExpenseReportQuery(2026, 4), CancellationToken.None);
 
@@ -59,8 +60,23 @@ public sealed class GetMonthlyExpenseReportHandlerTests
             => Task.FromResult((IReadOnlyList<Expense>)_expenses
                 .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
                 .ToList());
+        public Task<IReadOnlyList<Expense>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Expense>)_expenses);
+
+        public Task<IReadOnlyList<Expense>> GetByMonthAndHouseholdIdsAsync(int year, int month, IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Expense>)_expenses
+                .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
+                .ToList());
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+    }
+
+    private sealed class FakeCurrentUser : ICurrentUser
+    {
+        public UserId UserId { get; } = UserId.New();
+        public Task<IReadOnlyList<HouseholdId>> GetHouseholdIdsAsync(CancellationToken ct)
+            => Task.FromResult<IReadOnlyList<HouseholdId>>([]);
+        public void InvalidateHouseholdCache() { }
     }
 }

@@ -23,6 +23,14 @@ public sealed class ShoppingListConfiguration : IEntityTypeConfiguration<Shoppin
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(x => x.HouseholdId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? HouseholdId.From(value.Value) : null)
+            .IsRequired(false);
+
+        builder.HasIndex(x => x.HouseholdId);
+
         builder.HasMany(x => x.Items)
             .WithOne()
             .HasForeignKey(x => x.ShoppingListId)

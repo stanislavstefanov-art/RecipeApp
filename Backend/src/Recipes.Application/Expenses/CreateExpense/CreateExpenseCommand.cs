@@ -10,4 +10,5 @@ public sealed record CreateExpenseCommand(
     int Category,
     string Description,
     int SourceType,
-    Guid? SourceReferenceId) : IRequest<ErrorOr<CreateExpenseResponse>>;
+    Guid? SourceReferenceId,
+    Guid HouseholdId) : IRequest<ErrorOr<CreateExpenseResponse>>;

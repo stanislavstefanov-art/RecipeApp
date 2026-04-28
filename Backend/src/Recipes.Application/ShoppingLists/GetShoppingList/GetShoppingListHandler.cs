@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -9,10 +10,12 @@ public sealed class GetShoppingListHandler
     : IRequestHandler<GetShoppingListQuery, ErrorOr<ShoppingListDetailsDto>>
 {
     private readonly IShoppingListRepository _shoppingListRepository;
+    private readonly ICurrentUser _currentUser;
 
-    public GetShoppingListHandler(IShoppingListRepository shoppingListRepository)
+    public GetShoppingListHandler(IShoppingListRepository shoppingListRepository, ICurrentUser currentUser)
     {
         _shoppingListRepository = shoppingListRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<ShoppingListDetailsDto>> Handle(
@@ -27,6 +30,17 @@ public sealed class GetShoppingListHandler
             return Error.NotFound(
                 "ShoppingList.NotFound",
                 $"Shopping list '{request.ShoppingListId}' was not found.");
+        }
+
+        if (shoppingList.HouseholdId.HasValue)
+        {
+            var memberIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+            if (!memberIds.Contains(shoppingList.HouseholdId.Value))
+            {
+                return Error.NotFound(
+                    "ShoppingList.NotFound",
+                    $"Shopping list '{request.ShoppingListId}' was not found.");
+            }
         }
 
         return new ShoppingListDetailsDto(

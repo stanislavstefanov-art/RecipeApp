@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Enums;
 using Recipes.Domain.Repositories;
 
@@ -9,17 +10,20 @@ public sealed class GetMonthlyExpenseReportHandler
     : IRequestHandler<GetMonthlyExpenseReportQuery, ErrorOr<MonthlyExpenseReportDto>>
 {
     private readonly IExpenseRepository _expenseRepository;
+    private readonly ICurrentUser _currentUser;
 
-    public GetMonthlyExpenseReportHandler(IExpenseRepository expenseRepository)
+    public GetMonthlyExpenseReportHandler(IExpenseRepository expenseRepository, ICurrentUser currentUser)
     {
         _expenseRepository = expenseRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<MonthlyExpenseReportDto>> Handle(
         GetMonthlyExpenseReportQuery request,
         CancellationToken cancellationToken)
     {
-        var expenses = await _expenseRepository.GetByMonthAsync(request.Year, request.Month, cancellationToken);
+        var householdIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+        var expenses = await _expenseRepository.GetByMonthAndHouseholdIdsAsync(request.Year, request.Month, householdIds, cancellationToken);
 
         if (expenses.Count == 0)
         {

@@ -96,7 +96,8 @@ if (app.Environment.IsDevelopment())
         }
         if (!await db.Recipes.AnyAsync())
         {
-            var seeder = new DemoDataSeeder(db);
+            var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+            var seeder = new DemoDataSeeder(db, passwordHasher);
             await seeder.SeedAsync(default);
         }
     }

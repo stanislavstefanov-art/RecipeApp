@@ -12,5 +12,6 @@ public sealed class CreateExpenseValidator : AbstractValidator<CreateExpenseComm
         RuleFor(x => x.Description).NotEmpty().MaximumLength(500);
         RuleFor(x => x.Category).Must(x => Enum.IsDefined(typeof(ExpenseCategory), x));
         RuleFor(x => x.SourceType).Must(x => Enum.IsDefined(typeof(ExpenseSourceType), x));
+        RuleFor(x => x.HouseholdId).NotEmpty();
     }
 }

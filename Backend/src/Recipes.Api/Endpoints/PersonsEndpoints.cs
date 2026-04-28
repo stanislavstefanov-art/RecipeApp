@@ -27,7 +27,8 @@ public static class PersonsEndpoints
                     request.Name,
                     request.DietaryPreferences,
                     request.HealthConcerns,
-                    request.Notes),
+                    request.Notes,
+                    request.HouseholdId),
                 ct);
 
             return result.ToHttpResult(response => Results.Created($"/api/persons/{response.Id}", response));
@@ -47,4 +48,5 @@ public sealed record CreatePersonRequest(
     string Name,
     IReadOnlyList<int> DietaryPreferences,
     IReadOnlyList<int> HealthConcerns,
-    string? Notes);
+    string? Notes,
+    Guid HouseholdId);

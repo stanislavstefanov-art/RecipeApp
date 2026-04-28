@@ -1,3 +1,4 @@
+using Recipes.Application.Common.Auth;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Enums;
 
@@ -6,34 +7,46 @@ namespace Recipes.Infrastructure.Persistence;
 public sealed class DemoDataSeeder
 {
     private readonly RecipesDbContext _db;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public DemoDataSeeder(RecipesDbContext db)
+    public DemoDataSeeder(RecipesDbContext db, IPasswordHasher passwordHasher)
     {
         _db = db;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task SeedAsync(CancellationToken cancellationToken)
     {
-        var stan      = new Person("Stanislav", [DietaryPreference.HighProtein], [], "Prefers high-protein meals; avoids overly sweet desserts.");
-        var elena     = new Person("Elena", [DietaryPreference.Pescatarian], [HealthConcern.HighBloodPressure], "Watching sodium; loves Mediterranean cuisine.");
-        var milo      = new Person("Milo", [], [], "Picky eater; loves pasta and bread.");
-        var alex      = new Person("Alex", [DietaryPreference.Vegetarian], [HealthConcern.GlutenIntolerance], "No gluten; prefers hearty plant-based meals.");
-        var jordan    = new Person("Jordan", [], [HealthConcern.Diabetes], "Diabetic; low refined-sugar.");
+        // Create households first so we can assign their IDs to persons and other entities.
+        var stefanovs = new Household("The Stefanovs");
+        var roommates = new Household("Roommates");
+
+        // Create a demo user and add to both households.
+        var demoUser = User.CreateLocal("demo@recipesapp.local", _passwordHasher.Hash("Demo@1234"), "Demo User");
+        _db.Users.Add(demoUser);
+
+        var now = DateTimeOffset.UtcNow;
+        stefanovs.AddUser(demoUser.Id, now);
+        roommates.AddUser(demoUser.Id, now);
+
+        var stan      = new Person("Stanislav", [DietaryPreference.HighProtein], [], "Prefers high-protein meals; avoids overly sweet desserts.", stefanovs.Id);
+        var elena     = new Person("Elena", [DietaryPreference.Pescatarian], [HealthConcern.HighBloodPressure], "Watching sodium; loves Mediterranean cuisine.", stefanovs.Id);
+        var milo      = new Person("Milo", [], [], "Picky eater; loves pasta and bread.", stefanovs.Id);
+        var alex      = new Person("Alex", [DietaryPreference.Vegetarian], [HealthConcern.GlutenIntolerance], "No gluten; prefers hearty plant-based meals.", roommates.Id);
+        var jordan    = new Person("Jordan", [], [HealthConcern.Diabetes], "Diabetic; low refined-sugar.", roommates.Id);
 
         _db.Persons.AddRange(stan, elena, milo, alex, jordan);
 
-        var stefanovs = new Household("The Stefanovs");
         stefanovs.AddPerson(stan);
         stefanovs.AddPerson(elena);
         stefanovs.AddPerson(milo);
 
-        var roommates = new Household("Roommates");
         roommates.AddPerson(alex);
         roommates.AddPerson(jordan);
 
         _db.Households.AddRange(stefanovs, roommates);
 
-        var carbonara = new Recipe("Pasta Carbonara");
+        var carbonara = new Recipe("Pasta Carbonara", stefanovs.Id);
         carbonara.AddIngredient("spaghetti", 400m, "g");
         carbonara.AddIngredient("guanciale", 150m, "g");
         carbonara.AddIngredient("egg yolks", 4m, "pcs");
@@ -46,7 +59,7 @@ public sealed class DemoDataSeeder
         carbonara.AddStep("Off the heat, toss pasta with the guanciale, then add the egg-cheese mixture and a splash of pasta water until silky.");
         carbonara.AddVariation("vegetarian", "Replace guanciale with sautéed cremini mushrooms.", "Use 200 g cremini mushrooms in place of guanciale.");
 
-        var greekSalad = new Recipe("Greek Salad");
+        var greekSalad = new Recipe("Greek Salad", stefanovs.Id);
         greekSalad.AddIngredient("cucumber", 1m, "pcs");
         greekSalad.AddIngredient("tomato", 3m, "pcs");
         greekSalad.AddIngredient("red onion", 0.5m, "pcs");
@@ -58,7 +71,7 @@ public sealed class DemoDataSeeder
         greekSalad.AddStep("Combine in a bowl with olives and crumble feta over the top.");
         greekSalad.AddStep("Dress with olive oil and oregano. Toss gently before serving.");
 
-        var chickenCurry = new Recipe("Chicken Curry");
+        var chickenCurry = new Recipe("Chicken Curry", stefanovs.Id);
         chickenCurry.AddIngredient("chicken thighs", 600m, "g");
         chickenCurry.AddIngredient("onion", 1m, "pcs");
         chickenCurry.AddIngredient("garlic", 4m, "cloves");
@@ -72,7 +85,7 @@ public sealed class DemoDataSeeder
         chickenCurry.AddStep("Return chicken to the pan, pour in coconut milk and simmer for 25 minutes.");
         chickenCurry.AddStep("Serve over freshly cooked rice.");
 
-        var bananaBread = new Recipe("Banana Bread");
+        var bananaBread = new Recipe("Banana Bread", stefanovs.Id);
         bananaBread.AddIngredient("ripe banana", 3m, "pcs");
         bananaBread.AddIngredient("butter", 100m, "g");
         bananaBread.AddIngredient("sugar", 150m, "g");
@@ -85,7 +98,7 @@ public sealed class DemoDataSeeder
         bananaBread.AddStep("Fold flour and baking soda into the wet mixture.");
         bananaBread.AddStep("Pour into the tin and bake for 50–60 minutes until a skewer comes out clean.");
 
-        var trayBake = new Recipe("Mediterranean Tray Bake");
+        var trayBake = new Recipe("Mediterranean Tray Bake", stefanovs.Id);
         trayBake.AddIngredient("chicken drumsticks", 8m, "pcs");
         trayBake.AddIngredient("baby potatoes", 500m, "g");
         trayBake.AddIngredient("cherry tomatoes", 250m, "g");
@@ -97,7 +110,7 @@ public sealed class DemoDataSeeder
         trayBake.AddStep("Nestle drumsticks among the vegetables.");
         trayBake.AddStep("Roast for 35 minutes; add tomatoes and roast 10 minutes more until everything is golden.");
 
-        var lentilSoup = new Recipe("Lentil Soup");
+        var lentilSoup = new Recipe("Lentil Soup", stefanovs.Id);
         lentilSoup.AddIngredient("brown lentils", 250m, "g");
         lentilSoup.AddIngredient("carrot", 2m, "pcs");
         lentilSoup.AddIngredient("celery", 2m, "stalks");
@@ -109,7 +122,7 @@ public sealed class DemoDataSeeder
         lentilSoup.AddStep("Pour in stock, bring to a boil, then simmer 30 minutes until lentils are tender.");
         lentilSoup.AddStep("Season to taste and finish with a squeeze of lemon.");
 
-        var beefStew = new Recipe("Beef Stew");
+        var beefStew = new Recipe("Beef Stew", stefanovs.Id);
         beefStew.AddIngredient("beef chuck", 800m, "g");
         beefStew.AddIngredient("potato", 4m, "pcs");
         beefStew.AddIngredient("carrot", 3m, "pcs");
@@ -121,7 +134,7 @@ public sealed class DemoDataSeeder
         beefStew.AddStep("Stir in tomato paste, return beef and pour in stock.");
         beefStew.AddStep("Cover and simmer for 90 minutes until beef is fork-tender.");
 
-        var stirFry = new Recipe("Vegetable Stir-Fry");
+        var stirFry = new Recipe("Vegetable Stir-Fry", stefanovs.Id);
         stirFry.AddIngredient("broccoli florets", 300m, "g");
         stirFry.AddIngredient("bell pepper", 1m, "pcs");
         stirFry.AddIngredient("carrot", 1m, "pcs");
@@ -133,7 +146,7 @@ public sealed class DemoDataSeeder
         stirFry.AddStep("Add carrot and broccoli; toss for 3 minutes.");
         stirFry.AddStep("Add bell pepper, soy sauce and sesame oil; toss 1 minute more and serve.");
 
-        var risotto = new Recipe("Mushroom Risotto");
+        var risotto = new Recipe("Mushroom Risotto", stefanovs.Id);
         risotto.AddIngredient("arborio rice", 320m, "g");
         risotto.AddIngredient("cremini mushrooms", 300m, "g");
         risotto.AddIngredient("onion", 1m, "pcs");
@@ -147,7 +160,7 @@ public sealed class DemoDataSeeder
         risotto.AddStep("Pour in wine, let it absorb, then add hot stock a ladle at a time, stirring until creamy.");
         risotto.AddStep("Off the heat, fold in grated parmesan.");
 
-        var oats = new Recipe("Breakfast Oats");
+        var oats = new Recipe("Breakfast Oats", stefanovs.Id);
         oats.AddIngredient("rolled oats", 80m, "g");
         oats.AddIngredient("milk", 250m, "ml");
         oats.AddIngredient("banana", 1m, "pcs");
@@ -189,7 +202,7 @@ public sealed class DemoDataSeeder
 
         _db.Products.AddRange(products);
 
-        var shoppingList = new ShoppingList("This week's groceries");
+        var shoppingList = new ShoppingList("This week's groceries", stefanovs.Id);
         var pickedProducts = products.Take(12).ToList();
         for (var i = 0; i < pickedProducts.Count; i++)
         {
@@ -218,16 +231,16 @@ public sealed class DemoDataSeeder
         var lastMonth = thisMonth.AddMonths(-1);
 
         _db.Expenses.AddRange(
-            new Expense(42.30m,  "EUR", thisMonth.AddDays(-1),  ExpenseCategory.Food,          "Weekly groceries",                  ExpenseSourceType.ShoppingList, shoppingList.Id.Value),
-            new Expense(18.75m,  "EUR", thisMonth.AddDays(-3),  ExpenseCategory.Food,          "Bakery",                            ExpenseSourceType.Manual),
-            new Expense(56.40m,  "EUR", thisMonth.AddDays(-7),  ExpenseCategory.Food,          "Dinner out — Mediterranean",        ExpenseSourceType.Manual),
-            new Expense(120.00m, "EUR", thisMonth.AddDays(-10), ExpenseCategory.Utilities,     "Electricity",                       ExpenseSourceType.Manual),
-            new Expense(35.00m,  "EUR", thisMonth.AddDays(-12), ExpenseCategory.Transport,     "Monthly transit pass",              ExpenseSourceType.Manual),
-            new Expense(48.20m,  "EUR", lastMonth.AddDays(2),   ExpenseCategory.Food,          "Weekly groceries",                  ExpenseSourceType.ShoppingList),
-            new Expense(22.10m,  "EUR", lastMonth.AddDays(5),   ExpenseCategory.Entertainment, "Cinema",                            ExpenseSourceType.Manual),
-            new Expense(67.95m,  "EUR", lastMonth.AddDays(9),   ExpenseCategory.Food,          "Restaurant",                        ExpenseSourceType.Manual),
-            new Expense(115.00m, "EUR", lastMonth.AddDays(14),  ExpenseCategory.Utilities,     "Internet",                          ExpenseSourceType.Manual),
-            new Expense(28.50m,  "EUR", lastMonth.AddDays(20),  ExpenseCategory.Health,        "Pharmacy",                          ExpenseSourceType.Manual));
+            new Expense(42.30m,  "EUR", thisMonth.AddDays(-1),  ExpenseCategory.Food,          "Weekly groceries",                  ExpenseSourceType.ShoppingList, shoppingList.Id.Value, stefanovs.Id),
+            new Expense(18.75m,  "EUR", thisMonth.AddDays(-3),  ExpenseCategory.Food,          "Bakery",                            ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(56.40m,  "EUR", thisMonth.AddDays(-7),  ExpenseCategory.Food,          "Dinner out — Mediterranean",        ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(120.00m, "EUR", thisMonth.AddDays(-10), ExpenseCategory.Utilities,     "Electricity",                       ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(35.00m,  "EUR", thisMonth.AddDays(-12), ExpenseCategory.Transport,     "Monthly transit pass",              ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(48.20m,  "EUR", lastMonth.AddDays(2),   ExpenseCategory.Food,          "Weekly groceries",                  ExpenseSourceType.ShoppingList, null,                  stefanovs.Id),
+            new Expense(22.10m,  "EUR", lastMonth.AddDays(5),   ExpenseCategory.Entertainment, "Cinema",                            ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(67.95m,  "EUR", lastMonth.AddDays(9),   ExpenseCategory.Food,          "Restaurant",                        ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(115.00m, "EUR", lastMonth.AddDays(14),  ExpenseCategory.Utilities,     "Internet",                          ExpenseSourceType.Manual,       null,                  stefanovs.Id),
+            new Expense(28.50m,  "EUR", lastMonth.AddDays(20),  ExpenseCategory.Health,        "Pharmacy",                          ExpenseSourceType.Manual,       null,                  stefanovs.Id));
 
         await _db.SaveChangesAsync(cancellationToken);
     }

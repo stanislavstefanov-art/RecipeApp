@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Recipes.Application.Common;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPurchased;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Primitives;
@@ -17,7 +18,7 @@ public sealed class MarkShoppingListItemPurchasedHandlerTests
         var itemId = shoppingList.Items.Single().Id;
 
         var repository = new FakeShoppingListRepository([shoppingList]);
-        var handler = new MarkShoppingListItemPurchasedHandler(repository);
+        var handler = new MarkShoppingListItemPurchasedHandler(repository, new FakeCurrentUser());
 
         var result = await handler.Handle(
             new MarkShoppingListItemPurchasedCommand(shoppingList.Id.Value, itemId.Value),
@@ -47,8 +48,19 @@ public sealed class MarkShoppingListItemPurchasedHandlerTests
 
         public Task<IReadOnlyList<ShoppingList>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
+        public Task<IReadOnlyList<ShoppingList>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
+
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+    }
+
+    private sealed class FakeCurrentUser : ICurrentUser
+    {
+        public UserId UserId { get; } = UserId.New();
+        public Task<IReadOnlyList<HouseholdId>> GetHouseholdIdsAsync(CancellationToken ct)
+            => Task.FromResult<IReadOnlyList<HouseholdId>>([]);
+        public void InvalidateHouseholdCache() { }
     }
 }

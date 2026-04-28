@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
@@ -12,13 +13,16 @@ public sealed class PurchaseShoppingListItemHandler
 {
     private readonly IShoppingListRepository _shoppingListRepository;
     private readonly IExpenseRepository _expenseRepository;
+    private readonly ICurrentUser _currentUser;
 
     public PurchaseShoppingListItemHandler(
         IShoppingListRepository shoppingListRepository,
-        IExpenseRepository expenseRepository)
+        IExpenseRepository expenseRepository,
+        ICurrentUser currentUser)
     {
         _shoppingListRepository = shoppingListRepository;
         _expenseRepository = expenseRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<Success>> Handle(
@@ -34,6 +38,17 @@ public sealed class PurchaseShoppingListItemHandler
             return Error.NotFound(
                 "ShoppingList.NotFound",
                 $"Shopping list '{request.ShoppingListId}' was not found.");
+        }
+
+        if (shoppingList.HouseholdId.HasValue)
+        {
+            var memberIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+            if (!memberIds.Contains(shoppingList.HouseholdId.Value))
+            {
+                return Error.NotFound(
+                    "ShoppingList.NotFound",
+                    $"Shopping list '{request.ShoppingListId}' was not found.");
+            }
         }
 
         var item = shoppingList.Items.SingleOrDefault(x => x.Id == itemId);
@@ -57,7 +72,8 @@ public sealed class PurchaseShoppingListItemHandler
             ExpenseCategory.Food,
             description,
             ExpenseSourceType.ShoppingList,
-            item.Id.Value);
+            item.Id.Value,
+            shoppingList.HouseholdId);
 
         await _expenseRepository.AddAsync(expense, cancellationToken);
 

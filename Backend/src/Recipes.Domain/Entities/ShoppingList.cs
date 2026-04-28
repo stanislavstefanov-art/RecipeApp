@@ -9,13 +9,15 @@ public sealed class ShoppingList : Entity
     private readonly List<ShoppingListItem> _items = new();
 
     public ShoppingListId Id { get; private set; } = ShoppingListId.New();
+    public HouseholdId? HouseholdId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public IReadOnlyCollection<ShoppingListItem> Items => _items.AsReadOnly();
 
     private ShoppingList() { }
 
-    public ShoppingList(string name)
+    public ShoppingList(string name, HouseholdId? householdId = null)
     {
+        HouseholdId = householdId;
         Rename(name);
         RaiseDomainEvent(new ShoppingListCreated(Id, Name));
     }

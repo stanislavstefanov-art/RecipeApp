@@ -13,5 +13,6 @@ public sealed class CreatePersonValidator : AbstractValidator<CreatePersonComman
         RuleForEach(x => x.HealthConcerns)
             .Must(x => Enum.IsDefined(typeof(HealthConcern), x));
         RuleFor(x => x.Notes).MaximumLength(1000);
+        RuleFor(x => x.HouseholdId).NotEmpty();
     }
 }

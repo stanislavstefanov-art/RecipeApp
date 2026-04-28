@@ -11,6 +11,8 @@ public interface IRecipeRepository
     /// <summary>Loads all recipes without child collections (list view only needs Id + Name).</summary>
     Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Recipe>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(
         string ingredientName, CancellationToken cancellationToken = default);
 

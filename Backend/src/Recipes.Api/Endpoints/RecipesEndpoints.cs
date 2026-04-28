@@ -31,7 +31,7 @@ public static class RecipesEndpoints
 
         group.MapPost("/", async (CreateRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
-            var result = await sender.Send(new CreateRecipeCommand(request.Name), ct);
+            var result = await sender.Send(new CreateRecipeCommand(request.Name, request.HouseholdId), ct);
             return result.ToHttpResult(response => Results.Created($"/api/recipes/{response.Id}", response));
         });
 
@@ -179,7 +179,7 @@ public static class RecipesEndpoints
     }
 }
 
-public sealed record CreateRecipeRequest(string Name);
+public sealed record CreateRecipeRequest(string Name, Guid HouseholdId);
 
 public sealed record ImportRecipeRequest(string Text);
 public sealed record ImportRecipeFromUrlRequest(string SourceUrl);

@@ -59,6 +59,9 @@ public sealed class CreateMealPlanHandlerTests
 
         public Task<IReadOnlyList<Household>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Household>)_households);
+        public Task<IReadOnlyList<Household>> GetByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Household>)_households);
+
 
         public Task AddAsync(Household household, CancellationToken cancellationToken = default)
         {

@@ -26,6 +26,15 @@ public sealed class RecipeRepository : IRecipeRepository
             .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Recipe>> GetByHouseholdIdsAsync(
+        IReadOnlyList<HouseholdId> householdIds,
+        CancellationToken cancellationToken = default)
+        => await _db.Recipes
+            .AsNoTracking()
+            .Where(r => r.HouseholdId != null && householdIds.Contains(r.HouseholdId.Value))
+            .OrderBy(r => r.Name.Value)
+            .ToListAsync(cancellationToken);
+
     public async Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(
         string ingredientName, CancellationToken cancellationToken = default)
         => await _db.Recipes

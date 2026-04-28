@@ -32,10 +32,38 @@ public sealed class ExpenseRepository : IExpenseRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Expense>> GetByHouseholdIdsAsync(
+        IReadOnlyList<HouseholdId> householdIds,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Expenses
+            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
+            .OrderByDescending(x => x.ExpenseDate)
+            .ThenByDescending(x => x.Amount)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Expense>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Expenses
             .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
+            .OrderByDescending(x => x.ExpenseDate)
+            .ThenByDescending(x => x.Amount)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Expense>> GetByMonthAndHouseholdIdsAsync(
+        int year,
+        int month,
+        IReadOnlyList<HouseholdId> householdIds,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Expenses
+            .Where(x =>
+                x.ExpenseDate.Year == year &&
+                x.ExpenseDate.Month == month &&
+                x.HouseholdId != null &&
+                householdIds.Contains(x.HouseholdId.Value))
             .OrderByDescending(x => x.ExpenseDate)
             .ThenByDescending(x => x.Amount)
             .ToListAsync(cancellationToken);

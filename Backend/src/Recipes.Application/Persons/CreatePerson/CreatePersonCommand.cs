@@ -7,4 +7,5 @@ public sealed record CreatePersonCommand(
     string Name,
     IReadOnlyList<int> DietaryPreferences,
     IReadOnlyList<int> HealthConcerns,
-    string? Notes) : IRequest<ErrorOr<CreatePersonResponse>>;
+    string? Notes,
+    Guid HouseholdId) : IRequest<ErrorOr<CreatePersonResponse>>;

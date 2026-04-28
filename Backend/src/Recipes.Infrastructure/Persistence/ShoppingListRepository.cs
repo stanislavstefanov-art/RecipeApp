@@ -34,6 +34,17 @@ public sealed class ShoppingListRepository : IShoppingListRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<ShoppingList>> GetByHouseholdIdsAsync(
+        IReadOnlyList<HouseholdId> householdIds,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.ShoppingLists
+            .Include(x => x.Items)
+            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return _dbContext.SaveChangesAsync(cancellationToken);

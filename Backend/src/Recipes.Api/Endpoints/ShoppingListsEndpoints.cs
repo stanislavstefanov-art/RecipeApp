@@ -22,7 +22,7 @@ public static class ShoppingListsEndpoints
 
         group.MapPost("/", async (CreateShoppingListRequest request, ISender sender, CancellationToken ct) =>
         {
-            var result = await sender.Send(new CreateShoppingListCommand(request.Name), ct);
+            var result = await sender.Send(new CreateShoppingListCommand(request.Name, request.HouseholdId), ct);
             return result.ToHttpResult(response => Results.Created($"/api/shopping-lists/{response.Id}", response));
         });
 
@@ -126,7 +126,7 @@ public static class ShoppingListsEndpoints
     }
 }
 
-public sealed record CreateShoppingListRequest(string Name);
+public sealed record CreateShoppingListRequest(string Name, Guid HouseholdId);
 public sealed record AddShoppingListItemRequest(Guid ProductId, decimal Quantity, string Unit);
 public sealed record AddRecipesToShoppingListRequest(IReadOnlyList<Guid> RecipeIds);
 public sealed record PurchaseShoppingListItemRequest(decimal Amount, string Currency, DateOnly ExpenseDate, string? Description);

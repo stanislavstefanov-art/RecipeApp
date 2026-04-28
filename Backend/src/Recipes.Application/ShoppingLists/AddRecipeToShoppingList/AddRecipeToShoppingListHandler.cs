@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
@@ -12,15 +13,18 @@ public sealed class AddRecipeToShoppingListHandler
     private readonly IShoppingListRepository _shoppingListRepository;
     private readonly IRecipeRepository _recipeRepository;
     private readonly IProductRepository _productRepository;
+    private readonly ICurrentUser _currentUser;
 
     public AddRecipeToShoppingListHandler(
         IShoppingListRepository shoppingListRepository,
         IRecipeRepository recipeRepository,
-        IProductRepository productRepository)
+        IProductRepository productRepository,
+        ICurrentUser currentUser)
     {
         _shoppingListRepository = shoppingListRepository;
         _recipeRepository = recipeRepository;
         _productRepository = productRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<Success>> Handle(
@@ -36,6 +40,17 @@ public sealed class AddRecipeToShoppingListHandler
             return Error.NotFound(
                 code: "ShoppingList.NotFound",
                 description: $"Shopping list '{request.ShoppingListId}' was not found.");
+        }
+
+        if (shoppingList.HouseholdId.HasValue)
+        {
+            var memberIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+            if (!memberIds.Contains(shoppingList.HouseholdId.Value))
+            {
+                return Error.NotFound(
+                    code: "ShoppingList.NotFound",
+                    description: $"Shopping list '{request.ShoppingListId}' was not found.");
+            }
         }
 
         var recipe = await _recipeRepository.GetByIdAsync(recipeId, cancellationToken);

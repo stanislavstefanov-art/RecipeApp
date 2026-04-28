@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -10,22 +11,33 @@ public sealed class GetHouseholdHandler
 {
     private readonly IHouseholdRepository _householdRepository;
     private readonly IPersonRepository _personRepository;
+    private readonly ICurrentUser _currentUser;
 
     public GetHouseholdHandler(
         IHouseholdRepository householdRepository,
-        IPersonRepository personRepository)
+        IPersonRepository personRepository,
+        ICurrentUser currentUser)
     {
         _householdRepository = householdRepository;
         _personRepository = personRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<HouseholdDetailsDto>> Handle(
         GetHouseholdQuery request,
         CancellationToken cancellationToken)
     {
-        var household = await _householdRepository.GetByIdAsync(
-            HouseholdId.From(request.HouseholdId),
-            cancellationToken);
+        var householdId = HouseholdId.From(request.HouseholdId);
+        var memberHouseholdIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+
+        if (!memberHouseholdIds.Contains(householdId))
+        {
+            return Error.NotFound(
+                "Household.NotFound",
+                $"Household '{request.HouseholdId}' was not found.");
+        }
+
+        var household = await _householdRepository.GetByIdAsync(householdId, cancellationToken);
 
         if (household is null)
         {

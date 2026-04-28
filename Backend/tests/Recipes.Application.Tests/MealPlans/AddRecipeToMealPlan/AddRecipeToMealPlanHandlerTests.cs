@@ -88,6 +88,9 @@ public sealed class AddRecipeToMealPlanHandlerTests
 
         public Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes);
+        public Task<IReadOnlyList<Recipe>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Recipe>)_recipes);
+
 
         public Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(string ingredientName, CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes
@@ -113,6 +116,9 @@ public sealed class AddRecipeToMealPlanHandlerTests
 
         public Task<IReadOnlyList<Household>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Household>)_households);
+        public Task<IReadOnlyList<Household>> GetByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Household>)_households);
+
 
         public Task AddAsync(Household household, CancellationToken cancellationToken = default)
         {

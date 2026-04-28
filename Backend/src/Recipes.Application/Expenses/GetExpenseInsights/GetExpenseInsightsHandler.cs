@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Application.Expenses.GetMonthlyExpenseReport;
 using Recipes.Application.Expenses.ListExpenses;
 using Recipes.Domain.Repositories;
@@ -12,15 +13,18 @@ public sealed class GetExpenseInsightsHandler
     private readonly IExpenseRepository _expenseRepository;
     private readonly IRequestHandler<GetMonthlyExpenseReportQuery, ErrorOr<MonthlyExpenseReportDto>> _monthlyReportHandler;
     private readonly IExpenseInsightService _expenseInsightService;
+    private readonly ICurrentUser _currentUser;
 
     public GetExpenseInsightsHandler(
         IExpenseRepository expenseRepository,
         IRequestHandler<GetMonthlyExpenseReportQuery, ErrorOr<MonthlyExpenseReportDto>> monthlyReportHandler,
-        IExpenseInsightService expenseInsightService)
+        IExpenseInsightService expenseInsightService,
+        ICurrentUser currentUser)
     {
         _expenseRepository = expenseRepository;
         _monthlyReportHandler = monthlyReportHandler;
         _expenseInsightService = expenseInsightService;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<ExpenseInsightDto>> Handle(
@@ -36,7 +40,8 @@ public sealed class GetExpenseInsightsHandler
             return monthlyReportResult.Errors;
         }
 
-        var expenses = await _expenseRepository.GetByMonthAsync(request.Year, request.Month, cancellationToken);
+        var householdIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+        var expenses = await _expenseRepository.GetByMonthAndHouseholdIdsAsync(request.Year, request.Month, householdIds, cancellationToken);
 
         var expenseDtos = expenses.Select(x => new ExpenseDto(
             x.Id.Value,

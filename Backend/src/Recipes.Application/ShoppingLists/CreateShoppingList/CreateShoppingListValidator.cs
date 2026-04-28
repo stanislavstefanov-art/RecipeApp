@@ -9,5 +9,8 @@ public sealed class CreateShoppingListValidator : AbstractValidator<CreateShoppi
         RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(200);
+
+        RuleFor(x => x.HouseholdId)
+            .NotEmpty();
     }
 }

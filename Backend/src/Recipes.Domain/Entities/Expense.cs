@@ -7,6 +7,7 @@ using Recipes.Domain.Primitives;
 public sealed class Expense : Entity
 {
     public ExpenseId Id { get; private set; } = ExpenseId.New();
+    public HouseholdId? HouseholdId { get; private set; }
     public decimal Amount { get; private set; }
     public string Currency { get; private set; } = string.Empty;
     public DateOnly ExpenseDate { get; private set; }
@@ -24,8 +25,10 @@ public sealed class Expense : Entity
         ExpenseCategory category,
         string description,
         ExpenseSourceType sourceType,
-        Guid? sourceReferenceId = null)
+        Guid? sourceReferenceId = null,
+        HouseholdId? householdId = null)
     {
+        HouseholdId = householdId;
         SetAmount(amount);
         SetCurrency(currency);
         ExpenseDate = expenseDate;

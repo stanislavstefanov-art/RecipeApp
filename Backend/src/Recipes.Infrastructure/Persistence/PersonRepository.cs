@@ -29,6 +29,16 @@ public sealed class PersonRepository : IPersonRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Person>> GetByHouseholdIdsAsync(
+        IReadOnlyList<HouseholdId> householdIds,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Persons
+            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task AddAsync(Person person, CancellationToken cancellationToken = default)
         => _dbContext.Persons.AddAsync(person, cancellationToken).AsTask();
 

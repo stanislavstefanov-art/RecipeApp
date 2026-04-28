@@ -55,6 +55,9 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult(_recipes.SingleOrDefault(x => x.Id == id));
         public Task<IReadOnlyList<Recipe>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes);
+        public Task<IReadOnlyList<Recipe>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Recipe>)_recipes);
+
         public Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(string ingredientName, CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes.Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase))).ToList());
         public void Add(Recipe recipe) => _recipes.Add(recipe);
@@ -70,6 +73,9 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult(_households.SingleOrDefault(x => x.Id == id));
         public Task<IReadOnlyList<Household>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Household>)_households);
+        public Task<IReadOnlyList<Household>> GetByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Household>)_households);
+
         public Task AddAsync(Household household, CancellationToken cancellationToken = default) { _households.Add(household); return Task.CompletedTask; }
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
@@ -82,6 +88,9 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult(_persons.SingleOrDefault(x => x.Id == id));
         public Task<IReadOnlyList<Person>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<Person>)_persons);
+        public Task<IReadOnlyList<Person>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<Person>)_persons);
+
         public Task<IReadOnlyList<Person>> GetByIdsAsync(IEnumerable<PersonId> ids, CancellationToken cancellationToken = default)
         {
             var idSet = ids.ToHashSet();

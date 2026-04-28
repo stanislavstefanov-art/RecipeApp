@@ -19,6 +19,14 @@ public sealed class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
                 value => ExpenseId.From(value))
             .ValueGeneratedNever();
 
+        builder.Property(x => x.HouseholdId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? HouseholdId.From(value.Value) : null)
+            .IsRequired(false);
+
+        builder.HasIndex(x => x.HouseholdId);
+
         builder.Property(x => x.Amount)
             .HasPrecision(18, 2)
             .IsRequired();

@@ -17,11 +17,21 @@ public sealed class HouseholdRepository : IHouseholdRepository
     public Task<Household?> GetByIdAsync(HouseholdId id, CancellationToken cancellationToken = default)
         => _dbContext.Households
             .Include(x => x.Members)
+            .Include(x => x.People)
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
     public async Task<IReadOnlyList<Household>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _dbContext.Households
             .Include(x => x.Members)
+            .Include(x => x.People)
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<Household>> GetByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
+        => await _dbContext.Households
+            .Include(x => x.Members)
+            .Include(x => x.People)
+            .Where(h => h.Members.Any(m => m.UserId == userId))
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
 

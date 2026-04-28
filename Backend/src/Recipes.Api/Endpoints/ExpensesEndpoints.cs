@@ -25,7 +25,8 @@ public static class ExpensesEndpoints
                     request.Category,
                     request.Description,
                     request.SourceType,
-                    request.SourceReferenceId),
+                    request.SourceReferenceId,
+                    request.HouseholdId),
                 ct);
 
             return result.ToHttpResult(response => Results.Created($"/api/expenses/{response.Id}", response));
@@ -60,4 +61,5 @@ public sealed record CreateExpenseRequest(
     int Category,
     string Description,
     int SourceType,
-    Guid? SourceReferenceId);
+    Guid? SourceReferenceId,
+    Guid HouseholdId);
