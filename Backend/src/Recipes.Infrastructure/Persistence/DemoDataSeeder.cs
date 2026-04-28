@@ -241,6 +241,18 @@ public sealed class DemoDataSeeder
 
         _db.ShoppingLists.Add(shoppingList);
 
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        _db.CookingLogEntries.AddRange(
+            new CookingLogEntry(carbonara.Id,     demoUser.Id, stefanovs.Id, today.AddDays(-2),  2, "Turned out perfect.", now),
+            new CookingLogEntry(carbonara.Id,     demoUser.Id, stefanovs.Id, today.AddDays(-15), 4, "Made for guests.", now.AddDays(-13)),
+            new CookingLogEntry(carbonara.Id,     demoUser.Id, stefanovs.Id, today.AddDays(-40), 2, null, now.AddDays(-38)),
+            new CookingLogEntry(chickenCurry.Id,  demoUser.Id, stefanovs.Id, today.AddDays(-5),  4, "Added extra chilli.", now.AddDays(-3)),
+            new CookingLogEntry(chickenCurry.Id,  demoUser.Id, stefanovs.Id, today.AddDays(-30), 3, null, now.AddDays(-28)),
+            new CookingLogEntry(risotto.Id,       demoUser.Id, stefanovs.Id, today.AddDays(-10), 2, "Used porcini instead of cremini — excellent.", now.AddDays(-8)),
+            new CookingLogEntry(risotto.Id,       demoUser.Id, stefanovs.Id, today.AddDays(-55), 2, null, now.AddDays(-53)),
+            new CookingLogEntry(bananaBread.Id,   demoUser.Id, stefanovs.Id, today.AddDays(-20), 1, "Added walnuts.", now.AddDays(-18)),
+            new CookingLogEntry(beefStew.Id,      demoUser.Id, stefanovs.Id, today.AddDays(-45), 6, "Sunday batch cook.", now.AddDays(-43)));
+
         await _db.SaveChangesAsync(cancellationToken);
 
         var halfPurchased = shoppingList.Items.Take(shoppingList.Items.Count / 2).ToList();
