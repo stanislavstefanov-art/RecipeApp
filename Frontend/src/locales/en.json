@@ -245,6 +245,7 @@
     "maxLength": "Maximum length is {{max}} characters.",
     "greaterThan": "Value must be greater than {{min}}.",
     "positiveNumber": "Value must be a positive number.",
+    "range": "Must be between {{min}} and {{max}}.",
     "invalidDate": "Invalid date.",
     "email": "Please enter a valid email address.",
     "passwordLetter": "Password must contain at least one letter.",
@@ -283,7 +284,8 @@
     },
     "expenseSourceType": {
       "1": "Manual",
-      "2": "From shopping list"
+      "2": "From shopping list",
+      "3": "Meal plan"
     }
   },
   "errors": {

@@ -215,7 +215,8 @@
     "saveChanges": "Save changes",
     "saving": "Saving…",
     "selectRecipePlaceholder": "Select recipe",
-    "noSuggestionEntries": "No entries suggested."
+    "noSuggestionEntries": "No entries suggested.",
+    "baseRecipeId": "Recipe: {{id}}"
   },
   "shoppingLists": {
     "title": "Shopping lists",

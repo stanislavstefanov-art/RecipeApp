@@ -215,7 +215,8 @@
     "saveChanges": "Запази промените",
     "saving": "Запазване…",
     "selectRecipePlaceholder": "Избери рецепта",
-    "noSuggestionEntries": "Няма предложени записи."
+    "noSuggestionEntries": "Няма предложени записи.",
+    "baseRecipeId": "Рецепта: {{id}}"
   },
   "shoppingLists": {
     "title": "Списъци за пазаруване",
