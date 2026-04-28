@@ -12,7 +12,8 @@ public static class ExpensesEndpoints
     public static IEndpointRouteBuilder MapExpensesEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/expenses")
-            .WithTags("Expenses");
+            .WithTags("Expenses")
+            .RequireAuthorization();
 
         group.MapPost("/", async (CreateExpenseRequest request, ISender sender, CancellationToken ct) =>
         {

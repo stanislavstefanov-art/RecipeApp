@@ -11,7 +11,7 @@ public static class AdminEndpoints
 {
     public static WebApplication MapAdminEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/admin").WithTags("Admin");
+        var group = app.MapGroup("/api/admin").WithTags("Admin").RequireAuthorization();
 
         group.MapGet("/tool-calls", async (
             int limit = 100,

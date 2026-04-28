@@ -1,8 +1,12 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Recipes.Api.Auth;
 using Recipes.Api.Endpoints;
 using Recipes.Application;
 using Recipes.Application.Behaviors;
+using Recipes.Application.Common;
 using Recipes.Application.Common.Auth;
 using Recipes.Infrastructure;
 using Recipes.Infrastructure.Persistence;
@@ -32,6 +36,30 @@ if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 builder.Services.AddSingleton<IJwtIssuer, JwtIssuer>();
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var signingKey = jwtSection["SigningKey"] ?? string.Empty;
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection["Issuer"] ?? "RecipesApp",
+            ValidAudience = jwtSection["Audience"] ?? "RecipesApp",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -76,7 +104,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Frontend");
 
-app.MapHealthChecks("/health");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.MapAuthEndpoints();
 app.MapRecipesEndpoints();

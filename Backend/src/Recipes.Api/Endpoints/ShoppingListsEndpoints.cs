@@ -17,7 +17,8 @@ public static class ShoppingListsEndpoints
     public static IEndpointRouteBuilder MapShoppingListsEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/shopping-lists")
-            .WithTags("ShoppingLists");
+            .WithTags("ShoppingLists")
+            .RequireAuthorization();
 
         group.MapPost("/", async (CreateShoppingListRequest request, ISender sender, CancellationToken ct) =>
         {

@@ -19,7 +19,8 @@ public static class MealPlansEndpoints
     public static IEndpointRouteBuilder MapMealPlansEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/meal-plans")
-            .WithTags("MealPlans");
+            .WithTags("MealPlans")
+            .RequireAuthorization();
 
         group.MapPost("/", async (CreateMealPlanRequest request, ISender sender, CancellationToken ct) =>
         {

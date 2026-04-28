@@ -11,7 +11,8 @@ public static class PersonsEndpoints
     public static IEndpointRouteBuilder MapPersonsEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/persons")
-            .WithTags("Persons");
+            .WithTags("Persons")
+            .RequireAuthorization();
 
         group.MapGet("/", async (ISender sender, CancellationToken ct) =>
         {

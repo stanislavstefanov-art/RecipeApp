@@ -10,7 +10,8 @@ public static class ProductsEndpoints
     public static IEndpointRouteBuilder MapProductsEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/products")
-            .WithTags("Products");
+            .WithTags("Products")
+            .RequireAuthorization();
 
         group.MapGet("/", async (ISender sender, CancellationToken ct) =>
         {
