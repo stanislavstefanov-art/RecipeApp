@@ -8,9 +8,20 @@ export const recipeVariationSchema = z.object({
   ingredientAdjustmentNotes: z.string().nullable().optional(),
 });
 
+export const recipeRatingSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  stars: z.number().int().min(1).max(5),
+  comment: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string().nullable(),
+});
+
 export const recipeListItemSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
+  averageStars: z.number().nullable().default(null),
+  ratingCount: z.number().int().default(0),
 });
 
 export const recipeIngredientSchema = z.object({
@@ -30,6 +41,10 @@ export const recipeDetailsSchema = z.object({
   ingredients: z.array(recipeIngredientSchema),
   steps: z.array(recipeStepSchema),
   variations: z.array(recipeVariationSchema).default([]),
+  averageStars: z.number().nullable().default(null),
+  ratingCount: z.number().int().default(0),
+  ratings: z.array(recipeRatingSchema).default([]),
+  myRating: recipeRatingSchema.nullable().default(null),
 });
 
 export const createRecipeSchema = (t: TFunction) =>
@@ -55,6 +70,7 @@ export const addStepSchema = (t: TFunction) =>
   });
 
 export type RecipeVariation = z.infer<typeof recipeVariationSchema>;
+export type RecipeRating = z.infer<typeof recipeRatingSchema>;
 export type RecipeListItem = z.infer<typeof recipeListItemSchema>;
 export type RecipeDetails = z.infer<typeof recipeDetailsSchema>;
 

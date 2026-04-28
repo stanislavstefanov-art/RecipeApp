@@ -2,6 +2,7 @@ import { apiClient } from "./client";
 import {
   recipeDetailsSchema,
   recipeListItemSchema,
+  recipeRatingSchema,
   type AddIngredientInput,
   type AddStepInput,
   type CreateRecipeInput,
@@ -37,4 +38,13 @@ export async function addStep(recipeId: string, input: AddStepInput) {
 
 export async function deleteRecipe(recipeId: string) {
   await apiClient.delete(`/api/recipes/${recipeId}`);
+}
+
+export async function rateRecipe(recipeId: string, stars: number, comment?: string | null) {
+  const res = await apiClient.post(`/api/recipes/${recipeId}/ratings`, { stars, comment });
+  return recipeRatingSchema.parse(res.data);
+}
+
+export async function deleteRecipeRating(recipeId: string) {
+  await apiClient.delete(`/api/recipes/${recipeId}/ratings`);
 }

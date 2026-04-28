@@ -303,6 +303,38 @@ namespace Recipes.Infrastructure.Migrations
                     b.ToTable("RecipeIngredients", (string)null);
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeRating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("RecipeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("RecipeRatings", (string)null);
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.RecipeStep", b =>
                 {
                     b.Property<Guid>("Id")
@@ -551,6 +583,15 @@ namespace Recipes.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Recipes.Domain.Entities.RecipeRating", b =>
+                {
+                    b.HasOne("Recipes.Domain.Entities.Recipe", null)
+                        .WithMany("Ratings")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Recipes.Domain.Entities.RecipeStep", b =>
                 {
                     b.HasOne("Recipes.Domain.Entities.Recipe", null)
@@ -607,6 +648,8 @@ namespace Recipes.Infrastructure.Migrations
             modelBuilder.Entity("Recipes.Domain.Entities.Recipe", b =>
                 {
                     b.Navigation("Ingredients");
+
+                    b.Navigation("Ratings");
 
                     b.Navigation("Steps");
 

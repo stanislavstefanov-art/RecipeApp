@@ -7,6 +7,7 @@ import {
   EmptyState,
 } from "../../components/ui/PageState";
 import { SectionHeader } from "../../components/ui/SectionHeader";
+import { StarRating } from "../../components/ui/StarRating";
 
 export function RecipesPage() {
   const { t } = useTranslation();
@@ -53,6 +54,12 @@ export function RecipesPage() {
             className="border rounded-xl p-4 bg-white hover:shadow"
           >
             <h3 className="font-medium">{r.name}</h3>
+            {r.averageStars != null && (
+              <div className="mt-1 flex items-center gap-1 text-sm text-slate-500">
+                <StarRating value={r.averageStars} size="sm" />
+                <span>{r.averageStars.toFixed(1)} ({r.ratingCount})</span>
+              </div>
+            )}
           </Link>
         ))}
       </div>

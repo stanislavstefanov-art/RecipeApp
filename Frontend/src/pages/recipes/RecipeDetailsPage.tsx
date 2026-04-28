@@ -10,6 +10,7 @@ import { UpdateRecipeNameForm } from "../../features/recipes/components/UpdateRe
 import { AddIngredientForm } from "../../features/recipes/components/AddIngredientForm";
 import { AddStepForm } from "../../features/recipes/components/AddStepForm";
 import { DeleteRecipeButton } from "../../features/recipes/components/DeleteRecipeButton";
+import { RatingSection } from "../../features/recipes/components/RatingSection";
 
 export function RecipeDetailsPage() {
   const { t } = useTranslation();
@@ -108,6 +109,14 @@ export function RecipeDetailsPage() {
           </ol>
         )}
       </section>
+
+      <RatingSection
+        recipeId={data.id}
+        ratings={data.ratings}
+        myRating={data.myRating}
+        averageStars={data.averageStars}
+        ratingCount={data.ratingCount}
+      />
     </div>
   );
 }
