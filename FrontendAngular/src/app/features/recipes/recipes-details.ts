@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   input,
   signal,
@@ -129,6 +130,16 @@ export class RecipesDetails {
 
   protected selectedStars = signal<number | null>(null);
   protected ratingComment = signal('');
+
+  constructor() {
+    effect(() => {
+      const myRating = this.recipe.value()?.myRating;
+      if (myRating && this.selectedStars() === null) {
+        this.selectedStars.set(myRating.stars);
+        this.ratingComment.set(myRating.comment ?? '');
+      }
+    });
+  }
 
   protected onStarsSelected(stars: number): void {
     this.selectedStars.set(stars);
