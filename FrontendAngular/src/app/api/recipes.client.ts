@@ -10,8 +10,10 @@ import {
   ImportRecipeRequest,
   ImportedRecipeDto,
   IngredientSubstitutionSuggestionDto,
+  RateRecipeRequest,
   RecipeDto,
   RecipeListItemDto,
+  RecipeRatingDto,
   SuggestSubstitutionsRequest,
   UpdateRecipeRequest,
 } from './recipes.dto';
@@ -72,5 +74,16 @@ export class RecipesClient {
       `${API_BASE_URL}/api/recipes/import`,
       payload,
     );
+  }
+
+  rate(recipeId: string, payload: RateRecipeRequest): Observable<RecipeRatingDto> {
+    return this.http.post<RecipeRatingDto>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/ratings`,
+      payload,
+    );
+  }
+
+  deleteRating(recipeId: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/recipes/${recipeId}/ratings`);
   }
 }

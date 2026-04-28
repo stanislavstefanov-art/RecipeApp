@@ -8,12 +8,14 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { getErrorMessage } from '../../shared/get-error-message';
+import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
 import { SuggestSubstitutionsForm } from './suggest-substitutions-form';
@@ -24,9 +26,14 @@ type DeleteState =
   | { readonly kind: 'deleting' }
   | { readonly kind: 'error'; readonly message: string };
 
+type RatingState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'saving' }
+  | { readonly kind: 'deleting' };
+
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm, TranslateModule],
+  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -113,4 +120,52 @@ export class RecipesDetails {
     const value = this.recipe.value();
     return value !== undefined && value.steps.length > 0;
   });
+
+  // --- Ratings ---
+
+  private readonly ratingState = signal<RatingState>({ kind: 'idle' });
+  protected readonly isSavingRating = computed(() => this.ratingState().kind === 'saving');
+  protected readonly isDeletingRating = computed(() => this.ratingState().kind === 'deleting');
+
+  protected selectedStars = signal<number | null>(null);
+  protected ratingComment = signal('');
+
+  protected onStarsSelected(stars: number): void {
+    this.selectedStars.set(stars);
+  }
+
+  protected onSaveRating(): void {
+    const stars = this.selectedStars();
+    if (!stars) return;
+
+    this.ratingState.set({ kind: 'saving' });
+    this.client
+      .rate(this.id(), { stars, comment: this.ratingComment().trim() || null })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.ratingState.set({ kind: 'idle' });
+          this.recipe.reload();
+        },
+        error: () => this.ratingState.set({ kind: 'idle' }),
+      });
+  }
+
+  protected onDeleteRating(): void {
+    if (!window.confirm(this.translate.instant('ratings.confirmDeleteRating'))) return;
+
+    this.ratingState.set({ kind: 'deleting' });
+    this.client
+      .deleteRating(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.ratingState.set({ kind: 'idle' });
+          this.selectedStars.set(null);
+          this.ratingComment.set('');
+          this.recipe.reload();
+        },
+        error: () => this.ratingState.set({ kind: 'idle' }),
+      });
+  }
 }

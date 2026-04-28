@@ -226,6 +226,19 @@
     "creating": "Създаване…",
     "createDesc": "Проследяване на разходи за храна и домакинство."
   },
+  "ratings": {
+    "title": "Оценки",
+    "yourRating": "Вашата оценка",
+    "rateThis": "Оценете тази рецепта",
+    "commentPlaceholder": "Незадължителен коментар…",
+    "saveRating": "Запази оценката",
+    "saving": "Запазване…",
+    "deleteRating": "Изтрий оценката",
+    "deleting": "Изтриване…",
+    "confirmDeleteRating": "Изтрий вашата оценка?",
+    "noRatings": "Няма оценки все още.",
+    "confirmDelete": "Изтрий вашата оценка?"
+  },
   "auth": {
     "signIn": "Вход",
     "signUp": "Регистрация",

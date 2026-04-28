@@ -226,6 +226,19 @@
     "creating": "Creating…",
     "createDesc": "Track food and household-related spending."
   },
+  "ratings": {
+    "title": "Ratings",
+    "yourRating": "Your rating",
+    "rateThis": "Rate this recipe",
+    "commentPlaceholder": "Optional comment…",
+    "saveRating": "Save rating",
+    "saving": "Saving…",
+    "deleteRating": "Delete rating",
+    "deleting": "Deleting…",
+    "confirmDeleteRating": "Delete your rating?",
+    "noRatings": "No ratings yet.",
+    "confirmDelete": "Delete your rating?"
+  },
   "auth": {
     "signIn": "Sign in",
     "signUp": "Sign up",

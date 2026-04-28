@@ -5,10 +5,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { getErrorMessage } from '../../shared/get-error-message';
+import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 
 @Component({
   selector: 'app-recipes-list',
-  imports: [RouterLink, TranslateModule],
+  imports: [RouterLink, TranslateModule, StarRatingComponent],
   templateUrl: './recipes-list.html',
   styleUrl: './recipes-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,17 @@
+export interface RecipeRatingDto {
+  readonly id: string;
+  readonly userId: string;
+  readonly stars: number;
+  readonly comment: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string | null;
+}
+
 export interface RecipeListItemDto {
   readonly id: string;
   readonly name: string;
+  readonly averageStars: number | null;
+  readonly ratingCount: number;
 }
 
 export interface CreateRecipeRequest {
@@ -47,6 +58,15 @@ export interface RecipeDto {
   readonly ingredients: readonly IngredientDto[];
   readonly steps: readonly RecipeStepDto[];
   readonly variations?: readonly RecipeVariationDto[];
+  readonly averageStars: number | null;
+  readonly ratingCount: number;
+  readonly ratings: readonly RecipeRatingDto[];
+  readonly myRating: RecipeRatingDto | null;
+}
+
+export interface RateRecipeRequest {
+  readonly stars: number;
+  readonly comment?: string | null;
 }
 
 export interface SuggestSubstitutionsRequest {

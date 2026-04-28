@@ -366,6 +366,17 @@
       "3": "Meal plan"
     }
   },
+  "ratings": {
+    "title": "Ratings",
+    "yourRating": "Your rating",
+    "commentPlaceholder": "Optional comment…",
+    "saveRating": "Save rating",
+    "saving": "Saving…",
+    "deleteRating": "Delete rating",
+    "deleting": "Deleting…",
+    "confirmDeleteRating": "Delete your rating?",
+    "noRatings": "No ratings yet."
+  },
   "auth": {
     "signIn": "Sign in",
     "signUp": "Sign up",
