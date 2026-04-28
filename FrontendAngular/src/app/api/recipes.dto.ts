@@ -64,6 +64,23 @@ export interface RecipeDto {
   readonly myRating: RecipeRatingDto | null;
 }
 
+export interface CookingLogEntryDto {
+  readonly id: string;
+  readonly recipeId: string;
+  readonly recipeName: string;
+  readonly cookedOn: string;
+  readonly servings: number;
+  readonly notes: string | null;
+  readonly createdAt: string;
+}
+
+export interface LogCookingRequest {
+  readonly recipeId: string;
+  readonly cookedOn: string;
+  readonly servings: number;
+  readonly notes?: string | null;
+}
+
 export interface RateRecipeRequest {
   readonly stars: number;
   readonly comment?: string | null;

@@ -317,6 +317,20 @@
     "descriptionOptional": "Описание (незадължително)",
     "loadInsights": "Зареждане на анализ…"
   },
+  "cookingLog": {
+    "title": "История на готвене",
+    "logCooking": "Запиши готвене",
+    "logging": "Записване…",
+    "cookedOn": "Дата на готвене",
+    "servings": "Порции",
+    "notes": "Бележки",
+    "notesPlaceholder": "Незадължителни бележки…",
+    "noHistory": "Няма история на готвене все още.",
+    "confirmDelete": "Изтрий тази история?",
+    "deleting": "Изтриване…",
+    "deleteEntry": "Изтрий запис",
+    "servingsLabel": "{{count}} порц."
+  },
   "ratings": {
     "title": "Оценки",
     "yourRating": "Вашата оценка",

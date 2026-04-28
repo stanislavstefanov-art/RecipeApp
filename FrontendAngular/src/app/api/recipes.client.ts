@@ -5,11 +5,13 @@ import { Observable } from 'rxjs';
 import {
   AddIngredientRequest,
   AddStepRequest,
+  CookingLogEntryDto,
   CreateRecipeRequest,
   CreateRecipeResponse,
   ImportRecipeRequest,
   ImportedRecipeDto,
   IngredientSubstitutionSuggestionDto,
+  LogCookingRequest,
   RateRecipeRequest,
   RecipeDto,
   RecipeListItemDto,
@@ -85,5 +87,19 @@ export class RecipesClient {
 
   deleteRating(recipeId: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/recipes/${recipeId}/ratings`);
+  }
+
+  logCooking(payload: LogCookingRequest): Observable<CookingLogEntryDto> {
+    return this.http.post<CookingLogEntryDto>(`${API_BASE_URL}/api/cooking-log`, payload);
+  }
+
+  deleteCookingEntry(id: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/cooking-log/${id}`);
+  }
+
+  getCookingHistory(recipeId: string): Observable<CookingLogEntryDto[]> {
+    return this.http.get<CookingLogEntryDto[]>(
+      `${API_BASE_URL}/api/cooking-log/recipe/${recipeId}`,
+    );
   }
 }

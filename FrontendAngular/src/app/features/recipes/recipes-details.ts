@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import type { LogCookingValue } from './log-cooking-form';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -19,6 +20,7 @@ import { getErrorMessage } from '../../shared/get-error-message';
 import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
+import { LogCookingFormComponent } from './log-cooking-form';
 import { SuggestSubstitutionsForm } from './suggest-substitutions-form';
 import { UpdateRecipeNameForm } from './update-recipe-name-form';
 
@@ -34,7 +36,7 @@ type RatingState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent],
+  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -177,6 +179,46 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.ratingState.set({ kind: 'idle' }),
+      });
+  }
+
+  // --- Cooking history ---
+
+  protected readonly cookingHistory = rxResource({
+    params: () => this.id(),
+    stream: ({ params }) => this.client.getCookingHistory(params),
+  });
+
+  protected readonly isLoggingCooking = signal(false);
+  protected readonly deletingCookingEntryId = signal<string | null>(null);
+
+  protected onLogCooking(value: LogCookingValue): void {
+    this.isLoggingCooking.set(true);
+    this.client
+      .logCooking({ recipeId: this.id(), ...value })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isLoggingCooking.set(false);
+          this.cookingHistory.reload();
+        },
+        error: () => this.isLoggingCooking.set(false),
+      });
+  }
+
+  protected onDeleteCookingEntry(id: string): void {
+    if (!window.confirm(this.translate.instant('cookingLog.confirmDelete'))) return;
+
+    this.deletingCookingEntryId.set(id);
+    this.client
+      .deleteCookingEntry(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deletingCookingEntryId.set(null);
+          this.cookingHistory.reload();
+        },
+        error: () => this.deletingCookingEntryId.set(null),
       });
   }
 }

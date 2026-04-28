@@ -366,6 +366,20 @@
       "3": "Meal plan"
     }
   },
+  "cookingLog": {
+    "title": "Cooking history",
+    "logCooking": "Log cooking",
+    "logging": "Logging…",
+    "cookedOn": "Date cooked",
+    "servings": "Servings",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes…",
+    "noHistory": "No cooking history yet.",
+    "confirmDelete": "Delete this cooking log entry?",
+    "deleting": "Deleting…",
+    "deleteEntry": "Delete entry",
+    "servingsLabel": "{{count}} serving(s)"
+  },
   "ratings": {
     "title": "Ratings",
     "yourRating": "Your rating",
