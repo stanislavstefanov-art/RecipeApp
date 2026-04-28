@@ -257,6 +257,60 @@ What stubs do **not** exercise:
 If you need to test those paths specifically, set `Claude__ApiKey` and flip the
 relevant `*:Provider` to `Claude`.
 
+## Authentication
+
+RecipesApp uses JWT-based authentication. Two sign-in methods are supported:
+
+- **Local (email + password):** `POST /auth/register` and `POST /auth/login` —
+  handled by `RegisterCommandHandler` / `LoginCommandHandler` in
+  `Recipes.Application/Auth/`.
+- **Microsoft Entra ID (SSO):** `POST /auth/entra/exchange` — the frontend
+  obtains an OIDC id_token from MSAL, sends it to this endpoint, and gets back
+  a RecipesApp JWT. Disabled by default; enable with `Entra:Enabled=true` plus
+  `Entra:TenantId` / `Entra:ClientId` in `appsettings`.
+
+### JWT shape
+
+```json
+{ "sub": "<userId-guid>", "email": "user@example.com",
+  "displayName": "Alice", "exp": <unix-timestamp> }
+```
+
+`ICurrentUser` (in `Recipes.Application.Common`) is the only way handlers read
+identity. Never read `HttpContext` from Application layer code.
+
+### User vs Person distinction
+
+`User` (in `Recipes.Domain`) owns credentials and authentication. `Person` (also
+in `Recipes.Domain`) is a dietary-preference/health-concern profile used for
+meal planning. They are **separate aggregates**. A user may be linked to a
+`Person` record (via `User.PersonId`) but the link is optional — not every user
+has a `Person`, and not every `Person` is linked to a user.
+
+### Household membership and authorization
+
+`HouseholdMember` links a `Household` to a `User` (not a `Person`). Handlers
+that need to scope data to the current user's households call
+`ICurrentUser.GetHouseholdIdsAsync(ct)`. Shopping lists and expenses carry a
+nullable `HouseholdId`; handlers enforce ownership at the application layer.
+
+### Entra provider flag
+
+When `Entra:Enabled=false` (the default in `appsettings.Development.json`),
+the `/auth/entra/exchange` endpoint returns `404`. The React and Angular
+frontends hide the "Sign in with Microsoft" button when
+`VITE_ENTRA_ENABLED=false` / the equivalent Angular env var is not set.
+
+### Frontend auth state
+
+- **React:** Zustand `authStore` (`Frontend/src/features/auth/store/authStore.ts`),
+  persisted to `localStorage` under `auth.session`. Axios interceptor attaches
+  Bearer token; 401 triggers logout + redirect to `/login`.
+- **Angular:** Module-level signals in
+  `FrontendAngular/src/app/core/auth.store.ts`, same `auth.session` key.
+  `authInterceptor` (functional `HttpInterceptorFn`) + `authGuard`
+  (`CanActivateFn`) protect all routes.
+
 ## Recipe import
 The recipe import flow uses Claude-backed structured extraction by default.
 
