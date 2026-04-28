@@ -229,10 +229,11 @@ dotnet run --project Backend/src/Recipes.Api
 
 The example file sets `Database:Provider=InMemory`, flips every `*:Provider`
 switch to `Stub`, leaves `Claude:ApiKey` blank, and sets `Seed:Enabled=true`.
-On every fresh start the in-memory store is empty, so the seeder inserts ~10
-recipes, 2 households with 5 members, a weekly meal plan, a half-purchased
-shopping list, and 10 expenses across the current and previous month. Data is
-lost on shutdown — that's intentional for demo iteration.
+On every fresh start the in-memory store is empty, so the seeder inserts a demo
+user (`demo@local` / `demo1234`), ~10 recipes, 2 households with 5 members, a
+weekly meal plan, a half-purchased shopping list, and 10 expenses across the
+current and previous month. Log in with `demo@local` / `demo1234` to see the
+seeded data. Data is lost on shutdown — that's intentional for demo iteration.
 
 To run against a real database (LocalDB, SQL Server, Azure SQL), set
 `Database:Provider=SqlServer` and provide a `ConnectionStrings:RecipesDb`

@@ -22,7 +22,7 @@ public sealed class DemoDataSeeder
         var roommates = new Household("Roommates");
 
         // Create a demo user and add to both households.
-        var demoUser = User.CreateLocal("demo@recipesapp.local", _passwordHasher.Hash("Demo@1234"), "Demo User");
+        var demoUser = User.CreateLocal("demo@local", _passwordHasher.Hash("demo1234"), "Demo User");
         _db.Users.Add(demoUser);
 
         var now = DateTimeOffset.UtcNow;
