@@ -40,7 +40,7 @@ public sealed class SuggestMealPlanHandler
                 $"Household '{request.HouseholdId}' was not found.");
         }
 
-        var memberIds = household.Members.Select(x => x.PersonId).ToList();
+        var memberIds = household.People.Select(x => x.PersonId).ToList();
         if (memberIds.Count == 0)
         {
             return Error.Validation(

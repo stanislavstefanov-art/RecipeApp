@@ -39,7 +39,7 @@ public sealed class AcceptMealPlanSuggestionHandler
                 $"Household '{request.HouseholdId}' was not found.");
         }
 
-        var householdPersonIds = household.Members.Select(x => x.PersonId).ToHashSet();
+        var householdPersonIds = household.People.Select(x => x.PersonId).ToHashSet();
 
         var mealPlan = new MealPlan(request.Name, household.Id);
 

@@ -24,7 +24,7 @@ public sealed class ListHouseholdsHandler
             .Select(x => new HouseholdListItemDto(
                 x.Id.Value,
                 x.Name,
-                x.Members.Count))
+                x.People.Count))
             .ToList();
     }
 }

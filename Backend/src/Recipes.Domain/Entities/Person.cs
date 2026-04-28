@@ -10,6 +10,7 @@ public sealed class Person : Entity
 
     public PersonId Id { get; private set; } = PersonId.New();
     public string Name { get; private set; } = string.Empty;
+    public HouseholdId? HouseholdId { get; private set; }
     public IReadOnlyCollection<DietaryPreference> DietaryPreferences => _dietaryPreferences.AsReadOnly();
     public IReadOnlyCollection<HealthConcern> HealthConcerns => _healthConcerns.AsReadOnly();
     public string? Notes { get; private set; }
@@ -20,12 +21,14 @@ public sealed class Person : Entity
         string name,
         IEnumerable<DietaryPreference>? dietaryPreferences = null,
         IEnumerable<HealthConcern>? healthConcerns = null,
-        string? notes = null)
+        string? notes = null,
+        HouseholdId? householdId = null)
     {
         Rename(name);
         SetDietaryPreferences(dietaryPreferences ?? []);
         SetHealthConcerns(healthConcerns ?? []);
         UpdateNotes(notes);
+        HouseholdId = householdId;
     }
 
     public void Rename(string name)

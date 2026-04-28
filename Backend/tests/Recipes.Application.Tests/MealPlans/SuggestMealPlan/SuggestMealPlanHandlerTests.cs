@@ -14,7 +14,7 @@ public sealed class SuggestMealPlanHandlerTests
     {
         var person = new Person("Stanislav");
         var household = new Household("Family");
-        household.AddMember(person);
+        household.AddPerson(person);
 
         var recipes = new List<Recipe>
         {

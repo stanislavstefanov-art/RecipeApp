@@ -11,13 +11,7 @@ public sealed class HouseholdMemberConfiguration : IEntityTypeConfiguration<Hous
     {
         builder.ToTable("HouseholdMembers");
 
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Id)
-            .HasConversion(
-                id => id.Value,
-                value => HouseholdMemberId.From(value))
-            .ValueGeneratedNever();
+        builder.HasKey(x => new { x.HouseholdId, x.UserId });
 
         builder.Property(x => x.HouseholdId)
             .HasConversion(
@@ -25,13 +19,18 @@ public sealed class HouseholdMemberConfiguration : IEntityTypeConfiguration<Hous
                 value => HouseholdId.From(value))
             .IsRequired();
 
-        builder.Property(x => x.PersonId)
+        builder.Property(x => x.UserId)
             .HasConversion(
                 id => id.Value,
-                value => PersonId.From(value))
+                value => UserId.From(value))
             .IsRequired();
 
-        builder.HasIndex(x => new { x.HouseholdId, x.PersonId })
-            .IsUnique();
+        builder.Property(x => x.JoinedAt)
+            .IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

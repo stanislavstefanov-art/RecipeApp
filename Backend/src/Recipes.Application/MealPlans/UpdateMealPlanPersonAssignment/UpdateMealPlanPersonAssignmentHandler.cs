@@ -47,7 +47,7 @@ public sealed class UpdateMealPlanPersonAssignmentHandler
 
         var personId = PersonId.From(request.PersonId);
 
-        var personBelongsToHousehold = household.Members.Any(x => x.PersonId == personId);
+        var personBelongsToHousehold = household.People.Any(x => x.PersonId == personId);
         if (!personBelongsToHousehold)
         {
             return Error.Validation(

@@ -16,7 +16,9 @@ public interface IRecipesDbContext
     DbSet<Expense> Expenses { get; }
     DbSet<Person> Persons { get; }
     DbSet<Household> Households { get; }
+    DbSet<PersonMembership> PersonMemberships { get; }
     DbSet<HouseholdMember> HouseholdMembers { get; }
+    DbSet<User> Users { get; }
     DbSet<MealPlanPersonAssignment> MealPlanPersonAssignments { get; }
     DbSet<RecipeVariation> RecipeVariations { get; }
     DbSet<RecipeVariationIngredientOverride> RecipeVariationIngredientOverrides { get; }

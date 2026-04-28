@@ -33,7 +33,7 @@ public sealed class SuggestMealPlanMultiAgentHandler
         if (household is null)
             return Error.NotFound("Household.NotFound", $"Household '{request.HouseholdId}' was not found.");
 
-        var memberIds = household.Members.Select(m => m.PersonId).ToList();
+        var memberIds = household.People.Select(m => m.PersonId).ToList();
         if (memberIds.Count == 0)
             return Error.Validation("MealPlan.NoMembers", "The household has no members.");
 

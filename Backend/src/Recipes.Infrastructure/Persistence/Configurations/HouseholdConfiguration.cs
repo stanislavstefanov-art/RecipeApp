@@ -23,6 +23,11 @@ public sealed class HouseholdConfiguration : IEntityTypeConfiguration<Household>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.HasMany(x => x.People)
+            .WithOne()
+            .HasForeignKey(x => x.HouseholdId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasMany(x => x.Members)
             .WithOne()
             .HasForeignKey(x => x.HouseholdId)

@@ -11,6 +11,7 @@ public sealed class Recipe : Entity
 
     public RecipeId Id { get; private set; } = RecipeId.New();
     public RecipeName Name { get; private set; }
+    public HouseholdId? HouseholdId { get; private set; }
 
     public IReadOnlyCollection<RecipeIngredient> Ingredients => _ingredients.AsReadOnly();
     public IReadOnlyCollection<RecipeStep> Steps => _steps.AsReadOnly();
@@ -18,9 +19,10 @@ public sealed class Recipe : Entity
 
     private Recipe() { }
 
-    public Recipe(string name)
+    public Recipe(string name, HouseholdId? householdId = null)
     {
         Name = new RecipeName(name);
+        HouseholdId = householdId;
         RaiseDomainEvent(new RecipeCreated(Id, Name));
     }
 

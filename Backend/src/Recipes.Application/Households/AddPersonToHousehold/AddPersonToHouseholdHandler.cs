@@ -35,7 +35,7 @@ public sealed class AddPersonToHouseholdHandler
             return Error.NotFound("Person.NotFound", $"Person '{request.PersonId}' was not found.");
         }
 
-        household.AddMember(person);
+        household.AddPerson(person);
         await _householdRepository.SaveChangesAsync(cancellationToken);
 
         return Result.Success;

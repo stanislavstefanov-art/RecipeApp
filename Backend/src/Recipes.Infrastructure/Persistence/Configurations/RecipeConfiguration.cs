@@ -26,6 +26,15 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(r => r.HouseholdId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? HouseholdId.From(value.Value) : null)
+            .IsRequired(false);
+
+        builder.HasIndex(r => r.HouseholdId)
+            .HasFilter("[HouseholdId] IS NOT NULL");
+
         builder.HasMany(r => r.Ingredients)
             .WithOne()
             .HasForeignKey(i => i.RecipeId)

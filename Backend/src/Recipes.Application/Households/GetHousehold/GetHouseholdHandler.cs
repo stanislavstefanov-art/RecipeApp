@@ -37,7 +37,7 @@ public sealed class GetHouseholdHandler
         var persons = await _personRepository.GetAllAsync(cancellationToken);
         var personsById = persons.ToDictionary(x => x.Id, x => x);
 
-        var members = household.Members
+        var members = household.People
             .Select(m =>
             {
                 personsById.TryGetValue(m.PersonId, out var person);

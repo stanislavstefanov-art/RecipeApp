@@ -14,7 +14,7 @@ public sealed class UpdateMealPlanPersonAssignmentHandlerTests
     {
         var person = new Person("Sister");
         var household = new Household("Family");
-        household.AddMember(person);
+        household.AddPerson(person);
 
         var recipe1 = new Recipe("Gyuvetche");
         var recipe2 = new Recipe("Fish soup");

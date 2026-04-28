@@ -4,15 +4,16 @@ using Recipes.Domain.Primitives;
 
 public sealed class HouseholdMember
 {
-    public HouseholdMemberId Id { get; private set; } = HouseholdMemberId.New();
     public HouseholdId HouseholdId { get; private set; }
-    public PersonId PersonId { get; private set; }
+    public UserId UserId { get; private set; }
+    public DateTimeOffset JoinedAt { get; private set; }
 
     private HouseholdMember() { }
 
-    internal HouseholdMember(HouseholdId householdId, PersonId personId)
+    internal HouseholdMember(HouseholdId householdId, UserId userId, DateTimeOffset joinedAt)
     {
         HouseholdId = householdId;
-        PersonId = personId;
+        UserId = userId;
+        JoinedAt = joinedAt;
     }
 }

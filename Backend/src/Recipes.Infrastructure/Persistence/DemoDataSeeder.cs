@@ -23,13 +23,13 @@ public sealed class DemoDataSeeder
         _db.Persons.AddRange(stan, elena, milo, alex, jordan);
 
         var stefanovs = new Household("The Stefanovs");
-        stefanovs.AddMember(stan);
-        stefanovs.AddMember(elena);
-        stefanovs.AddMember(milo);
+        stefanovs.AddPerson(stan);
+        stefanovs.AddPerson(elena);
+        stefanovs.AddPerson(milo);
 
         var roommates = new Household("Roommates");
-        roommates.AddMember(alex);
-        roommates.AddMember(jordan);
+        roommates.AddPerson(alex);
+        roommates.AddPerson(jordan);
 
         _db.Households.AddRange(stefanovs, roommates);
 

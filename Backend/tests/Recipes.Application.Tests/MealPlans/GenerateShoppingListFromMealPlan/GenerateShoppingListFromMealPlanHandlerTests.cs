@@ -14,7 +14,7 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
     {
         var person = new Person("Stanislav");
         var household = new Household("Family");
-        household.AddMember(person);
+        household.AddPerson(person);
 
         var recipe1 = new Recipe("Pasta");
         recipe1.AddIngredient("Tomato", 2, "pcs");

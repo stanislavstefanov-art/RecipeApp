@@ -14,7 +14,7 @@ public sealed class AddRecipeToMealPlanHandlerTests
     {
         var person = new Person("Stanislav");
         var household = new Household("Family");
-        household.AddMember(person);
+        household.AddPerson(person);
 
         var mealPlan = new MealPlan("Weekly meals", household.Id);
         var recipe = new Recipe("Pasta");

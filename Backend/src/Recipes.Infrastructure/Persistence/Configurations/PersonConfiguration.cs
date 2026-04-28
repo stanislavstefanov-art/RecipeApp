@@ -28,6 +28,15 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
         builder.Property(x => x.Notes)
             .HasMaxLength(1000);
 
+        builder.Property(x => x.HouseholdId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? HouseholdId.From(value.Value) : null)
+            .IsRequired(false);
+
+        builder.HasIndex(x => x.HouseholdId)
+            .HasFilter("[HouseholdId] IS NOT NULL");
+
         builder.Property<List<DietaryPreference>>("_dietaryPreferences")
             .HasColumnName("DietaryPreferences")
             .HasConversion(

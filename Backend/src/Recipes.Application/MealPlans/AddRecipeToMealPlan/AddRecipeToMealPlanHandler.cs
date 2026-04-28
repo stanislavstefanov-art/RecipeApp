@@ -54,7 +54,7 @@ public sealed class AddRecipeToMealPlanHandler
                 $"Recipe '{request.RecipeId}' was not found.");
         }
 
-        var householdPersonIds = household.Members.Select(x => x.PersonId).ToHashSet();
+        var householdPersonIds = household.People.Select(x => x.PersonId).ToHashSet();
 
         foreach (var assignment in request.Assignments)
         {
