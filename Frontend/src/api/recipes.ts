@@ -1,5 +1,6 @@
 import { apiClient } from "./client";
 import {
+  cookingLogEntrySchema,
   recipeDetailsSchema,
   recipeListItemSchema,
   recipeRatingSchema,
@@ -47,4 +48,23 @@ export async function rateRecipe(recipeId: string, stars: number, comment?: stri
 
 export async function deleteRecipeRating(recipeId: string) {
   await apiClient.delete(`/api/recipes/${recipeId}/ratings`);
+}
+
+export async function logCooking(
+  recipeId: string,
+  cookedOn: string,
+  servings: number,
+  notes?: string | null,
+) {
+  const res = await apiClient.post("/api/cooking-log", { recipeId, cookedOn, servings, notes });
+  return cookingLogEntrySchema.parse(res.data);
+}
+
+export async function deleteCookingEntry(id: string) {
+  await apiClient.delete(`/api/cooking-log/${id}`);
+}
+
+export async function getCookingHistory(recipeId: string) {
+  const res = await apiClient.get(`/api/cooking-log/recipe/${recipeId}`);
+  return cookingLogEntrySchema.array().parse(res.data);
 }

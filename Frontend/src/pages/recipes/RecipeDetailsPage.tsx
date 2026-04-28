@@ -11,6 +11,7 @@ import { AddIngredientForm } from "../../features/recipes/components/AddIngredie
 import { AddStepForm } from "../../features/recipes/components/AddStepForm";
 import { DeleteRecipeButton } from "../../features/recipes/components/DeleteRecipeButton";
 import { RatingSection } from "../../features/recipes/components/RatingSection";
+import { CookingHistorySection } from "../../features/recipes/components/CookingHistorySection";
 
 export function RecipeDetailsPage() {
   const { t } = useTranslation();
@@ -117,6 +118,8 @@ export function RecipeDetailsPage() {
         averageStars={data.averageStars}
         ratingCount={data.ratingCount}
       />
+
+      <CookingHistorySection recipeId={data.id} />
     </div>
   );
 }
