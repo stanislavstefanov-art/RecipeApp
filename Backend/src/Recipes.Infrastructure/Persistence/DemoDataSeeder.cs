@@ -173,6 +173,30 @@ public sealed class DemoDataSeeder
         var recipes = new[] { carbonara, greekSalad, chickenCurry, bananaBread, trayBake, lentilSoup, beefStew, stirFry, risotto, oats };
         _db.Recipes.AddRange(recipes);
 
+        // Synthetic ratings from the demo user plus two stable ghost users.
+        var ghost1 = Recipes.Domain.Primitives.UserId.From(Guid.Parse("00000001-0000-0000-0000-000000000001"));
+        var ghost2 = Recipes.Domain.Primitives.UserId.From(Guid.Parse("00000001-0000-0000-0000-000000000002"));
+        var ratingTime = now.AddDays(-7);
+
+        carbonara.Rate(demoUser.Id, 5, "Absolutely perfect — silky sauce every time.", ratingTime);
+        carbonara.Rate(ghost1, 4, "Great recipe, needs more pepper for my taste.", ratingTime.AddHours(3));
+        carbonara.Rate(ghost2, 5, null, ratingTime.AddHours(6));
+
+        greekSalad.Rate(demoUser.Id, 4, "Fresh and easy. Good summer dish.", ratingTime.AddDays(1));
+        greekSalad.Rate(ghost1, 3, "Simple but nothing special.", ratingTime.AddDays(1).AddHours(2));
+
+        chickenCurry.Rate(demoUser.Id, 5, "Rich and warming — crowd favourite.", ratingTime.AddDays(2));
+        chickenCurry.Rate(ghost2, 4, null, ratingTime.AddDays(2).AddHours(4));
+
+        bananaBread.Rate(ghost1, 4, "Very moist. I added some walnuts.", ratingTime.AddDays(3));
+        bananaBread.Rate(ghost2, 3, "Could use less sugar for my taste.", ratingTime.AddDays(3).AddHours(1));
+
+        risotto.Rate(demoUser.Id, 5, "The best mushroom risotto I have made.", ratingTime.AddDays(4));
+        risotto.Rate(ghost1, 4, null, ratingTime.AddDays(4).AddHours(2));
+
+        beefStew.Rate(demoUser.Id, 4, "Hearty and comforting.", ratingTime.AddDays(5));
+        lentilSoup.Rate(ghost2, 5, "Perfect winter soup.", ratingTime.AddDays(5).AddHours(1));
+
         var weekStart = DateOnly.FromDateTime(DateTime.Today);
         var mealPlan = new MealPlan("This week's plan", stefanovs.Id);
 
