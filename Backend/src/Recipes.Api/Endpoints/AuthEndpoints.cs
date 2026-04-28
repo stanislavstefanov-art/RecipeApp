@@ -1,5 +1,8 @@
 using MediatR;
+using Microsoft.Extensions.Options;
+using Recipes.Api.Auth;
 using Recipes.Api.Extensions;
+using Recipes.Application.Auth.EntraExchange;
 using Recipes.Application.Auth.Login;
 using Recipes.Application.Auth.Me;
 using Recipes.Application.Auth.Register;
@@ -25,6 +28,19 @@ public static class AuthEndpoints
             return result.ToHttpResult(dto => Results.Ok(dto));
         }).AllowAnonymous();
 
+        group.MapPost("/entra/exchange", async (
+            EntraExchangeRequest request,
+            ISender sender,
+            IOptions<EntraOptions> entraOptions,
+            CancellationToken ct) =>
+        {
+            if (!entraOptions.Value.Enabled)
+                return Results.NotFound();
+
+            var result = await sender.Send(new EntraExchangeCommand(request.IdToken), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        }).AllowAnonymous();
+
         group.MapGet("/me", async (ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new MeQuery(), ct);
@@ -36,4 +52,5 @@ public static class AuthEndpoints
 
     private sealed record RegisterRequest(string Email, string Password, string DisplayName);
     private sealed record LoginRequest(string Email, string Password);
+    private sealed record EntraExchangeRequest(string IdToken);
 }

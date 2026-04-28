@@ -34,8 +34,10 @@ if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
 }
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<EntraOptions>(builder.Configuration.GetSection("Entra"));
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 builder.Services.AddSingleton<IJwtIssuer, JwtIssuer>();
+builder.Services.AddSingleton<IEntraTokenValidator, EntraTokenValidator>();
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var signingKey = jwtSection["SigningKey"] ?? string.Empty;
