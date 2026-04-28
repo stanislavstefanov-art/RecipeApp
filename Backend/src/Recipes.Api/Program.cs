@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Recipes.Api.Auth;
 using Recipes.Api.Endpoints;
 using Recipes.Application;
 using Recipes.Application.Behaviors;
+using Recipes.Application.Common.Auth;
 using Recipes.Infrastructure;
 using Recipes.Infrastructure.Persistence;
 
@@ -26,6 +28,10 @@ if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
 {
     builder.Services.AddApplicationInsightsTelemetry();
 }
+
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+builder.Services.AddSingleton<IJwtIssuer, JwtIssuer>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -72,6 +78,7 @@ app.UseCors("Frontend");
 
 app.MapHealthChecks("/health");
 
+app.MapAuthEndpoints();
 app.MapRecipesEndpoints();
 app.MapShoppingListsEndpoints();
 app.MapProductsEndpoints();

@@ -4,6 +4,19 @@
   "Database":              { "Provider": "InMemory" },
   "Seed":                  { "Enabled": true },
 
+  "Jwt": {
+    "SigningKey": "dev-only-256-bit-base64-secret-replace-in-production-aaaaaaaaaaaa",
+    "Issuer": "RecipesApp",
+    "Audience": "RecipesApp",
+    "LifetimeDays": 7
+  },
+
+  "Entra": {
+    "Enabled": false,
+    "TenantId": "",
+    "ClientId": ""
+  },
+
   "RecipeImport":          { "Provider": "Stub" },
   "MealPlanSuggestion":    { "Provider": "Stub" },
   "IngredientSubstitution":{ "Provider": "Stub" },

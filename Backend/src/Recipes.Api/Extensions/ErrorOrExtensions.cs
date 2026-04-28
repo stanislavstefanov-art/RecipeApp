@@ -20,11 +20,23 @@ public static class ErrorOrExtensions
         var first = errors[0];
         return first.Type switch
         {
-            ErrorType.NotFound   => Results.NotFound(),
-            ErrorType.Conflict   => Results.Conflict(),
-            ErrorType.Validation => Results.ValidationProblem(
+            ErrorType.NotFound     => Results.Problem(
+                detail: first.Description, statusCode: StatusCodes.Status404NotFound,
+                extensions: new Dictionary<string, object?> { ["code"] = first.Code }),
+            ErrorType.Conflict     => Results.Problem(
+                detail: first.Description, statusCode: StatusCodes.Status409Conflict,
+                extensions: new Dictionary<string, object?> { ["code"] = first.Code }),
+            ErrorType.Unauthorized => Results.Problem(
+                detail: first.Description, statusCode: StatusCodes.Status401Unauthorized,
+                extensions: new Dictionary<string, object?> { ["code"] = first.Code }),
+            ErrorType.Forbidden    => Results.Problem(
+                detail: first.Description, statusCode: StatusCodes.Status403Forbidden,
+                extensions: new Dictionary<string, object?> { ["code"] = first.Code }),
+            ErrorType.Validation   => Results.ValidationProblem(
                 new Dictionary<string, string[]> { [first.Code] = [first.Description] }),
-            _                    => Results.Problem(first.Description)
+            _                      => Results.Problem(
+                detail: first.Description, statusCode: StatusCodes.Status500InternalServerError,
+                extensions: new Dictionary<string, object?> { ["code"] = first.Code }),
         };
     }
 }
