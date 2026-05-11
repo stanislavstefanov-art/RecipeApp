@@ -1,0 +1,92 @@
+name: infra-validate
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - '.github/workflows/infra-validate.yml'
+
+concurrency:
+  group: infra-validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  what-if:
+    # Skip on fork PRs — they can't access OIDC secrets.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run what-if
+        id: whatif
+        env:
+          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+        run: |
+          set +e
+          output=$(az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters prefix="${{ vars.AZURE_PREFIX }}" \
+            --no-pretty-print 2>&1)
+          status=$?
+          printf '%s\n' "$output" > whatif.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Build comment body
+        run: |
+          {
+            echo "<!-- infra-validate -->"
+            echo "## Bicep \`what-if\` for this PR"
+            echo
+            if [[ "${{ steps.whatif.outputs.status }}" != "0" ]]; then
+              echo "❌ **\`what-if\` failed.** See output below — likely a Bicep syntax or parameter error."
+            else
+              echo "Resource changes that would apply if this PR were deployed:"
+            fi
+            echo
+            echo '```'
+            head -c 60000 whatif.txt
+            echo
+            echo '```'
+            if [[ $(wc -c < whatif.txt) -gt 60000 ]]; then
+              echo
+              echo "_(Output truncated — re-run \`infra-validate\` workflow and check raw logs for the full diff.)_"
+            fi
+            echo
+            echo "_Updated automatically on each push by [\`infra-validate.yml\`](../actions/workflows/infra-validate.yml)._"
+          } > body.md
+
+      - uses: peter-evans/find-comment@v3
+        id: existing
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- infra-validate -->'
+
+      - uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.existing.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: body.md
+          edit-mode: replace
+
+      - name: Fail job if what-if errored
+        if: steps.whatif.outputs.status != '0'
+        run: |
+          echo "::error::what-if exited with status ${{ steps.whatif.outputs.status }}. See PR comment for details."
+          exit 1
