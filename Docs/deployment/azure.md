@@ -64,6 +64,7 @@ And as **GitHub repository secrets** (same screen, Secrets tab):
 | `SQL_ADMIN_PASSWORD` | choose now |
 | `ANTHROPIC_API_KEY` | your Anthropic account |
 | `JWT_SIGNING_KEY` | written to `.bootstrap-output.txt` (gitignored) |
+| `MCP_SERVER_TOKEN` | written to `.bootstrap-output.txt` (gitignored) |
 
 > The bootstrap script **does not** store any long-lived service principal secret in GitHub. Workflow auth uses GitHub's OIDC token, federated to the AD app the script creates.
 

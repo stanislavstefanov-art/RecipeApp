@@ -7,6 +7,8 @@ param anthropicApiKey string
 param sqlConnectionString string
 @secure()
 param jwtSigningKey string
+@secure()
+param mcpServerToken string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'
@@ -46,6 +48,14 @@ resource secretJwtSigningKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: 'Jwt--SigningKey'
   properties: {
     value: jwtSigningKey
+  }
+}
+
+resource secretMcpServerToken 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'MCP-SERVER-TOKEN'
+  properties: {
+    value: mcpServerToken
   }
 }
 

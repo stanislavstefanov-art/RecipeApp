@@ -173,13 +173,14 @@ create_fed_cred() {
 create_fed_cred "github-main" "repo:${GITHUB_REPO}:ref:refs/heads/main"  "Push to main branch"
 create_fed_cred "github-pr"   "repo:${GITHUB_REPO}:pull_request"          "Pull request validation"
 
-# ── Generate JWT signing key ──────────────────────────────────────────────────
+# ── Generate secrets ──────────────────────────────────────────────────────────
 
 JWT_SIGNING_KEY=$(openssl rand -base64 32)
+MCP_SERVER_TOKEN=$(openssl rand -base64 32)
 
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 OUTPUT_FILE="$REPO_ROOT/.bootstrap-output.txt"
-printf 'JWT_SIGNING_KEY=%s' "$JWT_SIGNING_KEY" > "$OUTPUT_FILE"
+printf 'JWT_SIGNING_KEY=%s\nMCP_SERVER_TOKEN=%s' "$JWT_SIGNING_KEY" "$MCP_SERVER_TOKEN" > "$OUTPUT_FILE"
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 
@@ -205,6 +206,7 @@ $(green 'Next steps:')
    SQL_ADMIN_PASSWORD      = <choose a strong password — no '@' character>
    ANTHROPIC_API_KEY       = sk-ant-...
    JWT_SIGNING_KEY         = (see $OUTPUT_FILE)
+   MCP_SERVER_TOKEN        = (see $OUTPUT_FILE)
 
 3. Push a commit to main. Once the deploy workflows are wired up (later
    bundles in CICD-1), they will pick up the OIDC trust automatically.

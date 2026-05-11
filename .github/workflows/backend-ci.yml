@@ -63,8 +63,11 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Publish
-        run: dotnet publish Backend/src/Recipes.Api -c Release -o ./publish
+      - name: Publish API
+        run: dotnet publish Backend/src/Recipes.Api -c Release -o ./publish-api
+
+      - name: Publish MCP server
+        run: dotnet publish Backend/src/Recipes.McpServer -c Release -o ./publish-mcp
 
       - uses: azure/login@v2
         with:
@@ -72,20 +75,40 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - uses: azure/webapps-deploy@v3
+      - name: Deploy API
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ vars.AZURE_PREFIX }}-api
-          package: ./publish
+          package: ./publish-api
 
-      - name: Smoke check
+      - name: Deploy MCP server
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_PREFIX }}-mcp
+          package: ./publish-mcp
+
+      - name: Smoke check API
         run: |
           for i in {1..10}; do
             if curl --fail --silent --show-error "https://${{ vars.API_HOSTNAME }}/health"; then
-              echo "Health check passed"
+              echo "API health check passed"
               exit 0
             fi
             echo "Attempt $i failed, retrying in 6s..."
             sleep 6
           done
-          echo "::error::Health check did not pass within 60s"
+          echo "::error::API health check did not pass within 60s"
+          exit 1
+
+      - name: Smoke check MCP server
+        run: |
+          for i in {1..10}; do
+            if curl --fail --silent --show-error "https://${{ vars.AZURE_PREFIX }}-mcp.azurewebsites.net/health"; then
+              echo "MCP health check passed"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 6s..."
+            sleep 6
+          done
+          echo "::error::MCP health check did not pass within 60s"
           exit 1

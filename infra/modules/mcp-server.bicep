@@ -4,20 +4,8 @@ param tags object = {}
 param keyVaultName string
 param appInsightsConnectionString string
 param recipesApiHostname string
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
-  name: '${prefix}-mcp-plan'
-  location: location
-  tags: tags
-  sku: {
-    name: 'F1'
-    tier: 'Free'
-  }
-  kind: 'linux'
-  properties: {
-    reserved: true
-  }
-}
+// Shared with the API app — Azure allows only one F1 Linux plan per subscription per region
+param appServicePlanId string
 
 resource mcpApp 'Microsoft.Web/sites@2023-12-01' = {
   name: '${prefix}-mcp'
@@ -28,7 +16,7 @@ resource mcpApp 'Microsoft.Web/sites@2023-12-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlan.id
+    serverFarmId: appServicePlanId
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|10.0'

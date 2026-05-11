@@ -185,15 +185,19 @@ foreach ($cred in $federatedCreds) {
     Write-Host "  $($cred.Name): created"
 }
 
-# ── Generate JWT signing key ──────────────────────────────────────────────────
+# ── Generate secrets ──────────────────────────────────────────────────────────
 
 $keyBytes = New-Object byte[] 32
 [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($keyBytes)
 $jwtSigningKey = [Convert]::ToBase64String($keyBytes)
 
+$tokenBytes = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($tokenBytes)
+$mcpServerToken = [Convert]::ToBase64String($tokenBytes)
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $outputFile = Join-Path $repoRoot ".bootstrap-output.txt"
-Set-Content -Path $outputFile -Value "JWT_SIGNING_KEY=$jwtSigningKey" -Encoding utf8 -NoNewline
+Set-Content -Path $outputFile -Value "JWT_SIGNING_KEY=$jwtSigningKey`nMCP_SERVER_TOKEN=$mcpServerToken" -Encoding utf8 -NoNewline
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 
@@ -218,6 +222,7 @@ Write-Host ""
 Write-Host "   SQL_ADMIN_PASSWORD      = <choose a strong password — no '@' character>"
 Write-Host "   ANTHROPIC_API_KEY       = sk-ant-..."
 Write-Host "   JWT_SIGNING_KEY         = (see $outputFile)"
+Write-Host "   MCP_SERVER_TOKEN        = (see $outputFile)"
 Write-Host ""
 Write-Host "3. Push a commit to main. Once the deploy workflows are wired up (later"
 Write-Host "   bundles in CICD-1), they will pick up the OIDC trust automatically."

@@ -33,6 +33,7 @@ jobs:
           SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+          MCP_SERVER_TOKEN: ${{ secrets.MCP_SERVER_TOKEN }}
         run: |
           az deployment group create \
             --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
@@ -46,6 +47,7 @@ jobs:
         run: |
           api_url=$(jq -r '.apiUrl.value' outputs.json)
           api_hostname=$(jq -r '.apiHostname.value' outputs.json)
+          mcp_url=$(jq -r '.mcpAppUrl.value' outputs.json)
           react_url=$(jq -r '.reactAppUrl.value' outputs.json)
           angular_url=$(jq -r '.angularAppUrl.value' outputs.json)
           kv_name=$(jq -r '.keyVaultName.value' outputs.json)
@@ -56,6 +58,7 @@ jobs:
             echo "| Output | Value |"
             echo "|---|---|"
             echo "| API URL | $api_url |"
+            echo "| MCP server URL | $mcp_url |"
             echo "| React app URL | $react_url |"
             echo "| Angular app URL | $angular_url |"
             echo "| Key Vault name | \`$kv_name\` |"

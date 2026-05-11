@@ -71,6 +71,7 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   }
 }
 
+output appServicePlanId string = appServicePlan.id
 output webAppName string = webApp.name
 output webAppHostname string = webApp.properties.defaultHostName
 output principalId string = webApp.identity.principalId
