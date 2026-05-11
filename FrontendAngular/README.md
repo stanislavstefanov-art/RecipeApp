@@ -1,59 +1,67 @@
-# FrontendAngular
+# RecipesApp — Angular Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Angular (zoneless, standalone, signals) + Tailwind frontend for RecipesApp.
 
-## Development server
+## Prerequisites
 
-To start a local development server, run:
+- Node.js 22+
+- Backend API running at `http://localhost:5106` (see [`/Backend`](../Backend/README.md))
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Development
 
 ```bash
-ng generate component component-name
+npm install --legacy-peer-deps
+npm run start   # http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Build & lint
 
 ```bash
-ng generate --help
+npm run build
+npm run lint
 ```
 
-## Building
-
-To build the project run:
+## Unit tests
 
 ```bash
-ng build
+npm test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## E2E tests (Playwright)
 
 ```bash
-ng test
+npx playwright test           # all specs (headless)
+npx playwright test --ui      # interactive UI mode
 ```
 
-## Running end-to-end tests
+Tests mock the API via `page.route()` — no running backend required.
 
-For end-to-end (e2e) testing, run:
+## Environment / API URL
 
-```bash
-ng e2e
+The API base URL is set in `src/environments/`:
+
+| File | URL | Used when |
+|---|---|---|
+| `environment.ts` | `http://localhost:5106` | `ng serve` (development) |
+| `environment.prod.ts` | *(empty — relative URLs)* | `ng build` (production) |
+
+For production deployments where the API is on a separate domain, set `apiBaseUrl` in `environment.prod.ts` before building, or use file replacement in `angular.json`.
+
+## Project structure
+
+```
+src/app/
+  core/          — auth store, interceptors, global error handler
+  api/           — typed HTTP clients, DTO types
+  features/      — feature components (recipes, households, mealPlans, …)
+  shared/ui/     — reusable presentational components
+  app.routes.ts
+public/
+  i18n/          — translation files (bg.json, en.json)
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Localization
 
-## Additional Resources
+Default language: **Bulgarian**. Click the language switcher in the header to switch to English. The choice is persisted in `localStorage`.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+All new template strings must use the `translate` pipe (`{{ 'key' | translate }}`). For imperative strings use `TranslateService.instant('key')`. Add every new key to both `public/i18n/bg.json` and `public/i18n/en.json`.

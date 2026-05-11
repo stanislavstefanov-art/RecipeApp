@@ -1,63 +1,93 @@
-# Recipes Backend
+# Recipes API
 
-Minimal .NET backend scaffold using Clean Architecture + CQRS (MediatR), EF Core, and Minimal APIs.
+.NET 10 backend using Clean Architecture + CQRS (MediatR), EF Core, Minimal APIs, and FluentValidation.
 
 ## Prerequisites
 
-- .NET SDK (targets `net10.0`)
-- Azure SQL (or SQL Server) connection string
+- .NET 10 SDK
+- SQL Server / LocalDB — **optional** (in-memory mode runs without it)
 
-## Configure connection string (local)
+## Quick start
 
-Set `ConnectionStrings:RecipesDb` for the API project.
+```bash
+# First-time only — copy the dev config (file is gitignored)
+cp src/Recipes.Api/appsettings.Development.json.example \
+   src/Recipes.Api/appsettings.Development.json
 
-Example (dev only) in `Backend/src/Recipes.Api/appsettings.Development.json`:
+dotnet run --project src/Recipes.Api
+```
+
+Defaults: in-memory database, stub AI services, demo data seeded on startup.
+
+- API: `http://localhost:5106`
+- Swagger UI: `http://localhost:5106/swagger`
+- Health check: `GET /health`
+- Demo login: `demo@local` / `demo1234`
+
+## Running with real SQL Server
+
+In `src/Recipes.Api/appsettings.Development.json`:
 
 ```json
 {
+  "Database": { "Provider": "SqlServer" },
   "ConnectionStrings": {
-    "RecipesDb": "Server=localhost;Database=Recipes;Trusted_Connection=True;TrustServerCertificate=True"
+    "RecipesDb": "Server=(localdb)\\MSSQLLocalDB;Database=RecipesDb;Trusted_Connection=True;TrustServerCertificate=True"
   }
 }
 ```
 
-Avoid committing secrets. Prefer environment variables / user-secrets for real credentials.
+Migrations are applied automatically on startup.
 
-## Run API
+## Enabling live Claude AI for one feature
 
-From repo root:
+Override via environment variable — no config file edit required:
 
 ```bash
-dotnet run --project Backend/src/Recipes.Api
+RecipeImport__Provider=Claude \
+Claude__ApiKey=sk-ant-... \
+dotnet run --project src/Recipes.Api
 ```
 
-Swagger UI is enabled. Health check: `GET /health`.
-
-## EF Core migrations
-
-Add migration:
+## EF Core migrations (run from repo root)
 
 ```bash
-dotnet ef migrations add InitialCreate --project Backend/src/Recipes.Infrastructure --startup-project Backend/src/Recipes.Api
-```
+dotnet ef migrations add <Name> \
+  --project Backend/src/Recipes.Infrastructure \
+  --startup-project Backend/src/Recipes.Api
 
-Update database:
-
-```bash
 dotnet ef database update --startup-project Backend/src/Recipes.Api
-```
 
-If `dotnet ef` isn't available, install the tool:
-
-```bash
+# Install the tool if missing:
 dotnet tool install --global dotnet-ef
 ```
 
-## API endpoints (v1)
+## Tests
 
-- `POST /api/recipes`
-- `GET /api/recipes/{id}`
-- `GET /api/recipes`
-- `PUT /api/recipes/{id}`
-- `DELETE /api/recipes/{id}`
+```bash
+# Unit tests — no external dependencies
+dotnet test Recipes.sln --filter "Category!=Docker"
 
+# Integration tests — requires Docker
+dotnet test Recipes.sln --filter "Category=Docker"
+```
+
+## Architecture
+
+Clean Architecture with CQRS. Dependency direction: `Api → Application ← Infrastructure`, `Domain` at the center.
+
+| Project | Responsibility |
+|---|---|
+| `Recipes.Domain` | Aggregates, entities, strongly-typed IDs, value objects, domain events |
+| `Recipes.Application` | Vertical slices: Command/Query + Handler + FluentValidation Validator |
+| `Recipes.Infrastructure` | EF Core, `RecipesDbContext`, repository implementations |
+| `Recipes.Api` | Minimal API endpoints, dispatches to MediatR |
+
+## Architecture invariants (CI-enforced)
+
+The `architecture-guard` CI workflow fails on any of these:
+
+1. `IRecipesDbContext` referenced in `Recipes.Application`
+2. Cross-aggregate access (`Ingredient`, `RecipeStep`) outside a `Recipe` traversal
+3. New `*Command.cs` accepting user input without a matching `*Validator.cs`
+4. New AI-using slice without a `Backend/Docs/CCAF/<id>-*.md` entry
