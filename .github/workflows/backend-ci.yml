@@ -47,3 +47,45 @@ jobs:
       - run: dotnet build Backend/Recipes.sln --no-restore --configuration Release
 
       - run: dotnet test Backend/Recipes.sln --no-build --configuration Release --filter "Category=Docker"
+
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    needs: [unit, integration]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: dotnet publish Backend/src/Recipes.Api -c Release -o ./publish
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_PREFIX }}-api
+          package: ./publish
+
+      - name: Smoke check
+        run: |
+          for i in {1..10}; do
+            if curl --fail --silent --show-error "https://${{ vars.API_HOSTNAME }}/health"; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Attempt $i failed, retrying in 6s..."
+            sleep 6
+          done
+          echo "::error::Health check did not pass within 60s"
+          exit 1
