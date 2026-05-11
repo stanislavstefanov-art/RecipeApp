@@ -5,6 +5,8 @@ param tags object = {}
 param anthropicApiKey string
 @secure()
 param sqlConnectionString string
+@secure()
+param jwtSigningKey string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'
@@ -39,7 +41,16 @@ resource secretSqlConnectionString 'Microsoft.KeyVault/vaults/secrets@2023-07-01
   }
 }
 
+resource secretJwtSigningKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'Jwt--SigningKey'
+  properties: {
+    value: jwtSigningKey
+  }
+}
+
 output keyVaultName string = keyVault.name
 output keyVaultUri string = keyVault.properties.vaultUri
 output anthropicApiKeySecretUri string = secretAnthropicKey.properties.secretUri
 output sqlConnectionStringSecretUri string = secretSqlConnectionString.properties.secretUri
+output jwtSigningKeySecretUri string = secretJwtSigningKey.properties.secretUri
