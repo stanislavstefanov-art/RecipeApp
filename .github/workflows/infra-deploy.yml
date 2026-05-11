@@ -1,0 +1,69 @@
+name: infra-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - '.github/workflows/infra-deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: infra-deploy
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Bicep
+        env:
+          SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          JWT_SIGNING_KEY: ${{ secrets.JWT_SIGNING_KEY }}
+        run: |
+          az deployment group create \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters prefix="${{ vars.AZURE_PREFIX }}" \
+            --query properties.outputs \
+            --output json > outputs.json
+
+      - name: Summarise deployment
+        run: |
+          api_url=$(jq -r '.apiUrl.value' outputs.json)
+          api_hostname=$(jq -r '.apiHostname.value' outputs.json)
+          react_url=$(jq -r '.reactAppUrl.value' outputs.json)
+          angular_url=$(jq -r '.angularAppUrl.value' outputs.json)
+          kv_name=$(jq -r '.keyVaultName.value' outputs.json)
+
+          {
+            echo "## Infrastructure deployed"
+            echo
+            echo "| Output | Value |"
+            echo "|---|---|"
+            echo "| API URL | $api_url |"
+            echo "| React app URL | $react_url |"
+            echo "| Angular app URL | $angular_url |"
+            echo "| Key Vault name | \`$kv_name\` |"
+            echo
+            echo "### Set these as GitHub repo variables (first deploy only)"
+            echo
+            echo '```'
+            echo "API_HOSTNAME    = $api_hostname"
+            echo "KEY_VAULT_NAME  = $kv_name"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
