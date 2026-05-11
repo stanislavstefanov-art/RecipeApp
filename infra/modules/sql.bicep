@@ -42,6 +42,9 @@ resource database 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
     autoPauseDelay: 60
     minCapacity: json('0.5')
     zoneRedundant: false
+    // Opt in to Azure SQL free offer: 32 GB storage + 100k vCore-seconds/month free
+    useFreeLimit: true
+    freeLimitExhaustionBehavior: 'AutoPause'
   }
 }
 
