@@ -11,11 +11,12 @@ public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory f
     : IClassFixture<IntegrationTestWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateAuthenticatedClient();
+    private readonly Guid _householdId = factory.TestHousehold.Id.Value;
 
     [Fact]
     public async Task CreateRecipe_WithValidName_Returns201WithLocation()
     {
-        var response = await _client.PostAsJsonAsync("/api/recipes", new { Name = "Pasta" });
+        var response = await _client.PostAsJsonAsync("/api/recipes", new { Name = "Pasta", HouseholdId = _householdId });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         response.Headers.Location.Should().NotBeNull();
@@ -24,7 +25,7 @@ public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory f
     [Fact]
     public async Task CreateRecipe_WithEmptyName_Returns400ValidationProblem()
     {
-        var response = await _client.PostAsJsonAsync("/api/recipes", new { Name = "" });
+        var response = await _client.PostAsJsonAsync("/api/recipes", new { Name = "", HouseholdId = _householdId });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var body = await response.Content.ReadAsStringAsync();
@@ -42,7 +43,8 @@ public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory f
     [Fact]
     public async Task CreateRecipe_ThenGet_ReturnsSameRecipe()
     {
-        var create = await _client.PostAsJsonAsync("/api/recipes", new { Name = "Risotto" });
+        var create = await _client.PostAsJsonAsync("/api/recipes", new { Name = "Risotto", HouseholdId = _householdId });
+        create.StatusCode.Should().Be(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreateRecipeResponse>();
 
         var get = await _client.GetAsync($"/api/recipes/{created!.Id}");

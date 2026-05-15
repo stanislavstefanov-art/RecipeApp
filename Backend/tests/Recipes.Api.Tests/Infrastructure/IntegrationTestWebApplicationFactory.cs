@@ -18,9 +18,15 @@ public sealed class IntegrationTestWebApplicationFactory
 
     private readonly MsSqlContainer _db = new MsSqlBuilder().Build();
 
+    /// <summary>The test user seeded in <see cref="InitializeAsync"/>.</summary>
+    public User TestUser { get; } = User.CreateLocal("test@example.com", "hash-not-used", "Test User");
+
+    /// <summary>The household the <see cref="TestUser"/> is a member of.</summary>
+    public Household TestHousehold { get; } = new("Test Household");
+
     static IntegrationTestWebApplicationFactory()
     {
-        // Program.cs reads Configuration["Jwt:SigningKey"] BEFORE any callback we
+        // Program.cs reads Configuration["Jwt:SigningKey"] before any callback we
         // could register via ConfigureWebHost / ConfigureAppConfiguration. Env
         // vars are picked up by the default WebApplication.CreateBuilder config
         // sources, so setting them at static-init time guarantees they're visible
@@ -46,19 +52,25 @@ public sealed class IntegrationTestWebApplicationFactory
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
         await db.Database.MigrateAsync();
+
+        // Seed a user + household so the household-scoped handlers (CreateRecipe,
+        // ListRecipes, etc.) find a membership when they look up the current user.
+        TestHousehold.AddUser(TestUser.Id, DateTimeOffset.UtcNow);
+        db.Users.Add(TestUser);
+        db.Households.Add(TestHousehold);
+        await db.SaveChangesAsync();
     }
 
     /// <summary>
-    /// Creates an HttpClient pre-authenticated with a JWT for a synthetic test user.
-    /// All endpoints under <c>/api</c> require auth, so tests should use this instead
-    /// of <c>CreateClient()</c>.
+    /// Creates an HttpClient pre-authenticated with a JWT for the seeded
+    /// <see cref="TestUser"/>. All endpoints under <c>/api</c> require auth, so
+    /// tests should use this instead of <c>CreateClient()</c>.
     /// </summary>
     public HttpClient CreateAuthenticatedClient()
     {
         var client = CreateClient();
         var issuer = Services.GetRequiredService<IJwtIssuer>();
-        var (token, _) = issuer.Issue(
-            User.CreateLocal("test@example.com", "hash-not-used", "Test User"));
+        var (token, _) = issuer.Issue(TestUser);
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         return client;
