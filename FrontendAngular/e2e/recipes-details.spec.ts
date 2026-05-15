@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '44444444-4444-4444-4444-444444444444';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -20,6 +20,10 @@ test.describe('recipe details', () => {
             { order: 1, instruction: 'Mix dry ingredients.' },
             { order: 2, instruction: 'Whisk in the milk.' },
           ],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -53,7 +57,7 @@ test.describe('recipe details', () => {
 
     await expect(page.getByRole('heading', { name: 'Recipe not found' })).toBeVisible();
     await expect(page.getByText('Failed to load recipe')).toHaveCount(0);
-    await expect(page.getByRole('link', { name: /Back to recipes/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
   });
 
   test('shows the generic error state on 500', async ({ page }) => {
@@ -69,7 +73,7 @@ test.describe('recipe details', () => {
 
     await expect(page.getByText('Failed to load recipe')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Recipe not found' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: /Back to recipes/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
   });
 
   test('renders empty hints when ingredients and steps are empty', async ({ page }) => {
@@ -82,6 +86,10 @@ test.describe('recipe details', () => {
           name: 'Blank recipe',
           ingredients: [],
           steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -103,6 +111,10 @@ test.describe('recipe details', () => {
           name: 'Pancakes',
           ingredients: [],
           steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -115,7 +127,7 @@ test.describe('recipe details', () => {
     });
 
     await page.goto(`/recipes/${ID}`);
-    await page.getByRole('link', { name: /Back to recipes/ }).click();
+    await page.getByRole('link', { name: /← Recipes/ }).click();
 
     await expect(page).toHaveURL(/\/recipes$/);
   });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '88888888-8888-8888-8888-888888888888';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -9,6 +9,10 @@ const RECIPE_BODY = JSON.stringify({
   name: 'Pancakes',
   ingredients: [],
   steps: [],
+  averageStars: null,
+  ratingCount: 0,
+  ratings: [],
+  myRating: null,
 });
 
 test.describe('delete recipe', () => {

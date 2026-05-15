@@ -5,6 +5,7 @@
 | Resource | Service | SKU |
 |---|---|---|
 | API | App Service (Linux, .NET 10) | F1 free |
+| MCP server | App Service (Linux, .NET 10) | F1 free (shared plan with API) |
 | React frontend | Static Web Apps | Free |
 | Angular frontend | Static Web Apps | Free |
 | Database | Azure SQL (serverless) | Free tier |
@@ -13,19 +14,45 @@
 
 Infrastructure is defined as Bicep IaC in `/infra`.
 
+> **Free tier limits to watch:**
+> - SQL pauses after 60 s of inactivity (auto-resumes on first query, adds ~5 s latency)
+> - App Service F1 has 60 CPU minutes/day — fine for testing, but the app sleeps after 20 min of inactivity
+> - Key Vault allows 2 000 secret operations / 10 min on the free tier, well within normal usage
+
+---
+
 ## Prerequisites
 
-- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) installed and authenticated (`az login`)
-- [PowerShell 7+](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) (Windows) or `bash` + `jq` + `openssl` (macOS / Linux) — for the bootstrap script
-- Azure subscription
-- SQL Server admin password (strong, avoid `@` character)
-- Anthropic API key (`sk-ant-...`)
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) installed  
+- [PowerShell 7+](https://learn.microsoft.com/powershell/scripting/install/installing-powershell) (Windows) or `bash` + `jq` + `openssl` (macOS / Linux)  
+- An Azure subscription (free trial works)  
+- An Anthropic API key (`sk-ant-...`)  
+- Your GitHub repo accessible (public, or Actions enabled)
 
-## Step 0 — One-time bootstrap
+Log in to Azure before running any steps:
 
-This script creates the resource group, an Azure AD application with GitHub OIDC federated credentials, and a Contributor role assignment scoped to the resource group. Run it once per Azure subscription. It is idempotent — safe to re-run.
+```powershell
+az login
+az account show   # confirm it shows the correct subscription
+```
 
-After this step, subsequent deployments are driven by GitHub Actions workflows triggered by push to `main`. No more manual `az` commands.
+---
+
+## Step 1 — Choose a unique prefix
+
+The prefix becomes part of all resource names (Key Vault, SQL Server, App Service hostname). Requirements:
+
+- Globally unique across Azure (SQL Server and Key Vault names are public DNS)
+- Lowercase letters, numbers, and hyphens only
+- 20 characters or fewer
+
+Pick something like `recipes-<initials>-<4-digit-random>`, e.g. `recipes-ss-7421`.
+
+---
+
+## Step 2 — Run the bootstrap script
+
+From the repo root, run the bootstrap script once. It is idempotent — safe to re-run.
 
 ### Windows (PowerShell)
 
@@ -33,8 +60,8 @@ After this step, subsequent deployments are driven by GitHub Actions workflows t
 pwsh infra/bootstrap.ps1 `
   -ResourceGroup RecipesApp `
   -Location westeurope `
-  -Prefix recipes-prod-<unique-suffix> `
-  -GitHubRepo your-org/RecipesApp
+  -Prefix recipes-ss-7421 `
+  -GitHubRepo YourGitHubUsername/RecipesApp
 ```
 
 ### macOS / Linux (bash)
@@ -43,128 +70,162 @@ pwsh infra/bootstrap.ps1 `
 infra/bootstrap.sh \
   --resource-group RecipesApp \
   --location westeurope \
-  --prefix recipes-prod-<unique-suffix> \
-  --github-repo your-org/RecipesApp
+  --prefix recipes-ss-7421 \
+  --github-repo YourGitHubUsername/RecipesApp
 ```
 
-The script prints the values to set as **GitHub repository variables** (Settings → Secrets and variables → Actions → Variables):
+Replace `recipes-ss-7421` with your chosen prefix and `YourGitHubUsername/RecipesApp` with your actual GitHub repo path.
 
-| Variable | Source |
-|---|---|
-| `AZURE_CLIENT_ID` | bootstrap output |
-| `AZURE_TENANT_ID` | bootstrap output |
-| `AZURE_SUBSCRIPTION_ID` | bootstrap output |
-| `AZURE_RESOURCE_GROUP` | the value you passed as `--resource-group` |
-| `AZURE_PREFIX` | the value you passed as `--prefix` |
-
-And as **GitHub repository secrets** (same screen, Secrets tab):
-
-| Secret | Source |
-|---|---|
-| `SQL_ADMIN_PASSWORD` | choose now |
-| `ANTHROPIC_API_KEY` | your Anthropic account |
-| `JWT_SIGNING_KEY` | written to `.bootstrap-output.txt` (gitignored) |
-| `MCP_SERVER_TOKEN` | written to `.bootstrap-output.txt` (gitignored) |
-
-> The bootstrap script **does not** store any long-lived service principal secret in GitHub. Workflow auth uses GitHub's OIDC token, federated to the AD app the script creates.
-
-### What the bootstrap creates
+**What the script does:**
 
 | Resource | Purpose |
 |---|---|
-| Resource group | Container for all RecipesApp Azure resources |
-| Azure AD app `github-actions-<rg>` | Identity used by GitHub Actions workflows |
+| Resource group `RecipesApp` | Container for all Azure resources |
+| Azure AD app `github-actions-RecipesApp` | Identity used by GitHub Actions workflows |
 | Service principal | Backing identity for role assignments |
 | Federated credential `github-main` | Allows OIDC tokens from `refs/heads/main` to authenticate as the SP |
 | Federated credential `github-pr` | Allows OIDC tokens from PR runs to authenticate as the SP |
-| Role assignment | Contributor on the resource group, scoped to the SP |
-| `.bootstrap-output.txt` | Local, gitignored — holds the generated JWT signing key |
+| Role assignment: Contributor | Scoped to the resource group |
+| Role assignment: Key Vault Secrets User | Scoped to the resource group |
+| `.bootstrap-output.txt` | Local, gitignored — holds generated JWT signing key and MCP server token |
 
-### Tearing the bootstrap down
+> The script does **not** store any long-lived service principal secret in GitHub. Workflow auth uses GitHub's OIDC token federated to the AD app.
 
-```bash
-az ad app delete --id <AZURE_CLIENT_ID>
-az group delete --name RecipesApp --yes
+**Keep the terminal open** — you will copy values from it in the next step.
+
+---
+
+## Step 3 — Configure GitHub repo secrets and variables
+
+Go to your GitHub repo → **Settings → Secrets and variables → Actions**.
+
+### Variables tab — add 5 variables
+
+| Name | Value |
+|---|---|
+| `AZURE_CLIENT_ID` | printed by bootstrap as `AZURE_CLIENT_ID` |
+| `AZURE_TENANT_ID` | printed by bootstrap as `AZURE_TENANT_ID` |
+| `AZURE_SUBSCRIPTION_ID` | printed by bootstrap as `AZURE_SUBSCRIPTION_ID` |
+| `AZURE_RESOURCE_GROUP` | `RecipesApp` |
+| `AZURE_PREFIX` | your prefix, e.g. `recipes-ss-7421` |
+
+### Secrets tab — add 4 secrets
+
+| Name | Value |
+|---|---|
+| `SQL_ADMIN_PASSWORD` | A strong password — **no `@` character** (breaks connection strings). Example: `RecipesApp!2024xQ9` |
+| `ANTHROPIC_API_KEY` | Your `sk-ant-...` key |
+| `JWT_SIGNING_KEY` | From `.bootstrap-output.txt` in repo root |
+| `MCP_SERVER_TOKEN` | From `.bootstrap-output.txt` in repo root |
+
+To read `.bootstrap-output.txt`:
+
+```powershell
+Get-Content .bootstrap-output.txt
 ```
 
 ---
 
-## Step 1 — Deploy infrastructure
+## Step 4 — Deploy infrastructure
 
-Push any change under `infra/**` to `main`. The `infra-deploy` workflow runs `az deployment group create` automatically using OIDC, then writes the deployment outputs (API URL, app URLs, Key Vault name) to the workflow run summary.
+Trigger the `infra-deploy` workflow. Two options:
 
-```bash
-git add infra/
-git commit -m "chore(infra): tweak"
+**Option A — manual trigger (recommended for first deploy):**  
+GitHub → Actions → `infra-deploy` → **Run workflow** → Run.
+
+**Option B — push an empty commit:**
+
+```powershell
+git commit --allow-empty -m "chore: trigger infra deploy"
 git push origin main
 ```
 
-Watch the run at `https://github.com/<owner>/<repo>/actions/workflows/infra-deploy.yml`. The summary lists every output and tells you which repo variables to populate after the first deploy.
+The workflow runs `az deployment group create` via OIDC and deploys all Azure resources:
 
-You can also trigger the workflow manually from the Actions tab (`Run workflow` → `infra-deploy`) without changing any code — useful for re-applying after rotating a secret.
+- SQL Server + database (free tier, auto-pause on idle)
+- Key Vault with all secrets pre-populated
+- App Service plan (F1) + API app + MCP server app (sharing the same plan)
+- Static Web Apps for React and Angular
+- Application Insights
+- RBAC role assignments for managed identities
 
-After the first run, set these additional repo variables from the summary output:
+**Expected duration: 15–20 minutes.**
 
-| Variable | Value |
-|---|---|
-| `API_HOSTNAME` | `<prefix>-api.azurewebsites.net` |
-| `KEY_VAULT_NAME` | `<prefix>-kv` (or truncated to 24 chars) |
+When it finishes, the workflow run **Summary** tab shows:
 
-<details>
-<summary>Manual fallback — if you need to deploy outside GitHub Actions</summary>
+```
+| API URL         | https://recipes-ss-7421-api.azurewebsites.net       |
+| MCP server URL  | https://recipes-ss-7421-mcp.azurewebsites.net       |
+| React app URL   | https://<random>.azurestaticapps.net                |
+| Angular app URL | https://<random>.azurestaticapps.net                |
+| Key Vault name  | recipes-ss-7421-kv                                  |
 
-```bash
-# Resource group (skip if bootstrap was run)
-az group create --name RecipesApp --location westeurope
-
-# Deploy
-SQL_ADMIN_PASSWORD=<your-password> \
-ANTHROPIC_API_KEY=sk-ant-... \
-JWT_SIGNING_KEY=<from .bootstrap-output.txt> \
-az deployment group create \
-  --resource-group RecipesApp \
-  --template-file infra/main.bicep \
-  --parameters infra/main.bicepparam \
-  --parameters prefix=recipes-<unique-suffix>
-
-# Retrieve outputs at any time
-az deployment group show \
-  --resource-group RecipesApp \
-  --name main \
-  --query properties.outputs
+Set these as GitHub repo variables (first deploy only):
+  API_HOSTNAME   = recipes-ss-7421-api.azurewebsites.net
+  KEY_VAULT_NAME = recipes-ss-7421-kv
 ```
 
-The `prefix` must be globally unique (used in Key Vault and SQL Server names). Add a short random suffix to avoid conflicts, e.g. `recipes-abc123`.
+<details>
+<summary>Manual fallback — deploy infrastructure outside GitHub Actions</summary>
+
+```powershell
+$env:SQL_ADMIN_PASSWORD  = "<your-password>"
+$env:ANTHROPIC_API_KEY   = "sk-ant-..."
+$env:JWT_SIGNING_KEY      = "<from .bootstrap-output.txt>"
+$env:MCP_SERVER_TOKEN     = "<from .bootstrap-output.txt>"
+
+az deployment group create `
+  --resource-group RecipesApp `
+  --template-file infra/main.bicep `
+  --parameters infra/main.bicepparam `
+  --parameters prefix=recipes-ss-7421 `
+  --query properties.outputs `
+  --output json
+```
 
 </details>
 
 ---
 
-## Step 2 — Deploy app code
+## Step 5 — Set the two post-deploy variables
 
-Push to `main` under `Backend/**`, `Frontend/**`, or `FrontendAngular/**`. The corresponding CI workflow runs build + tests + deploy in one job graph:
+Back in GitHub → **Settings → Secrets and variables → Actions → Variables**, add:
 
-| Path changed | Workflow | What it does |
-|---|---|---|
-| `Backend/**` | `backend-ci` | Unit + integration tests → `dotnet publish` → `azure/webapps-deploy` → smoke check `/health` |
-| `Frontend/**` | `frontend-react-ci` | `npm ci`/`lint`/`build` (with `VITE_API_BASE_URL`) → fetch SWA token from Key Vault → `static-web-apps-deploy` |
-| `FrontendAngular/**` | `frontend-angular-ci` | Same as React, plus `sed` to bake API URL into `environment.prod.ts` before `ng build` |
+| Name | Value (from run summary) |
+|---|---|
+| `API_HOSTNAME` | `recipes-ss-7421-api.azurewebsites.net` |
+| `KEY_VAULT_NAME` | `recipes-ss-7421-kv` |
 
-Production deploys run on `push` to `main`. Backend PRs still trigger build + tests but skip the deploy job.
+These are needed by the frontend build (to bake in the API URL) and by all deploy workflows to fetch SWA tokens from Key Vault.
 
-The frontend workflows fetch their SWA deployment tokens from Key Vault at deploy time using the GitHub OIDC trust — no token secrets need to live in GitHub.
+---
 
-### PR previews (frontends only)
+## Step 6 — Deploy app code
 
-Pull requests that touch `Frontend/**` or `FrontendAngular/**` deploy to a per-PR preview environment in Azure Static Web Apps. The deploy action posts a comment on the PR with the preview URL (e.g. `https://<random>-<n>.azurestaticapps.net`). Each push to the PR re-deploys to the same URL.
+Trigger all three app CI workflows with a push to `main`, or run them manually from the Actions tab:
 
-When the PR is closed (merged or not), the `close-preview` job tears the environment down. The PR preview points at the **production API URL** — useful for visual review, not isolated data.
+```powershell
+git commit --allow-empty -m "chore: trigger app deploys"
+git push origin main
+```
+
+This kicks off in parallel:
+
+| Workflow | What it does |
+|---|---|
+| `backend-ci` | Build → unit + integration tests → `dotnet publish` → deploy API + MCP server → smoke-check `/health` |
+| `frontend-react-ci` | `npm ci` → lint → build (with API URL baked in) → fetch SWA token from Key Vault → deploy |
+| `frontend-angular-ci` | `npm ci` → lint → build → Playwright E2E tests → fetch SWA token → deploy |
+
+**Expected duration: 10–15 minutes.**
+
+> **Key Vault RBAC propagation:** If the backend deploy fails with a Key Vault 403 on the first deploy, wait 5 minutes and re-run the workflow. RBAC role assignments take a few minutes to propagate after a fresh infra deploy.
 
 <details>
 <summary>Manual fallback — deploy backend from a developer machine</summary>
 
 ```bash
-APP_NAME=recipes-<unique-suffix>-api
+APP_NAME=recipes-ss-7421-api
 
 dotnet publish Backend/src/Recipes.Api \
   --configuration Release \
@@ -189,14 +250,12 @@ curl https://$APP_NAME.azurewebsites.net/health   # should return Healthy
 ```bash
 cd Frontend
 
-# Point at the deployed API
-echo "VITE_API_BASE_URL=https://<apiUrl>" > .env.production.local
+echo "VITE_API_BASE_URL=https://recipes-ss-7421-api.azurewebsites.net" > .env.production.local
 
 npm run build
 
-# Fetch deployment token from Key Vault
 TOKEN=$(az keyvault secret show \
-  --vault-name <KEY_VAULT_NAME> \
+  --vault-name recipes-ss-7421-kv \
   --name React-Deployment-Token \
   --query value -o tsv)
 
@@ -213,13 +272,13 @@ npx @azure/static-web-apps-cli deploy ./dist \
 ```bash
 cd FrontendAngular
 
-sed -i "s|apiBaseUrl: ''|apiBaseUrl: 'https://<apiUrl>'|g" \
+sed -i "s|apiBaseUrl: ''|apiBaseUrl: 'https://recipes-ss-7421-api.azurewebsites.net'|g" \
   src/environments/environment.prod.ts
 
 npm run build
 
 TOKEN=$(az keyvault secret show \
-  --vault-name <KEY_VAULT_NAME> \
+  --vault-name recipes-ss-7421-kv \
   --name Angular-Deployment-Token \
   --query value -o tsv)
 
@@ -231,11 +290,35 @@ npx @azure/static-web-apps-cli deploy \
 
 </details>
 
-## Step 3 — Verify
+---
 
-Open the app URLs from the Bicep outputs. Log in with the credentials you registered (demo seeder is disabled in Production mode — register a new account).
+## Step 7 — Verify
 
-Check Application Insights for any startup errors.
+Open the React or Angular app URL from the infra run summary.
+
+1. **Register a new account** — the production seeder is disabled; use the Register page
+2. **Browse recipes** — the list should load from the live SQL database
+3. **AI features** — try ingredient substitution or meal plan generation (these call your Anthropic key)
+4. **Check Application Insights** — in the Azure Portal, open the Application Insights resource (`<prefix>-insights`) and look at the Live Metrics or Failures blade for any startup errors
+
+---
+
+## Total time: ~45–50 minutes end to end
+
+| Step | Time |
+|---|---|
+| Prerequisites + az login | 5 min |
+| Choose prefix | 2 min |
+| Bootstrap script | 10 min |
+| GitHub secrets + variables | 10 min |
+| Infra deploy | 15–20 min |
+| Post-deploy variables | 2 min |
+| App code deploy | 10–15 min |
+| Verify | 5 min |
+
+The only manual steps are running bootstrap once and entering 11 values into GitHub. Everything after that is automated by `git push`.
+
+---
 
 ## Pull request checks
 
@@ -243,10 +326,12 @@ Beyond build/test/lint, two workflows post PR comments to surface what would cha
 
 | Workflow | Trigger | What it posts |
 |---|---|---|
-| `infra-validate` | PR touches `infra/**` | Sticky comment with `az deployment group what-if` output — resources that would be created / modified / deleted if this PR were deployed |
+| `infra-validate` | PR touches `infra/**` | Sticky comment with `az deployment group what-if` output — resources that would be created / modified / deleted |
 | `frontend-react-ci` / `frontend-angular-ci` | PR touches `Frontend/**` or `FrontendAngular/**` | Comment from the SWA action with a preview URL — torn down on PR close |
 
 Both are sticky: subsequent pushes update the existing comment in place rather than spamming the thread.
+
+---
 
 ## Redeploying after changes
 
@@ -255,15 +340,22 @@ Every redeploy is a `git push` — the workflows handle the rest.
 | Changed | Workflow triggered |
 |---|---|
 | `infra/**` | `infra-deploy` |
-| `infra/modules/app-service.bicep` (settings) | `infra-deploy` (idempotent — only changed settings update) |
-| `Backend/**` | `backend-ci` (test + deploy) |
+| `Backend/**` | `backend-ci` (test + deploy API + MCP server) |
 | `Frontend/**` | `frontend-react-ci` (build + deploy) |
-| `FrontendAngular/**` | `frontend-angular-ci` (build + deploy) |
+| `FrontendAngular/**` | `frontend-angular-ci` (build + E2E + deploy) |
+
+To re-apply infra after rotating a secret (e.g. new `SQL_ADMIN_PASSWORD`), trigger `infra-deploy` manually from the Actions tab — no code change needed.
+
+---
 
 ## Tearing down
 
 ```bash
+# Delete all Azure resources
 az group delete --name RecipesApp --yes --no-wait
+
+# Delete the OIDC trust (AD app)
+az ad app delete --id <AZURE_CLIENT_ID>
 ```
 
-This deletes all resources in the group.
+This deletes all resources in the group including the SQL database, Key Vault, App Service, and Static Web Apps.

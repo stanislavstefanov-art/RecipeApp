@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '66666666-6666-6666-6666-666666666666';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -11,7 +11,7 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {
@@ -19,12 +19,14 @@ test.describe('add ingredient', () => {
       await route.fulfill({ status: 204, body: '' });
     });
 
+    const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
-    await page.getByLabel('Quantity').fill('100');
-    await page.getByLabel('Unit').fill('g');
+    await expect(page.getByText('No ingredients')).toBeVisible();
+    await form.getByLabel('Quantity').fill('100');
+    await form.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
-    await expect(page.getByText('Ingredient name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -34,7 +36,7 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {
@@ -44,12 +46,13 @@ test.describe('add ingredient', () => {
 
     const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
+    await expect(page.getByText('No ingredients')).toBeVisible();
     await form.getByLabel('Ingredient name').fill('Flour');
-    await page.getByLabel('Quantity').fill('100');
-    await page.getByLabel('Unit').fill('');
+    await form.getByLabel('Quantity').fill('100');
+    await form.getByLabel('Unit').fill('');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
-    await expect(page.getByText('Unit is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -59,7 +62,7 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {
@@ -69,12 +72,13 @@ test.describe('add ingredient', () => {
 
     const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
+    await expect(page.getByText('No ingredients')).toBeVisible();
     await form.getByLabel('Ingredient name').fill('Flour');
-    await page.getByLabel('Quantity').fill('0');
-    await page.getByLabel('Unit').fill('g');
+    await form.getByLabel('Quantity').fill('0');
+    await form.getByLabel('Unit').fill('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
-    await expect(page.getByText('Quantity must be greater than 0.')).toBeVisible();
+    await expect(page.getByText('Value must be greater than 0.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -92,6 +96,10 @@ test.describe('add ingredient', () => {
           name: 'Cake',
           ingredients,
           steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -126,7 +134,7 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {
@@ -159,7 +167,7 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {

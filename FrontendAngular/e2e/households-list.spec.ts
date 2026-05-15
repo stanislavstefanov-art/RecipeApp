@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
 

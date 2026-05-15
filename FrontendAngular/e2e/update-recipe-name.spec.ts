@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '55555555-5555-5555-5555-555555555555';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -22,6 +22,10 @@ test.describe('update recipe name', () => {
         name: 'Old name',
         ingredients: [],
         steps: [],
+        averageStars: null,
+        ratingCount: 0,
+        ratings: [],
+        myRating: null,
       }),
     );
 
@@ -40,6 +44,10 @@ test.describe('update recipe name', () => {
         name: 'Old name',
         ingredients: [],
         steps: [],
+        averageStars: null,
+        ratingCount: 0,
+        ratings: [],
+        myRating: null,
       }),
     );
     let putRequested = false;
@@ -56,7 +64,7 @@ test.describe('update recipe name', () => {
     await page.getByLabel('Recipe name').fill('');
     await page.getByRole('button', { name: 'Save name' }).click();
 
-    await expect(page.getByText('Name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(putRequested).toBe(false);
   });
 
@@ -70,6 +78,10 @@ test.describe('update recipe name', () => {
         name: 'Old name',
         ingredients: [],
         steps: [],
+        averageStars: null,
+        ratingCount: 0,
+        ratings: [],
+        myRating: null,
       }),
     );
     let putRequested = false;
@@ -86,7 +98,7 @@ test.describe('update recipe name', () => {
     await page.getByLabel('Recipe name').fill('a'.repeat(201));
     await page.getByRole('button', { name: 'Save name' }).click();
 
-    await expect(page.getByText('Name must be 200 characters or fewer.')).toBeVisible();
+    await expect(page.getByText('Maximum length is 200 characters.')).toBeVisible();
     expect(putRequested).toBe(false);
   });
 
@@ -139,6 +151,10 @@ test.describe('update recipe name', () => {
           name: 'Old name',
           ingredients: [],
           steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -170,6 +186,10 @@ test.describe('update recipe name', () => {
           name: 'Old name',
           ingredients: [],
           steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });

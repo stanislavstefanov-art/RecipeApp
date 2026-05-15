@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const PERSONS_URL = 'http://localhost:5106/api/persons';
 const NEW_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
@@ -18,7 +18,7 @@ test.describe('persons create', () => {
     await page.goto('/persons/new');
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('Name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 

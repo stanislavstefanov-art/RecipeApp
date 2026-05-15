@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '99999999-9999-9999-9999-999999999999';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -9,6 +9,10 @@ const RECIPE_BODY = JSON.stringify({
   name: 'Chocolate Cake',
   ingredients: [],
   steps: [],
+  averageStars: null,
+  ratingCount: 0,
+  ratings: [],
+  myRating: null,
 });
 
 function makeResult(overrides: object = {}) {
@@ -48,7 +52,7 @@ test.describe('ingredient substitution', () => {
     await page.goto(`/recipes/${ID}`);
     await page.locator('app-suggest-substitutions-form').getByRole('button', { name: 'Find substitutes' }).click();
 
-    await expect(page.getByText('Ingredient name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 

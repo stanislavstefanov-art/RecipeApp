@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
 const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
@@ -29,7 +29,7 @@ test.describe('meal plans create', () => {
     await page.goto('/meal-plans/new');
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('Name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 

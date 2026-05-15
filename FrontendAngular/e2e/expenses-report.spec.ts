@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const REPORT_URL = 'http://localhost:5106/api/expenses/monthly-report?year=2025&month=3';
 const INSIGHTS_URL = 'http://localhost:5106/api/expenses/insights?year=2025&month=3';
@@ -91,6 +91,6 @@ test.describe('expenses report', () => {
 
     await page.goto('/expenses/report');
 
-    await expect(page.getByRole('link', { name: /Back to expenses/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /← Expenses/ })).toBeVisible();
   });
 });

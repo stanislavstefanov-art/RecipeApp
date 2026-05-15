@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const IMPORT_URL = 'http://localhost:5106/api/recipes/import';
 const LIST_URL = 'http://localhost:5106/api/recipes';
@@ -42,7 +42,7 @@ test.describe('recipe import', () => {
     await page.getByLabel('Recipe text').fill('short');
     await page.getByRole('button', { name: 'Extract' }).click();
 
-    await expect(page.getByText('Recipe text must be at least 10 characters.')).toBeVisible();
+    await expect(page.getByText('Minimum length is 10 characters.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -56,7 +56,7 @@ test.describe('recipe import', () => {
     await page.goto('/recipes/import');
     await page.getByRole('button', { name: 'Extract' }).click();
 
-    await expect(page.getByText('Recipe text is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 

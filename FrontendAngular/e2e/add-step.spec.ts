@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const ID = '77777777-7777-7777-7777-777777777777';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
@@ -11,7 +11,7 @@ test.describe('add step', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(STEPS, async (route) => {
@@ -20,10 +20,11 @@ test.describe('add step', () => {
     });
 
     await page.goto(`/recipes/${ID}`);
+    await expect(page.getByText('No steps')).toBeVisible();
     await page.getByLabel('Instruction').fill('');
     await page.getByRole('button', { name: 'Add step' }).click();
 
-    await expect(page.getByText('Instruction is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -35,7 +36,7 @@ test.describe('add step', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(STEPS, async (route) => {
@@ -44,11 +45,12 @@ test.describe('add step', () => {
     });
 
     await page.goto(`/recipes/${ID}`);
+    await expect(page.getByText('No steps')).toBeVisible();
     await page.getByLabel('Instruction').fill('a'.repeat(1001));
     await page.getByRole('button', { name: 'Add step' }).click();
 
     await expect(
-      page.getByText('Instruction must be 1000 characters or fewer.'),
+      page.getByText('Maximum length is 1000 characters.'),
     ).toBeVisible();
     expect(requested).toBe(false);
   });
@@ -66,6 +68,10 @@ test.describe('add step', () => {
           name: 'Cake',
           ingredients: [],
           steps,
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
         }),
       });
     });
@@ -92,7 +98,7 @@ test.describe('add step', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(STEPS, async (route) => {
@@ -120,7 +126,7 @@ test.describe('add step', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [] }),
+        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
       });
     });
     await page.route(STEPS, async (route) => {

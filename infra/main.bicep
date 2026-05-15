@@ -29,6 +29,7 @@ var tags = {
 
 // Key Vault name must be globally unique, max 24 chars, alphanumeric + hyphens
 var kvPrefix = length(prefix) > 20 ? substring(prefix, 0, 20) : prefix
+var kvName = '${kvPrefix}-kv'
 
 // ── Monitoring ────────────────────────────────────────────────────────────────
 
@@ -124,14 +125,14 @@ module mcpServer 'modules/mcp-server.bicep' = {
 
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 
-// Reference the deployed Key Vault so we can scope the role assignment to it
+// kvName is a variable (computable at start) — required for scope/parent/name on role assignments and secrets
 resource kvExisting 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVault.outputs.keyVaultName
+  name: kvName
 }
 
 resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: kvExisting
-  name: guid(keyVault.outputs.keyVaultName, appService.outputs.principalId, keyVaultSecretsUserRoleId)
+  name: guid(resourceGroup().id, kvName, 'api-kv-secrets-user')
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
     principalId: appService.outputs.principalId
@@ -141,7 +142,7 @@ resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =
 
 resource kvRoleAssignmentMcp 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: kvExisting
-  name: guid(keyVault.outputs.keyVaultName, mcpServer.outputs.principalId, keyVaultSecretsUserRoleId)
+  name: guid(resourceGroup().id, kvName, 'mcp-kv-secrets-user')
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
     principalId: mcpServer.outputs.principalId

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 const API = 'http://localhost:5106/api/recipes';
 const NEW_ID = '33333333-3333-3333-3333-333333333333';
@@ -20,7 +20,7 @@ test.describe('recipes create', () => {
     await page.goto('/recipes/new');
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('Name is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.')).toBeVisible();
     expect(requested).toBe(false);
     await expect(page).toHaveURL(/\/recipes\/new$/);
   });
@@ -38,7 +38,7 @@ test.describe('recipes create', () => {
     await page.getByLabel('Name').fill('a'.repeat(201));
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('Name must be 200 characters or fewer.')).toBeVisible();
+    await expect(page.getByText('Maximum length is 200 characters.')).toBeVisible();
     expect(requested).toBe(false);
   });
 
