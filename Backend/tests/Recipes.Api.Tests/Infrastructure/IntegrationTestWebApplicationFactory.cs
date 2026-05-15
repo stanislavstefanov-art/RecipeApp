@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Recipes.Api.Auth;
+using Recipes.Application.Common.Auth;
 using Recipes.Domain.Entities;
 using Recipes.Infrastructure.Persistence;
 using Testcontainers.MsSql;
