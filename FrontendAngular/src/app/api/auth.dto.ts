@@ -13,5 +13,5 @@ export interface AuthSessionDto {
 
 export interface MeResponseDto {
   readonly user: AuthUserDto;
-  readonly households: ReadonlyArray<{ readonly id: string; readonly name: string }>;
+  readonly households: readonly { readonly id: string; readonly name: string }[];
 }

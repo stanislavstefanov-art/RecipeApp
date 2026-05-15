@@ -1,8 +1,9 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-3">
   <div class="flex flex-wrap gap-3">
     <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-gray-700">{{ 'cookingLog.cookedOn' | translate }}</label>
+      <label for="cookedOn" class="text-sm font-medium text-gray-700">{{ 'cookingLog.cookedOn' | translate }}</label>
       <input
+        id="cookedOn"
         type="date"
         formControlName="cookedOn"
         [max]="todayIso"
@@ -10,8 +11,9 @@
       />
     </div>
     <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-gray-700">{{ 'cookingLog.servings' | translate }}</label>
+      <label for="servings" class="text-sm font-medium text-gray-700">{{ 'cookingLog.servings' | translate }}</label>
       <input
+        id="servings"
         type="number"
         formControlName="servings"
         min="1"

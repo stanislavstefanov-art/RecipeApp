@@ -1,6 +1,6 @@
 <span
   [class]="size() === 'sm' ? 'inline-flex gap-0.5 text-sm' : 'inline-flex gap-0.5 text-xl'"
-  [attr.aria-label]="value() != null ? value() + ' out of 5 stars' : 'Not rated'"
+  [attr.aria-label]="value() !== null && value() !== undefined ? value() + ' out of 5 stars' : 'Not rated'"
 >
   @for (n of stars; track n) {
     @if (readonly()) {

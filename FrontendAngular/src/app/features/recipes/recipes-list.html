@@ -38,7 +38,7 @@
             class="block rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
           >
             <h2 class="font-semibold">{{ recipe.name }}</h2>
-            @if (recipe.averageStars != null) {
+            @if (recipe.averageStars !== null && recipe.averageStars !== undefined) {
               <div class="mt-1 flex items-center gap-1 text-sm text-gray-500">
                 <app-star-rating [value]="recipe.averageStars" [readonly]="true" size="sm" />
                 <span>{{ recipe.averageStars.toFixed(1) }} ({{ recipe.ratingCount }})</span>

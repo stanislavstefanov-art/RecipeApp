@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MealPlanEntryAssignmentDto } from '../../api/meal-plans.dto';
 import { MealPlansDetails } from './meal-plans-details';
 
@@ -19,6 +19,7 @@ const STUB_ASSIGNMENT: MealPlanEntryAssignmentDto = {
 
 @Component({
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MealPlansDetails],
   template: '<app-meal-plans-details id="plan-1" />',
 })
