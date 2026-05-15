@@ -1,6 +1,7 @@
 name: frontend-react-ci
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths:
