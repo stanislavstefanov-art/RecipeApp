@@ -38,11 +38,16 @@ public sealed class ShoppingListRepository : IShoppingListRepository
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.ShoppingLists
+        // EF Core can't translate any operation against a nullable strongly-typed
+        // ID with a value conversion — filter client-side. Volumes are small.
+        var ids = householdIds.Select(h => h.Value).ToHashSet();
+        var all = await _dbContext.ShoppingLists
             .Include(x => x.Items)
-            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
-            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
+        return all
+            .Where(x => x.HouseholdId.HasValue && ids.Contains(x.HouseholdId.Value.Value))
+            .OrderBy(x => x.Name)
+            .ToList();
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -33,10 +33,14 @@ public sealed class PersonRepository : IPersonRepository
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Persons
-            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
+        // EF Core can't translate any operation against a nullable strongly-typed
+        // ID with a value conversion — filter client-side. Volumes are small.
+        var ids = householdIds.Select(h => h.Value).ToHashSet();
+        var all = await _dbContext.Persons.ToListAsync(cancellationToken);
+        return all
+            .Where(x => x.HouseholdId.HasValue && ids.Contains(x.HouseholdId.Value.Value))
             .OrderBy(x => x.Name)
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 
     public Task AddAsync(Person person, CancellationToken cancellationToken = default)

@@ -36,11 +36,15 @@ public sealed class ExpenseRepository : IExpenseRepository
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Expenses
-            .Where(x => x.HouseholdId != null && householdIds.Contains(x.HouseholdId.Value))
+        // EF Core can't translate any operation against a nullable strongly-typed
+        // ID with a value conversion — filter client-side. Volumes are small.
+        var ids = householdIds.Select(h => h.Value).ToHashSet();
+        var all = await _dbContext.Expenses.ToListAsync(cancellationToken);
+        return all
+            .Where(x => x.HouseholdId.HasValue && ids.Contains(x.HouseholdId.Value.Value))
             .OrderByDescending(x => x.ExpenseDate)
             .ThenByDescending(x => x.Amount)
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 
     public async Task<IReadOnlyList<Expense>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken = default)
@@ -58,15 +62,17 @@ public sealed class ExpenseRepository : IExpenseRepository
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Expenses
-            .Where(x =>
-                x.ExpenseDate.Year == year &&
-                x.ExpenseDate.Month == month &&
-                x.HouseholdId != null &&
-                householdIds.Contains(x.HouseholdId.Value))
+        // Keep the year/month filter server-side (translates fine), apply the
+        // nullable strongly-typed HouseholdId filter client-side (see notes above).
+        var ids = householdIds.Select(h => h.Value).ToHashSet();
+        var monthRows = await _dbContext.Expenses
+            .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
+            .ToListAsync(cancellationToken);
+        return monthRows
+            .Where(x => x.HouseholdId.HasValue && ids.Contains(x.HouseholdId.Value.Value))
             .OrderByDescending(x => x.ExpenseDate)
             .ThenByDescending(x => x.Amount)
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
