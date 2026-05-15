@@ -30,12 +30,18 @@ public sealed class RecipeRepository : IRecipeRepository
     public async Task<IReadOnlyList<Recipe>> GetByHouseholdIdsAsync(
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
-        => await _db.Recipes
+    {
+        // EF Core can't translate `householdIds.Contains(r.HouseholdId.Value)` on a
+        // nullable strongly-typed ID — `.Value` on the nullable form isn't supported
+        // in the query provider. Compare nullable-to-nullable instead.
+        var nullableIds = householdIds.Select(id => (HouseholdId?)id).ToList();
+        return await _db.Recipes
             .AsNoTracking()
             .Include(r => r.Ratings)
-            .Where(r => r.HouseholdId != null && householdIds.Contains(r.HouseholdId.Value))
+            .Where(r => nullableIds.Contains(r.HouseholdId))
             .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
+    }
 
     public async Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(
         string ingredientName, CancellationToken cancellationToken = default)
