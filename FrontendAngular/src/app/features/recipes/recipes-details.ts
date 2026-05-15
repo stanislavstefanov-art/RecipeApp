@@ -134,6 +134,8 @@ export class RecipesDetails {
 
   constructor() {
     effect(() => {
+      // rxResource.value() throws when the resource is in error state — guard with hasValue()
+      if (!this.recipe.hasValue()) return;
       const myRating = this.recipe.value()?.myRating;
       if (myRating && this.selectedStars() === null) {
         this.selectedStars.set(myRating.stars);
