@@ -10,7 +10,7 @@ namespace Recipes.Api.Tests.Recipes;
 public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory factory)
     : IClassFixture<IntegrationTestWebApplicationFactory>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = factory.CreateAuthenticatedClient();
 
     [Fact]
     public async Task CreateRecipe_WithValidName_Returns201WithLocation()
