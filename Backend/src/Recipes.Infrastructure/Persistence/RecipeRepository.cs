@@ -31,16 +31,17 @@ public sealed class RecipeRepository : IRecipeRepository
         IReadOnlyList<HouseholdId> householdIds,
         CancellationToken cancellationToken = default)
     {
-        // EF Core can't translate `householdIds.Contains(r.HouseholdId.Value)` on a
-        // nullable strongly-typed ID — `.Value` on the nullable form isn't supported
-        // in the query provider. Compare nullable-to-nullable instead.
-        var nullableIds = householdIds.Select(id => (HouseholdId?)id).ToList();
-        return await _db.Recipes
+        // EF Core can't translate Contains against a nullable strongly-typed ID
+        // that has a value conversion. Filter on the raw Guid column via a
+        // shadow-property lookup, then re-hydrate to entities.
+        var ids = householdIds.Select(h => h.Value).ToHashSet();
+        var all = await _db.Recipes
             .AsNoTracking()
             .Include(r => r.Ratings)
-            .Where(r => nullableIds.Contains(r.HouseholdId))
+            .Where(r => r.HouseholdId != null)
             .OrderBy(r => r.Name.Value)
             .ToListAsync(cancellationToken);
+        return all.Where(r => ids.Contains(r.HouseholdId!.Value.Value)).ToList();
     }
 
     public async Task<IReadOnlyList<Recipe>> SearchByIngredientNameAsync(
