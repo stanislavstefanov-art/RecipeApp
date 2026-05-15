@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +77,20 @@ public sealed class IntegrationTestWebApplicationFactory
 
             services.AddDbContext<RecipesDbContext>(options =>
                 options.UseSqlServer(_db.GetConnectionString()));
+
+            // Surface unhandled exceptions in the response body during tests so CI
+            // logs include the actual error, not just "An error occurred".
+            services.AddProblemDetails(opts =>
+            {
+                opts.CustomizeProblemDetails = ctx =>
+                {
+                    var ex = ctx.HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
+                    if (ex is not null)
+                    {
+                        ctx.ProblemDetails.Detail = ex.ToString();
+                    }
+                };
+            });
         });
 
         builder.UseEnvironment("Development");
