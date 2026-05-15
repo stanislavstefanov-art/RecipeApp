@@ -130,6 +130,10 @@ resource kvExisting 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: kvName
 }
 
+// Resources that target kvExisting need an explicit dependsOn on the keyVault
+// module — Bicep doesn't infer dependencies through `existing` references, so
+// without this they race the Key Vault creation and fail with ParentResourceNotFound.
+
 resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: kvExisting
   name: guid(resourceGroup().id, kvName, 'api-kv-secrets-user')
@@ -138,6 +142,7 @@ resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =
     principalId: appService.outputs.principalId
     principalType: 'ServicePrincipal'
   }
+  dependsOn: [keyVault]
 }
 
 resource kvRoleAssignmentMcp 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -148,6 +153,7 @@ resource kvRoleAssignmentMcp 'Microsoft.Authorization/roleAssignments@2022-04-01
     principalId: mcpServer.outputs.principalId
     principalType: 'ServicePrincipal'
   }
+  dependsOn: [keyVault]
 }
 
 // ── SWA deployment tokens → Key Vault ─────────────────────────────────────────
@@ -160,6 +166,7 @@ resource secretReactDeploymentToken 'Microsoft.KeyVault/vaults/secrets@2023-07-0
   properties: {
     value: swaReact.outputs.deploymentToken
   }
+  dependsOn: [keyVault]
 }
 
 resource secretAngularDeploymentToken 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
@@ -168,6 +175,7 @@ resource secretAngularDeploymentToken 'Microsoft.KeyVault/vaults/secrets@2023-07
   properties: {
     value: swaAngular.outputs.deploymentToken
   }
+  dependsOn: [keyVault]
 }
 
 // ── Outputs ───────────────────────────────────────────────────────────────────
