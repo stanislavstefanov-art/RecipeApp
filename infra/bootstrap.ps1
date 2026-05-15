@@ -77,6 +77,31 @@ Write-Host "Tenant       : $tenantId" -ForegroundColor Cyan
 Write-Host "GitHub repo  : $GitHubRepo" -ForegroundColor Cyan
 Write-Host ""
 
+# ── Resource providers ────────────────────────────────────────────────────────
+# Fresh subscriptions only have a handful of providers registered. Bicep
+# deployments fail with MissingSubscriptionRegistration if these aren't
+# registered up-front. Registration is asynchronous but registering is a no-op
+# once done.
+
+$providers = @(
+    'Microsoft.Web'                # App Service, Static Web Apps
+    'Microsoft.Sql'                # Azure SQL
+    'Microsoft.KeyVault'           # Key Vault
+    'Microsoft.Insights'           # Application Insights
+    'Microsoft.OperationalInsights' # Log Analytics workspace
+)
+
+Write-Host "▶ Resource providers" -ForegroundColor Yellow
+foreach ($ns in $providers) {
+    $state = az provider show --namespace $ns --query registrationState --output tsv 2>$null
+    if ($state -eq 'Registered') {
+        Write-Host "  $ns`: already registered"
+    } else {
+        az provider register --namespace $ns --output none
+        Write-Host "  $ns`: registration requested"
+    }
+}
+
 # ── Resource group ────────────────────────────────────────────────────────────
 
 Write-Host "▶ Resource group: $ResourceGroup ($Location)" -ForegroundColor Yellow

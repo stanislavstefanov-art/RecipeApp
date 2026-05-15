@@ -80,6 +80,30 @@ cyan "Tenant       : $TENANT_ID"
 cyan "GitHub repo  : $GITHUB_REPO"
 echo
 
+# ── Resource providers ────────────────────────────────────────────────────────
+# Fresh subscriptions only have a handful of providers registered. Bicep
+# deployments fail with MissingSubscriptionRegistration if these aren't
+# registered up-front.
+
+PROVIDERS=(
+    "Microsoft.Web"                 # App Service, Static Web Apps
+    "Microsoft.Sql"                 # Azure SQL
+    "Microsoft.KeyVault"            # Key Vault
+    "Microsoft.Insights"            # Application Insights
+    "Microsoft.OperationalInsights" # Log Analytics workspace
+)
+
+yellow "▶ Resource providers"
+for ns in "${PROVIDERS[@]}"; do
+    state=$(az provider show --namespace "$ns" --query registrationState --output tsv 2>/dev/null || true)
+    if [ "$state" = "Registered" ]; then
+        echo "  $ns: already registered"
+    else
+        az provider register --namespace "$ns" --output none
+        echo "  $ns: registration requested"
+    fi
+done
+
 # ── Resource group ────────────────────────────────────────────────────────────
 
 yellow "▶ Resource group: $RESOURCE_GROUP ($LOCATION)"
