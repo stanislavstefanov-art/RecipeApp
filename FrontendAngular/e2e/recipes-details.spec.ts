@@ -55,10 +55,9 @@ test.describe('recipe details', () => {
 
     await page.goto(`/recipes/${ID}`);
 
-    // Wait for the back link (translated) — ensures English translations are loaded
-    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Recipe not found' })).toBeVisible();
     await expect(page.getByText('Failed to load recipe')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
   });
 
   test('shows the generic error state on 500', async ({ page }) => {
@@ -72,10 +71,9 @@ test.describe('recipe details', () => {
 
     await page.goto(`/recipes/${ID}`);
 
-    // Wait for the back link (translated) — ensures English translations are loaded
-    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
     await expect(page.getByText('Failed to load recipe')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Recipe not found' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /← Recipes/ })).toBeVisible();
   });
 
   test('renders empty hints when ingredients and steps are empty', async ({ page }) => {
