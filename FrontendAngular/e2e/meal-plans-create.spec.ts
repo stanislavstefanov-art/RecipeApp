@@ -29,7 +29,7 @@ test.describe('meal plans create', () => {
     await page.goto('/meal-plans/new');
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('This field is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.').first()).toBeVisible();
     expect(requested).toBe(false);
   });
 

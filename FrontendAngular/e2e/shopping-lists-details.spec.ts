@@ -85,7 +85,7 @@ test.describe('shopping list details', () => {
     await stubMealPlans(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
-    await page.getByRole('button', { name: 'Mark pending' }).click();
+    await page.getByRole('button', { name: 'Mark as pending' }).click();
 
     await expect(page.getByText('Pending')).toBeVisible();
   });

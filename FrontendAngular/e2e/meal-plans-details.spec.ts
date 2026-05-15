@@ -78,6 +78,6 @@ test.describe('meal plans details', () => {
 
     await page.goto(`/meal-plans/${MEAL_PLAN_ID}`);
 
-    await expect(page.getByText('No entries yet.')).toBeVisible();
+    await expect(page.getByText('No entries in this plan.')).toBeVisible();
   });
 });

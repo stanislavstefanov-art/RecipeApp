@@ -18,9 +18,9 @@ test.describe('households list', () => {
     await page.goto('/households');
 
     await expect(page.getByText('Smith Family')).toBeVisible();
-    await expect(page.getByText('3 members')).toBeVisible();
+    await expect(page.getByText('Members: 3')).toBeVisible();
     await expect(page.getByText('Jones Household')).toBeVisible();
-    await expect(page.getByText('1 member')).toBeVisible();
+    await expect(page.getByText('Members: 1')).toBeVisible();
   });
 
   test('renders empty state when the list is empty', async ({ page }) => {

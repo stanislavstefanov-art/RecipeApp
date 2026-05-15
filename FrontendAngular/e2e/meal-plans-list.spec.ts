@@ -30,9 +30,9 @@ test.describe('meal plans list', () => {
     await page.goto('/meal-plans');
 
     await expect(page.getByText('Week of April 28')).toBeVisible();
-    await expect(page.getByText('Smith Family · 7 entries')).toBeVisible();
+    await expect(page.getByText('Entries: 7')).toBeVisible();
     await expect(page.getByText('Weekend meals')).toBeVisible();
-    await expect(page.getByText('Smith Family · 1 entry')).toBeVisible();
+    await expect(page.getByText('Entries: 1')).toBeVisible();
   });
 
   test('renders empty state when the list is empty', async ({ page }) => {

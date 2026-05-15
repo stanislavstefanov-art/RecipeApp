@@ -26,7 +26,7 @@ test.describe('shopping lists list', () => {
     await page.goto('/shopping-lists');
 
     await expect(page.getByRole('link', { name: 'Weekly Groceries' })).toBeVisible();
-    await expect(page.getByText('2 items')).toBeVisible();
+    await expect(page.getByText('Items: 2')).toBeVisible();
   });
 
   test('shows empty state when no shopping lists', async ({ page }) => {

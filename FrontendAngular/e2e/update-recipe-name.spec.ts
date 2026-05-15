@@ -116,7 +116,16 @@ test.describe('update recipe name', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name, ingredients: [], steps: [] }),
+        body: JSON.stringify({
+          id: ID,
+          name,
+          ingredients: [],
+          steps: [],
+          averageStars: null,
+          ratingCount: 0,
+          ratings: [],
+          myRating: null,
+        }),
       });
     });
 
