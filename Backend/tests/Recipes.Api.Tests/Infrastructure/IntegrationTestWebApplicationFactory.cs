@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recipes.Application.Common.Auth;
 using Recipes.Domain.Entities;
@@ -18,6 +17,27 @@ public sealed class IntegrationTestWebApplicationFactory
         "integration-test-signing-key-must-be-at-least-256-bits-long-aaaaaaaaaa";
 
     private readonly MsSqlContainer _db = new MsSqlBuilder().Build();
+
+    static IntegrationTestWebApplicationFactory()
+    {
+        // Program.cs reads Configuration["Jwt:SigningKey"] BEFORE any callback we
+        // could register via ConfigureWebHost / ConfigureAppConfiguration. Env
+        // vars are picked up by the default WebApplication.CreateBuilder config
+        // sources, so setting them at static-init time guarantees they're visible
+        // by the time the host code runs.
+        Environment.SetEnvironmentVariable("Jwt__SigningKey", TestSigningKey);
+        Environment.SetEnvironmentVariable("Jwt__Issuer", "RecipesApp");
+        Environment.SetEnvironmentVariable("Jwt__Audience", "RecipesApp");
+        Environment.SetEnvironmentVariable("Jwt__LifetimeDays", "1");
+        Environment.SetEnvironmentVariable("RecipeImport__Provider", "Stub");
+        Environment.SetEnvironmentVariable("MealPlanSuggestion__Provider", "Stub");
+        Environment.SetEnvironmentVariable("IngredientSubstitution__Provider", "Stub");
+        Environment.SetEnvironmentVariable("RecipeCritique__Provider", "Stub");
+        Environment.SetEnvironmentVariable("RecipeScaling__Provider", "Stub");
+        Environment.SetEnvironmentVariable("RecipeBatchAnalysis__Provider", "Stub");
+        Environment.SetEnvironmentVariable("RecipeDraftReview__Provider", "Stub");
+        Environment.SetEnvironmentVariable("ExpenseInsight__Provider", "Stub");
+    }
 
     public async Task InitializeAsync()
     {
@@ -46,28 +66,6 @@ public sealed class IntegrationTestWebApplicationFactory
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((_, config) =>
-        {
-            // The real appsettings.json doesn't set Jwt config (it lives in the
-            // gitignored Development.json) — provide a deterministic one for tests
-            // so JwtBearer can validate the tokens we issue below.
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Jwt:SigningKey"] = TestSigningKey,
-                ["Jwt:Issuer"] = "RecipesApp",
-                ["Jwt:Audience"] = "RecipesApp",
-                ["Jwt:LifetimeDays"] = "1",
-                ["RecipeImport:Provider"] = "Stub",
-                ["MealPlanSuggestion:Provider"] = "Stub",
-                ["IngredientSubstitution:Provider"] = "Stub",
-                ["RecipeCritique:Provider"] = "Stub",
-                ["RecipeScaling:Provider"] = "Stub",
-                ["RecipeBatchAnalysis:Provider"] = "Stub",
-                ["RecipeDraftReview:Provider"] = "Stub",
-                ["ExpenseInsight:Provider"] = "Stub",
-            });
-        });
-
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(
@@ -78,8 +76,8 @@ public sealed class IntegrationTestWebApplicationFactory
             services.AddDbContext<RecipesDbContext>(options =>
                 options.UseSqlServer(_db.GetConnectionString()));
 
-            // Surface unhandled exceptions in the response body during tests so CI
-            // logs include the actual error, not just "An error occurred".
+            // Surface unhandled exceptions in the response body during tests so
+            // CI logs show the actual error, not just "An error occurred".
             services.AddProblemDetails(opts =>
             {
                 opts.CustomizeProblemDetails = ctx =>

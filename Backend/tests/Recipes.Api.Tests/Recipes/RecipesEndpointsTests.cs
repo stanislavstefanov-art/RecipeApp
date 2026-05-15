@@ -57,8 +57,7 @@ public sealed class RecipesEndpointsTests(IntegrationTestWebApplicationFactory f
     {
         var response = await _client.GetAsync("/api/recipes");
 
-        var body = await response.Content.ReadAsStringAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.OK, "response body was: {0}", body);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
