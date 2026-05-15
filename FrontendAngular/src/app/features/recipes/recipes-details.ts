@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -102,8 +101,8 @@ export class RecipesDetails {
   }
 
   protected readonly isNotFound = computed(() => {
-    const err = this.recipe.error();
-    return err instanceof HttpErrorResponse && err.status === 404;
+    const err = this.recipe.error() as { status?: number } | null;
+    return err?.status === 404;
   });
 
   protected readonly errorMessage = computed(() => {
