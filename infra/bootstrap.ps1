@@ -138,6 +138,9 @@ function Assert-RoleAssignment {
 Write-Host "▶ Role assignments on $ResourceGroup" -ForegroundColor Yellow
 Assert-RoleAssignment -Role "Contributor"
 Assert-RoleAssignment -Role "Key Vault Secrets User"
+# Needed so the SP can create the Microsoft.Authorization/roleAssignments resources
+# declared in infra/main.bicep (grants App Service + MCP Server access to Key Vault).
+Assert-RoleAssignment -Role "User Access Administrator"
 
 # ── Federated credentials ─────────────────────────────────────────────────────
 

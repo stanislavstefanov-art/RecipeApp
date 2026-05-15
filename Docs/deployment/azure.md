@@ -87,6 +87,7 @@ Replace `recipes-ss-7421` with your chosen prefix and `YourGitHubUsername/Recipe
 | Federated credential `github-pr` | Allows OIDC tokens from PR runs to authenticate as the SP |
 | Role assignment: Contributor | Scoped to the resource group |
 | Role assignment: Key Vault Secrets User | Scoped to the resource group |
+| Role assignment: User Access Administrator | Scoped to the resource group — required so the SP can create the role-assignment resources in `main.bicep` |
 | `.bootstrap-output.txt` | Local, gitignored — holds generated JWT signing key and MCP server token |
 
 > The script does **not** store any long-lived service principal secret in GitHub. Workflow auth uses GitHub's OIDC token federated to the AD app.

@@ -134,6 +134,9 @@ assert_role_assignment() {
 yellow "▶ Role assignments on $RESOURCE_GROUP"
 assert_role_assignment "Contributor"
 assert_role_assignment "Key Vault Secrets User"
+# Needed so the SP can create the Microsoft.Authorization/roleAssignments resources
+# declared in infra/main.bicep (grants App Service + MCP Server access to Key Vault).
+assert_role_assignment "User Access Administrator"
 
 # ── Federated credentials ─────────────────────────────────────────────────────
 
