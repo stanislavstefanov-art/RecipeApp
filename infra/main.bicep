@@ -6,6 +6,9 @@ param prefix string
 @description('Azure region for all resources.')
 param location string = resourceGroup().location
 
+@description('Azure region for SQL — override if the main region is not accepting new SQL servers (RegionDoesNotAllowProvisioning).')
+param sqlLocation string = location
+
 @secure()
 @description('SQL Server administrator password.')
 param sqlAdminPassword string
@@ -47,7 +50,7 @@ module monitoring 'modules/monitoring.bicep' = {
 module sql 'modules/sql.bicep' = {
   name: 'sql'
   params: {
-    location: location
+    location: sqlLocation
     prefix: prefix
     tags: tags
     adminPassword: sqlAdminPassword

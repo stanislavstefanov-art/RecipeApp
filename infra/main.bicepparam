@@ -8,6 +8,10 @@ param prefix = 'recipes-prod'
 // Azure region — default picks up the resource group location.
 // param location = 'westeurope'
 
+// SQL region — override if the main region returns RegionDoesNotAllowProvisioning
+// for new SQL servers. North Europe is the closest fallback for West Europe.
+param sqlLocation = 'northeurope'
+
 // SQL admin password — store in Azure DevOps / GitHub Actions secrets, never commit.
 // Set via: az deployment group create ... --parameters sqlAdminPassword=<value>
 param sqlAdminPassword = readEnvironmentVariable('SQL_ADMIN_PASSWORD')
