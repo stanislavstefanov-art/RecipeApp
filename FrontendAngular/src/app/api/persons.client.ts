@@ -23,4 +23,8 @@ export class PersonsClient {
   create(payload: CreatePersonRequest): Observable<CreatePersonResponse> {
     return this.http.post<CreatePersonResponse>(`${API_BASE_URL}/api/persons`, payload);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/persons/${id}`);
+  }
 }

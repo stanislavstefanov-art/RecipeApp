@@ -35,4 +35,8 @@ export class HouseholdsClient {
       null,
     );
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/households/${id}`);
+  }
 }

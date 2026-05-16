@@ -31,7 +31,9 @@
     "import": "Import",
     "critique": "Critique",
     "scale": "Scale",
-    "review": "Review"
+    "review": "Review",
+    "clearAllData": "Clear all data",
+    "confirmClearAllData": "This will permanently delete all your recipes, persons, households, meal plans, shopping lists, and expenses. This cannot be undone. Are you sure?"
   },
   "recipes": {
     "title": "Recipes",
@@ -201,6 +203,7 @@
     "suggestPlanDesc": "Generate a household-aware meal plan suggestion for review.",
     "loading": "Loading meal plans…",
     "failedToLoad": "Failed to load meal plans",
+    "confirmDelete": "Delete this meal plan?",
     "noMealPlansDesc": "Create a meal plan or use AI to suggest one.",
     "notFound": "Meal plan not found.",
     "notFoundDesc": "This meal plan does not exist or has been removed.",

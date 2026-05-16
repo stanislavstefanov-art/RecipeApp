@@ -16,6 +16,11 @@ type SubmitState =
   | { readonly kind: 'submitting' }
   | { readonly kind: 'error'; readonly message: string };
 
+type DeleteState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'deleting'; readonly id: string }
+  | { readonly kind: 'error'; readonly id: string; readonly message: string };
+
 @Component({
   selector: 'app-expenses-list',
   standalone: true,
@@ -64,6 +69,33 @@ export class ExpensesList {
   });
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
+
+  private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
+
+  protected isDeletingRow(id: string): boolean {
+    const s = this.deleteState();
+    return s.kind === 'deleting' && s.id === id;
+  }
+
+  protected onDeleteExpense(id: string): void {
+    const confirmed = window.confirm(this.translate.instant('expenses.confirmDelete'));
+    if (!confirmed) return;
+
+    this.deleteState.set({ kind: 'deleting', id });
+    this.client
+      .delete(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deleteState.set({ kind: 'idle' });
+          this.expenses.reload();
+        },
+        error: (err: unknown) => {
+          this.deleteState.set({ kind: 'error', id, message: getErrorMessage(err, this.translate, 'Failed to delete') });
+          this.toast.show('error', getErrorMessage(err, this.translate, 'Failed to delete'));
+        },
+      });
+  }
 
   protected onSubmit(): void {
     if (this.createForm.invalid) return;

@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -30,6 +30,11 @@ type GenerateState =
   | { readonly kind: 'busy' }
   | { readonly kind: 'error'; readonly message: string };
 
+type DeleteState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'deleting' }
+  | { readonly kind: 'error'; readonly message: string };
+
 @Component({
   selector: 'app-shopping-lists-details',
   standalone: true,
@@ -43,6 +48,7 @@ export class ShoppingListsDetails {
 
   private readonly client = inject(ShoppingListsClient);
   private readonly mealPlansClient = inject(MealPlansClient);
+  private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
@@ -65,6 +71,30 @@ export class ShoppingListsDetails {
     const err = this.shoppingList.error();
     return err ? getErrorMessage(err, this.translate) : '';
   });
+
+  private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
+
+  protected readonly isDeleting = computed(() => this.deleteState().kind === 'deleting');
+  protected readonly deleteError = computed(() => {
+    const s = this.deleteState();
+    return s.kind === 'error' ? s.message : '';
+  });
+
+  protected onDelete(): void {
+    const confirmed = window.confirm(this.translate.instant('shoppingLists.confirmDelete'));
+    if (!confirmed) return;
+
+    this.deleteState.set({ kind: 'deleting' });
+    this.client
+      .delete(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => void this.router.navigate(['/shopping-lists']),
+        error: (err: unknown) => {
+          this.deleteState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to delete') });
+        },
+      });
+  }
 
   protected readonly markPendingState = signal<ItemActionState>({ kind: 'idle' });
   protected readonly generateState = signal<GenerateState>({ kind: 'idle' });

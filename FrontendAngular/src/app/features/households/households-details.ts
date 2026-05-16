@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { HouseholdsClient } from '../../api/households.client';
@@ -23,6 +23,11 @@ type AddMemberState =
   | { readonly kind: 'submitting' }
   | { readonly kind: 'error'; readonly message: string };
 
+type DeleteState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'deleting' }
+  | { readonly kind: 'error'; readonly message: string };
+
 @Component({
   selector: 'app-households-details',
   imports: [ReactiveFormsModule, RouterLink, TranslateModule],
@@ -33,6 +38,7 @@ type AddMemberState =
 export class HouseholdsDetails {
   private readonly householdsClient = inject(HouseholdsClient);
   private readonly personsClient = inject(PersonsClient);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
@@ -61,6 +67,30 @@ export class HouseholdsDetails {
   });
 
   protected readonly selectedPersonId = new FormControl('', { nonNullable: true });
+
+  private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
+
+  protected readonly isDeleting = computed(() => this.deleteState().kind === 'deleting');
+  protected readonly deleteError = computed(() => {
+    const s = this.deleteState();
+    return s.kind === 'error' ? s.message : '';
+  });
+
+  protected onDelete(): void {
+    const confirmed = window.confirm(this.translate.instant('households.confirmDelete'));
+    if (!confirmed) return;
+
+    this.deleteState.set({ kind: 'deleting' });
+    this.householdsClient
+      .delete(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => void this.router.navigate(['/households']),
+        error: (err: unknown) => {
+          this.deleteState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to delete') });
+        },
+      });
+  }
 
   private readonly addMemberState = signal<AddMemberState>({ kind: 'idle' });
 

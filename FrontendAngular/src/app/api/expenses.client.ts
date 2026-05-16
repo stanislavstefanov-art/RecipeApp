@@ -37,4 +37,8 @@ export class ExpensesClient {
       `${API_BASE_URL}/api/expenses/insights?year=${year}&month=${month}`,
     );
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/expenses/${id}`);
+  }
 }

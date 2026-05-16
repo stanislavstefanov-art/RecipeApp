@@ -12,7 +12,7 @@
     </button>
 
     @if (open()) {
-      <div class="absolute right-0 z-10 mt-1 w-48 rounded-lg border bg-white shadow-lg">
+      <div class="absolute right-0 z-10 mt-1 w-52 rounded-lg border bg-white shadow-lg">
         <div class="border-b px-4 py-2">
           <p class="text-xs text-slate-500">{{ s.user.email }}</p>
         </div>
@@ -23,6 +23,16 @@
         >
           {{ 'auth.logout' | translate }}
         </button>
+        <div class="border-t">
+          <button
+            type="button"
+            (click)="handleClearAllData()"
+            [disabled]="isClearing()"
+            class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+          >
+            {{ isClearing() ? ('common.loading' | translate) : ('common.clearAllData' | translate) }}
+          </button>
+        </div>
       </div>
     }
   </div>
