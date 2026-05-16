@@ -38,6 +38,10 @@ public sealed class HouseholdRepository : IHouseholdRepository
     public Task AddAsync(Household household, CancellationToken cancellationToken = default)
         => _dbContext.Households.AddAsync(household, cancellationToken).AsTask();
 
+    public void Remove(Household household) => _dbContext.Households.Remove(household);
+
+    public void RemoveRange(IEnumerable<Household> households) => _dbContext.Households.RemoveRange(households);
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
         => _dbContext.SaveChangesAsync(cancellationToken);
 }

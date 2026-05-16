@@ -2,6 +2,7 @@ using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Households.AddPersonToHousehold;
 using Recipes.Application.Households.CreateHousehold;
+using Recipes.Application.Households.DeleteHousehold;
 using Recipes.Application.Households.GetHousehold;
 using Recipes.Application.Households.ListHouseholds;
 
@@ -40,6 +41,12 @@ public static class HouseholdsEndpoints
             CancellationToken ct) =>
         {
             var result = await sender.Send(new AddPersonToHouseholdCommand(householdId, personId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapDelete("/{householdId:guid}", async (Guid householdId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteHouseholdCommand(householdId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 

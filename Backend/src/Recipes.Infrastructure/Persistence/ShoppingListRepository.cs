@@ -50,6 +50,10 @@ public sealed class ShoppingListRepository : IShoppingListRepository
             .ToList();
     }
 
+    public void Remove(ShoppingList shoppingList) => _dbContext.ShoppingLists.Remove(shoppingList);
+
+    public void RemoveRange(IEnumerable<ShoppingList> shoppingLists) => _dbContext.ShoppingLists.RemoveRange(shoppingLists);
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return _dbContext.SaveChangesAsync(cancellationToken);

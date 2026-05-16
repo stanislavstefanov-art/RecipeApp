@@ -132,5 +132,6 @@ app.MapPersonsEndpoints();
 app.MapHouseholdsEndpoints();
 app.MapAdminEndpoints();
 app.MapCookingLogEndpoints();
+app.MapUserEndpoints();
 
 app.Run();

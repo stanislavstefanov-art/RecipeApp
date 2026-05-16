@@ -72,6 +72,10 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
         public Task AddAsync(MealPlan mealPlan, CancellationToken cancellationToken = default) { _mealPlans.Add(mealPlan); return Task.CompletedTask; }
         public Task<IReadOnlyList<MealPlan>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<MealPlan>)_mealPlans);
+        public Task<IReadOnlyList<MealPlan>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<MealPlan>)_mealPlans);
+        public void Remove(MealPlan mealPlan) => _mealPlans.Remove(mealPlan);
+        public void RemoveRange(IEnumerable<MealPlan> mealPlans) => _mealPlans.RemoveAll(mealPlans.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -86,7 +90,8 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
         public Task<IReadOnlyList<ShoppingList>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
-
+        public void Remove(ShoppingList shoppingList) => _shoppingLists.Remove(shoppingList);
+        public void RemoveRange(IEnumerable<ShoppingList> shoppingLists) => _shoppingLists.RemoveAll(shoppingLists.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -105,6 +110,7 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes.Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase))).ToList());
         public void Add(Recipe recipe) => _recipes.Add(recipe);
         public void Remove(Recipe recipe) => _recipes.Remove(recipe);
+        public void RemoveRange(IEnumerable<Recipe> recipes) => _recipes.RemoveAll(recipes.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -150,6 +156,9 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
             _persons.Add(person);
             return Task.CompletedTask;
         }
+
+        public void Remove(Person person) => _persons.Remove(person);
+        public void RemoveRange(IEnumerable<Person> persons) => _persons.RemoveAll(persons.Contains);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;

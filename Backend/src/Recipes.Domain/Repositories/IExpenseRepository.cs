@@ -11,5 +11,7 @@ public interface IExpenseRepository
     Task<IReadOnlyList<Expense>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Expense>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Expense>> GetByMonthAndHouseholdIdsAsync(int year, int month, IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default);
+    void Remove(Expense expense);
+    void RemoveRange(IEnumerable<Expense> expenses);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

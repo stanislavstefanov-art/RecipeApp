@@ -57,6 +57,8 @@ public sealed class RecipeRepository : IRecipeRepository
 
     public void Remove(Recipe recipe) => _db.Recipes.Remove(recipe);
 
+    public void RemoveRange(IEnumerable<Recipe> recipes) => _db.Recipes.RemoveRange(recipes);
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         => await _db.SaveChangesAsync(cancellationToken);
 }

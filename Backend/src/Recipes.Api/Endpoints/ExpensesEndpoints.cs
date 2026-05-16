@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Expenses.CreateExpense;
+using Recipes.Application.Expenses.DeleteExpense;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.Expenses.GetMonthlyExpenseReport;
 using Recipes.Application.Expenses.ListExpenses;
@@ -48,6 +49,12 @@ public static class ExpensesEndpoints
         {
             var result = await sender.Send(new GetExpenseInsightsQuery(year, month), ct);
             return result.ToHttpResult(response => Results.Ok(response));
+        });
+
+        group.MapDelete("/{expenseId:guid}", async (Guid expenseId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteExpenseCommand(expenseId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         return app;

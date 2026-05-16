@@ -62,6 +62,9 @@ public sealed class CreateExpenseHandlerTests
                 .ToList());
 
 
+        public void Remove(Expense expense) => Stored.Remove(expense);
+        public void RemoveRange(IEnumerable<Expense> expenses) => Stored.RemoveAll(expenses.Contains);
+
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
     }

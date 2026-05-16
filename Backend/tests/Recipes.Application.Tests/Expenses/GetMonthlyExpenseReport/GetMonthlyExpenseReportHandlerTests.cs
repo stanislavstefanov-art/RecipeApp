@@ -68,6 +68,9 @@ public sealed class GetMonthlyExpenseReportHandlerTests
                 .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
                 .ToList());
 
+        public void Remove(Expense expense) => _expenses.Remove(expense);
+        public void RemoveRange(IEnumerable<Expense> expenses) => _expenses.RemoveAll(expenses.Contains);
+
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
     }

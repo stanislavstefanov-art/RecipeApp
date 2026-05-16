@@ -52,6 +52,8 @@ public sealed class MarkShoppingListItemPendingHandlerTests
         public Task<IReadOnlyList<ShoppingList>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
 
+        public void Remove(ShoppingList shoppingList) => _shoppingLists.Remove(shoppingList);
+        public void RemoveRange(IEnumerable<ShoppingList> shoppingLists) => _shoppingLists.RemoveAll(shoppingLists.Contains);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;

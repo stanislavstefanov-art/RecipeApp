@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Persons.CreatePerson;
+using Recipes.Application.Persons.DeletePerson;
 using Recipes.Application.Persons.GetPerson;
 using Recipes.Application.Persons.ListPersons;
 
@@ -38,6 +39,12 @@ public static class PersonsEndpoints
         {
             var result = await sender.Send(new GetPersonQuery(personId), ct);
             return result.ToHttpResult(response => Results.Ok(response));
+        });
+
+        group.MapDelete("/{personId:guid}", async (Guid personId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeletePersonCommand(personId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         return app;

@@ -10,6 +10,7 @@ using Recipes.Application.MealPlans.RegenerateShoppingListFromMealPlan;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.MealPlans.PlanningWorkflow;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
+using Recipes.Application.MealPlans.DeleteMealPlan;
 using Recipes.Application.MealPlans.UpdateMealPlanPersonAssignment;
 
 namespace Recipes.Api.Endpoints;
@@ -153,6 +154,12 @@ public static class MealPlansEndpoints
         {
             var result = await sender.Send(new ListMealPlansQuery(), ct);
             return result.ToHttpResult(response => Results.Ok(response));
+        });
+
+        group.MapDelete("/{mealPlanId:guid}", async (Guid mealPlanId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteMealPlanCommand(mealPlanId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         group.MapPut("/{mealPlanId:guid}/entries/{mealPlanEntryId:guid}/assignments", async (

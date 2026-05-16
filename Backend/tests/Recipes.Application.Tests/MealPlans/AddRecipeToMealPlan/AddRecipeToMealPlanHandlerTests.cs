@@ -70,6 +70,12 @@ public sealed class AddRecipeToMealPlanHandlerTests
         public Task<IReadOnlyList<MealPlan>> GetAllAsync(CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<MealPlan>)_mealPlans);
 
+        public Task<IReadOnlyList<MealPlan>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
+            => Task.FromResult((IReadOnlyList<MealPlan>)_mealPlans);
+
+        public void Remove(MealPlan mealPlan) => _mealPlans.Remove(mealPlan);
+        public void RemoveRange(IEnumerable<MealPlan> mealPlans) => _mealPlans.RemoveAll(mealPlans.Contains);
+
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
     }
@@ -99,6 +105,7 @@ public sealed class AddRecipeToMealPlanHandlerTests
 
         public void Add(Recipe recipe) => _recipes.Add(recipe);
         public void Remove(Recipe recipe) => _recipes.Remove(recipe);
+        public void RemoveRange(IEnumerable<Recipe> recipes) => _recipes.RemoveAll(recipes.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -125,6 +132,9 @@ public sealed class AddRecipeToMealPlanHandlerTests
             _households.Add(household);
             return Task.CompletedTask;
         }
+
+        public void Remove(Household household) => _households.Remove(household);
+        public void RemoveRange(IEnumerable<Household> households) => _households.RemoveAll(households.Contains);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;

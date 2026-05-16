@@ -18,5 +18,6 @@ public interface IRecipeRepository
 
     void Add(Recipe recipe);
     void Remove(Recipe recipe);
+    void RemoveRange(IEnumerable<Recipe> recipes);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

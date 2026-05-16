@@ -62,6 +62,7 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult((IReadOnlyList<Recipe>)_recipes.Where(x => x.Ingredients.Any(i => i.Name.Contains(ingredientName, StringComparison.OrdinalIgnoreCase))).ToList());
         public void Add(Recipe recipe) => _recipes.Add(recipe);
         public void Remove(Recipe recipe) => _recipes.Remove(recipe);
+        public void RemoveRange(IEnumerable<Recipe> recipes) => _recipes.RemoveAll(recipes.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -77,6 +78,8 @@ public sealed class SuggestMealPlanHandlerTests
             => Task.FromResult((IReadOnlyList<Household>)_households);
 
         public Task AddAsync(Household household, CancellationToken cancellationToken = default) { _households.Add(household); return Task.CompletedTask; }
+        public void Remove(Household household) => _households.Remove(household);
+        public void RemoveRange(IEnumerable<Household> households) => _households.RemoveAll(households.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
@@ -97,6 +100,8 @@ public sealed class SuggestMealPlanHandlerTests
             return Task.FromResult((IReadOnlyList<Person>)_persons.Where(x => idSet.Contains(x.Id)).ToList());
         }
         public Task AddAsync(Person person, CancellationToken cancellationToken = default) { _persons.Add(person); return Task.CompletedTask; }
+        public void Remove(Person person) => _persons.Remove(person);
+        public void RemoveRange(IEnumerable<Person> persons) => _persons.RemoveAll(persons.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 }

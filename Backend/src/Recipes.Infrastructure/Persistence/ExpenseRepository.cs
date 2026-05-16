@@ -75,6 +75,10 @@ public sealed class ExpenseRepository : IExpenseRepository
             .ToList();
     }
 
+    public void Remove(Expense expense) => _dbContext.Expenses.Remove(expense);
+
+    public void RemoveRange(IEnumerable<Expense> expenses) => _dbContext.Expenses.RemoveRange(expenses);
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return _dbContext.SaveChangesAsync(cancellationToken);

@@ -59,6 +59,8 @@ public sealed class AddRecipeToShoppingListHandlerTests
         public Task<IReadOnlyList<ShoppingList>> GetByHouseholdIdsAsync(IReadOnlyList<HouseholdId> householdIds, CancellationToken cancellationToken = default)
             => Task.FromResult((IReadOnlyList<ShoppingList>)_shoppingLists);
 
+        public void Remove(ShoppingList shoppingList) => _shoppingLists.Remove(shoppingList);
+        public void RemoveRange(IEnumerable<ShoppingList> shoppingLists) => _shoppingLists.RemoveAll(shoppingLists.Contains);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;
@@ -97,6 +99,8 @@ public sealed class AddRecipeToShoppingListHandlerTests
         {
             _recipes.Remove(recipe);
         }
+
+        public void RemoveRange(IEnumerable<Recipe> recipes) => _recipes.RemoveAll(recipes.Contains);
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
             => Task.CompletedTask;

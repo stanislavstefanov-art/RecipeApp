@@ -7,6 +7,7 @@ using Recipes.Application.ShoppingLists.CreateShoppingList;
 using Recipes.Application.ShoppingLists.GetShoppingList;
 using Recipes.Application.ShoppingLists.ListShoppingLists;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPending;
+using Recipes.Application.ShoppingLists.DeleteShoppingList;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPurchased;
 using Recipes.Application.ShoppingLists.PurchaseShoppingListItem;
 
@@ -119,6 +120,12 @@ public static class ShoppingListsEndpoints
                     request.Description),
                 ct);
 
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapDelete("/{shoppingListId:guid}", async (Guid shoppingListId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteShoppingListCommand(shoppingListId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 

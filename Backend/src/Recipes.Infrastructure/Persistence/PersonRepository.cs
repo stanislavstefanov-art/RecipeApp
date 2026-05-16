@@ -46,6 +46,10 @@ public sealed class PersonRepository : IPersonRepository
     public Task AddAsync(Person person, CancellationToken cancellationToken = default)
         => _dbContext.Persons.AddAsync(person, cancellationToken).AsTask();
 
+    public void Remove(Person person) => _dbContext.Persons.Remove(person);
+
+    public void RemoveRange(IEnumerable<Person> persons) => _dbContext.Persons.RemoveRange(persons);
+
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
         => _dbContext.SaveChangesAsync(cancellationToken);
 }
