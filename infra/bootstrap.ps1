@@ -89,6 +89,7 @@ $providers = @(
     'Microsoft.KeyVault'           # Key Vault
     'Microsoft.Insights'           # Application Insights
     'Microsoft.OperationalInsights' # Log Analytics workspace
+    'Microsoft.Storage'            # Blob Storage (recipe images)
 )
 
 Write-Host "▶ Resource providers" -ForegroundColor Yellow
