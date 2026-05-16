@@ -16,12 +16,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var additionalOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy
+            .WithOrigins([
+                "http://localhost:5173",
+                "http://localhost:4200",
+                .. additionalOrigins
+            ])
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 });
 
 builder.Services.AddProblemDetails();
@@ -79,6 +88,15 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
+    if (db.Database.IsRelational())
+        await db.Database.MigrateAsync();
+    else
+        await db.Database.EnsureCreatedAsync();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -88,14 +106,6 @@ if (app.Environment.IsDevelopment())
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
-        if (db.Database.IsRelational())
-        {
-            await db.Database.MigrateAsync();
-        }
-        else
-        {
-            await db.Database.EnsureCreatedAsync();
-        }
         if (!await db.Recipes.AnyAsync())
         {
             var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
