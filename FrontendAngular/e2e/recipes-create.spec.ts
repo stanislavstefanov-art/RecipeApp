@@ -1,9 +1,24 @@
 import { expect, test } from './test';
 
 const API = 'http://localhost:5106/api/recipes';
+const HOUSEHOLDS_API = 'http://localhost:5106/api/households';
 const NEW_ID = '33333333-3333-3333-3333-333333333333';
+const HOUSEHOLD_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+const ONE_HOUSEHOLD = [{ id: HOUSEHOLD_ID, name: 'Test Household', memberCount: 1 }];
 
 test.describe('recipes create', () => {
+  test.beforeEach(async ({ page }) => {
+    // Auto-select: single household → householdId is set without a dropdown
+    await page.route(HOUSEHOLDS_API, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(ONE_HOUSEHOLD),
+      });
+    });
+  });
+
   test('client-side validation blocks empty submit and makes no request', async ({
     page,
   }) => {
@@ -18,6 +33,7 @@ test.describe('recipes create', () => {
     });
 
     await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page.getByText('This field is required.')).toBeVisible();
@@ -35,6 +51,7 @@ test.describe('recipes create', () => {
     });
 
     await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('a'.repeat(201));
     await page.getByRole('button', { name: 'Create' }).click();
 
@@ -45,7 +62,7 @@ test.describe('recipes create', () => {
   test('navigates to /recipes/{id} on 201', async ({ page }) => {
     await page.route(API, async (route, request) => {
       expect(request.method()).toBe('POST');
-      expect(request.postDataJSON()).toEqual({ name: 'Pancakes' });
+      expect(request.postDataJSON()).toEqual({ name: 'Pancakes', householdId: HOUSEHOLD_ID });
       await route.fulfill({
         status: 201,
         contentType: 'application/json',
@@ -55,6 +72,7 @@ test.describe('recipes create', () => {
     });
 
     await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Pancakes');
     await page.getByRole('button', { name: 'Create' }).click();
 
@@ -74,6 +92,7 @@ test.describe('recipes create', () => {
     });
 
     await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Pancakes');
     await page.getByRole('button', { name: 'Create' }).click();
 
@@ -92,6 +111,7 @@ test.describe('recipes create', () => {
     });
 
     await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Pancakes');
     await page.getByRole('button', { name: 'Create' }).click();
 
