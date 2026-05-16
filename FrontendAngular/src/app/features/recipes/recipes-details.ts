@@ -15,6 +15,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { ToastService } from '../../core/toast.service';
 import { getErrorMessage } from '../../shared/get-error-message';
 import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 import { AddIngredientForm } from './add-ingredient-form';
@@ -50,6 +51,7 @@ export class RecipesDetails {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
+  private readonly toast = inject(ToastService);
 
   readonly id = input.required<string>();
 
@@ -196,8 +198,17 @@ export class RecipesDetails {
 
   protected onUploadImage(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+    const raw = input.files?.[0];
+    if (!raw) return;
+
+    // Android gallery often reports file.type as '' — infer from extension
+    const mimeMap: Record<string, string> = {
+      jpg: 'image/jpeg', jpeg: 'image/jpeg',
+      png: 'image/png', webp: 'image/webp',
+    };
+    const ext = raw.name.split('.').pop()?.toLowerCase() ?? '';
+    const resolvedType = raw.type || mimeMap[ext] || 'image/jpeg';
+    const file = resolvedType !== raw.type ? new File([raw], raw.name, { type: resolvedType }) : raw;
 
     this.imageState.set({ kind: 'uploading' });
     this.client
@@ -208,7 +219,10 @@ export class RecipesDetails {
           this.imageState.set({ kind: 'idle' });
           this.recipe.reload();
         },
-        error: () => this.imageState.set({ kind: 'idle' }),
+        error: (err: unknown) => {
+          this.imageState.set({ kind: 'idle' });
+          this.toast.show('error', getErrorMessage(err, this.translate, 'Failed to upload image.'));
+        },
       });
   }
 
@@ -224,7 +238,10 @@ export class RecipesDetails {
           this.imageState.set({ kind: 'idle' });
           this.recipe.reload();
         },
-        error: () => this.imageState.set({ kind: 'idle' }),
+        error: (err: unknown) => {
+          this.imageState.set({ kind: 'idle' });
+          this.toast.show('error', getErrorMessage(err, this.translate, 'Failed to delete image.'));
+        },
       });
   }
 
