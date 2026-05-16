@@ -24,7 +24,7 @@ public sealed class ListRecipesHandler : IRequestHandler<ListRecipesQuery, Error
         var recipes = await _repository.GetByHouseholdIdsAsync(householdIds, cancellationToken);
 
         IReadOnlyList<RecipeListItemDto> result = recipes
-            .Select(r => new RecipeListItemDto(r.Id.Value, r.Name.Value, r.AverageStars, r.RatingCount))
+            .Select(r => new RecipeListItemDto(r.Id.Value, r.Name.Value, r.AverageStars, r.RatingCount, r.ImageUrl))
             .ToList();
 
         return result.ToErrorOr();

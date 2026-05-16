@@ -13,7 +13,8 @@ public sealed record RecipeDto(
     double? AverageStars,
     int RatingCount,
     IReadOnlyList<RecipeRatingDto> Ratings,
-    RecipeRatingDto? MyRating);
+    RecipeRatingDto? MyRating,
+    string? ImageUrl);
 
 public sealed record IngredientDto(string Name, decimal Quantity, string Unit);
 

@@ -57,6 +57,10 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'Database__Provider', value: 'SqlServer' }
         { name: 'Seed__Enabled', value: 'false' }
 
+        // Blob storage
+        { name: 'BlobStorage__Provider', value: 'AzureBlob' }
+        { name: 'BlobStorage__ConnectionString', value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=BlobStorage--ConnectionString)' }
+
         // AI providers — live Claude in production
         { name: 'RecipeImport__Provider', value: 'Claude' }
         { name: 'MealPlanSuggestion__Provider', value: 'Claude' }

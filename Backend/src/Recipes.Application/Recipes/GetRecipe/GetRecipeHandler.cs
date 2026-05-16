@@ -52,6 +52,7 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<R
             recipe.AverageStars,
             recipe.RatingCount,
             ratingDtos,
-            myRating);
+            myRating,
+            recipe.ImageUrl);
     }
 }

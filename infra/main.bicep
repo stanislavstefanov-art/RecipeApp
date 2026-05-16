@@ -57,6 +57,17 @@ module sql 'modules/sql.bicep' = {
   }
 }
 
+// ── Storage ───────────────────────────────────────────────────────────────────
+
+module storage 'modules/storage.bicep' = {
+  name: 'storage'
+  params: {
+    location: location
+    prefix: prefix
+    tags: tags
+  }
+}
+
 // ── Static Web Apps ───────────────────────────────────────────────────────────
 
 module swaReact 'modules/static-web-app.bicep' = {
@@ -89,6 +100,7 @@ module keyVault 'modules/key-vault.bicep' = {
     sqlConnectionString: sql.outputs.connectionString
     jwtSigningKey: jwtSigningKey
     mcpServerToken: mcpServerToken
+    blobStorageConnectionString: storage.outputs.connectionString
   }
 }
 

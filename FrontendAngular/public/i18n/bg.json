@@ -105,7 +105,11 @@
     "dietaryGoal": "Хранителна цел",
     "householdId": "Домакинство",
     "selectHouseholdPlaceholder": "Изберете домакинство…",
-    "noHouseholdsForCreate": "Необходимо е домакинство, за да създадете рецепта."
+    "noHouseholdsForCreate": "Необходимо е домакинство, за да създадете рецепта.",
+    "uploadImage": "Качи снимка",
+    "deleteImage": "Изтрий снимката",
+    "confirmDeleteImage": "Изтриване на снимката към рецептата?",
+    "imageUploading": "Качване…"
   },
   "households": {
     "title": "Домакинства",

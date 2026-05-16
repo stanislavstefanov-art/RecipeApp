@@ -33,6 +33,11 @@ type RatingState =
   | { readonly kind: 'saving' }
   | { readonly kind: 'deleting' };
 
+type ImageState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'uploading' }
+  | { readonly kind: 'deleting' };
+
 @Component({
   selector: 'app-recipes-details',
   imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent],
@@ -180,6 +185,46 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.ratingState.set({ kind: 'idle' }),
+      });
+  }
+
+  // --- Image upload ---
+
+  private readonly imageState = signal<ImageState>({ kind: 'idle' });
+  protected readonly isUploadingImage = computed(() => this.imageState().kind === 'uploading');
+  protected readonly isDeletingImage = computed(() => this.imageState().kind === 'deleting');
+
+  protected onUploadImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.imageState.set({ kind: 'uploading' });
+    this.client
+      .uploadImage(this.id(), file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.imageState.set({ kind: 'idle' });
+          this.recipe.reload();
+        },
+        error: () => this.imageState.set({ kind: 'idle' }),
+      });
+  }
+
+  protected onDeleteImage(): void {
+    if (!window.confirm(this.translate.instant('recipes.confirmDeleteImage'))) return;
+
+    this.imageState.set({ kind: 'deleting' });
+    this.client
+      .deleteImage(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.imageState.set({ kind: 'idle' });
+          this.recipe.reload();
+        },
+        error: () => this.imageState.set({ kind: 'idle' }),
       });
   }
 

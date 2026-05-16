@@ -12,6 +12,7 @@ export interface RecipeListItemDto {
   readonly name: string;
   readonly averageStars: number | null;
   readonly ratingCount: number;
+  readonly imageUrl?: string | null;
 }
 
 export interface CreateRecipeRequest {
@@ -63,6 +64,7 @@ export interface RecipeDto {
   readonly ratingCount: number;
   readonly ratings: readonly RecipeRatingDto[];
   readonly myRating: RecipeRatingDto | null;
+  readonly imageUrl?: string | null;
 }
 
 export interface CookingLogEntryDto {

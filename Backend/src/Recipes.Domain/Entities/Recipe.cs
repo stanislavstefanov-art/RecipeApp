@@ -14,6 +14,8 @@ public sealed class Recipe : Entity
     public RecipeName Name { get; private set; }
     public HouseholdId? HouseholdId { get; private set; }
 
+    public string? ImageUrl { get; private set; }
+
     public IReadOnlyCollection<RecipeIngredient> Ingredients => _ingredients.AsReadOnly();
     public IReadOnlyCollection<RecipeStep> Steps => _steps.AsReadOnly();
     public IReadOnlyCollection<RecipeVariation> Variations => _variations.AsReadOnly();
@@ -128,4 +130,6 @@ public sealed class Recipe : Entity
         _ratings.Remove(existing);
         return true;
     }
+
+    public void SetImageUrl(string? url) => ImageUrl = url;
 }

@@ -34,6 +34,7 @@ using Recipes.Infrastructure.Events;
 using Recipes.Infrastructure.Options;
 using Recipes.Infrastructure.Persistence;
 using Recipes.Infrastructure.Services;
+using Recipes.Infrastructure.Storage;
 
 namespace Recipes.Infrastructure;
 
@@ -76,6 +77,10 @@ public static class DependencyInjection
         services.Configure<ExpenseInsightOptions>(options =>
         {
             configuration.GetSection(ExpenseInsightOptions.SectionName).Bind(options);
+        });
+        services.Configure<BlobStorageOptions>(options =>
+        {
+            configuration.GetSection(BlobStorageOptions.SectionName).Bind(options);
         });
 
         var dbProvider = configuration["Database:Provider"] ?? "SqlServer";
@@ -215,6 +220,20 @@ public static class DependencyInjection
             {
                 "Claude" => sp.GetRequiredService<ClaudeRecipeDraftReviewService>(),
                 _ => sp.GetRequiredService<StubRecipeDraftReviewService>()
+            };
+        });
+
+        services.AddScoped<StubBlobStorageService>();
+        services.AddScoped<AzureBlobStorageService>();
+        services.AddScoped<Recipes.Application.Common.IBlobStorageService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<BlobStorageOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "AzureBlob" => sp.GetRequiredService<AzureBlobStorageService>(),
+                _ => sp.GetRequiredService<StubBlobStorageService>()
             };
         });
 

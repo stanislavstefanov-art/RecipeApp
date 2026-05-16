@@ -105,7 +105,11 @@
     "dietaryGoal": "Dietary goal",
     "householdId": "Household",
     "selectHouseholdPlaceholder": "Select a household…",
-    "noHouseholdsForCreate": "You need a household to create recipes."
+    "noHouseholdsForCreate": "You need a household to create recipes.",
+    "uploadImage": "Upload image",
+    "deleteImage": "Delete image",
+    "confirmDeleteImage": "Delete the recipe image?",
+    "imageUploading": "Uploading…"
   },
   "households": {
     "title": "Households",

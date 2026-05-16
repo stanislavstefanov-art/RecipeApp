@@ -9,6 +9,8 @@ param sqlConnectionString string
 param jwtSigningKey string
 @secure()
 param mcpServerToken string
+@secure()
+param blobStorageConnectionString string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'
@@ -56,6 +58,14 @@ resource secretMcpServerToken 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   name: 'MCP-SERVER-TOKEN'
   properties: {
     value: mcpServerToken
+  }
+}
+
+resource secretBlobStorageConnectionString 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'BlobStorage--ConnectionString'
+  properties: {
+    value: blobStorageConnectionString
   }
 }
 

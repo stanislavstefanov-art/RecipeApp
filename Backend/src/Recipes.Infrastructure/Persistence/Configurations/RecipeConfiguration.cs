@@ -32,6 +32,10 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
                 value => value.HasValue ? HouseholdId.From(value.Value) : null)
             .IsRequired(false);
 
+        builder.Property(r => r.ImageUrl)
+            .IsRequired(false)
+            .HasMaxLength(2048);
+
         builder.HasIndex(r => r.HouseholdId)
             .HasFilter("[HouseholdId] IS NOT NULL");
 

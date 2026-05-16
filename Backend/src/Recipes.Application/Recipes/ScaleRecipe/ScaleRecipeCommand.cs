@@ -43,7 +43,7 @@ public sealed class ScaleRecipeHandler : IRequestHandler<ScaleRecipeCommand, Err
             recipe.Name.Value,
             recipe.Ingredients.Select(i => new IngredientDto(i.Name, i.Quantity, i.Unit)).ToList(),
             recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList(),
-            null, 0, [], null);
+            null, 0, [], null, null);
 
         try
         {

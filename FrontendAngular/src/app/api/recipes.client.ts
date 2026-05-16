@@ -93,6 +93,16 @@ export class RecipesClient {
     return this.http.post<CookingLogEntryDto>(`${API_BASE_URL}/api/cooking-log`, payload);
   }
 
+  uploadImage(recipeId: string, file: File): Observable<{ imageUrl: string }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${API_BASE_URL}/api/recipes/${recipeId}/image`, form);
+  }
+
+  deleteImage(recipeId: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/recipes/${recipeId}/image`);
+  }
+
   deleteCookingEntry(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/cooking-log/${id}`);
   }

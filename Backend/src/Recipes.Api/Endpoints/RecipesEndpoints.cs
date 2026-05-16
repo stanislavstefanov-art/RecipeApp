@@ -5,6 +5,7 @@ using Recipes.Application.Recipes.AddRecipeVariation;
 using Recipes.Application.Recipes.AddStepToRecipe;
 using Recipes.Application.Recipes.CreateRecipe;
 using Recipes.Application.Recipes.DeleteRecipe;
+using Recipes.Application.Recipes.DeleteRecipeImage;
 using Recipes.Application.Recipes.GetRecipe;
 using Recipes.Application.Recipes.ImportRecipeFromText;
 using Recipes.Application.Recipes.AnalyseRecipeNutrition;
@@ -17,6 +18,7 @@ using Recipes.Application.Recipes.ReviewRecipeDraft;
 using Recipes.Application.Recipes.CritiqueRecipe;
 using Recipes.Application.Recipes.ScaleRecipe;
 using Recipes.Application.Recipes.UpdateRecipe;
+using Recipes.Application.Recipes.UploadRecipeImage;
 using Recipes.Application.Recipes.DeleteRecipeRating;
 using Recipes.Application.Recipes.RateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
@@ -92,6 +94,32 @@ public static class RecipesEndpoints
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new DeleteRecipeCommand(id), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{id:guid}/image", async (Guid id, IFormFile file, ISender sender, CancellationToken ct) =>
+        {
+            const long maxBytes = 5 * 1024 * 1024;
+            if (file.Length > maxBytes)
+                return Results.BadRequest("File exceeds maximum size of 5 MB.");
+
+            var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+            if (!allowed.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+                return Results.BadRequest("Only JPEG, PNG, and WebP images are accepted.");
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)) ext = ".jpg";
+
+            await using var stream = file.OpenReadStream();
+            var result = await sender.Send(
+                new UploadRecipeImageCommand(id, stream, file.ContentType, ext), ct);
+
+            return result.ToHttpResult(url => Results.Ok(new { imageUrl = url }));
+        }).DisableAntiforgery();
+
+        group.MapDelete("/{id:guid}/image", async (Guid id, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new DeleteRecipeImageCommand(id), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
