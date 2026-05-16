@@ -35,7 +35,7 @@
           type="button"
           (click)="onGenerate()"
           [disabled]="!selectedMealPlanId.value || generateState().kind === 'busy'"
-          class="rounded bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+          class="rounded bg-green-700 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:opacity-50"
         >
           {{ generateState().kind === 'busy' ? ('shoppingLists.generating' | translate) : ('common.generate' | translate) }}
         </button>
@@ -101,7 +101,7 @@
                   <button
                     type="button"
                     (click)="onOpenPurchase(item)"
-                    class="rounded bg-black px-2 py-1 text-xs font-medium text-white hover:bg-gray-800"
+                    class="rounded bg-green-700 px-2 py-1 text-xs font-medium text-white hover:bg-green-800"
                   >
                     {{ 'shoppingLists.purchase' | translate }}
                   </button>
@@ -167,7 +167,7 @@
             <button
               type="submit"
               [disabled]="purchaseForm.invalid || purchaseState().kind === 'busy'"
-              class="rounded bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+              class="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:opacity-50"
             >
               {{ purchaseState().kind === 'busy' ? ('shoppingLists.saving' | translate) : ('shoppingLists.savePurchase' | translate) }}
             </button>

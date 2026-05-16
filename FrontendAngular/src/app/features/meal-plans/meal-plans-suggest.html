@@ -122,7 +122,7 @@
     <button
       type="submit"
       [disabled]="isSuggesting()"
-      class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+      class="rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400"
     >
       {{ isSuggesting() ? ('mealPlans.suggesting' | translate) : ('mealPlans.suggest' | translate) }}
     </button>
@@ -168,7 +168,7 @@
           type="button"
           (click)="onAccept()"
           [disabled]="isAccepting()"
-          class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+          class="rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400"
         >
           {{ isAccepting() ? ('mealPlans.accepting' | translate) : ('common.accept' | translate) }}
         </button>

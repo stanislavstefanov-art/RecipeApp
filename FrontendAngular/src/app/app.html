@@ -1,9 +1,9 @@
 <div class="min-h-screen bg-gray-50">
-  <header class="border-b bg-white">
+  <header class="bg-stone-900">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
       <div>
-        <a routerLink="/" class="text-lg font-semibold sm:text-xl">RecipeApp</a>
-        <p class="text-xs text-gray-500 sm:text-sm">Recipes, meal plans, shopping, expenses</p>
+        <a routerLink="/" class="text-lg font-semibold text-white sm:text-xl">RecipeApp</a>
+        <p class="text-xs text-stone-400 sm:text-sm">Recipes, meal plans, shopping, expenses</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -13,33 +13,33 @@
         <button
           type="button"
           (click)="toggleNav()"
-          class="rounded-lg border px-3 py-2 text-sm md:hidden"
+          class="rounded-lg border border-stone-700 px-3 py-2 text-sm text-stone-300 md:hidden"
         >
           {{ isNavOpen() ? ('common.close' | translate) : ('common.menu' | translate) }}
         </button>
       </div>
 
       <nav class="hidden gap-5 text-sm md:flex">
-        <a routerLink="/recipes" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.recipes' | translate }}</a>
-        <a routerLink="/persons" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.persons' | translate }}</a>
-        <a routerLink="/households" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.households' | translate }}</a>
-        <a routerLink="/meal-plans" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.mealPlans' | translate }}</a>
-        <a routerLink="/shopping-lists" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.shoppingLists' | translate }}</a>
-        <a routerLink="/expenses" routerLinkActive="font-medium text-blue-600" [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 hover:text-gray-900">{{ 'nav.expenses' | translate }}</a>
-        <a routerLink="/expenses/report" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900">{{ 'nav.reports' | translate }}</a>
+        <a routerLink="/recipes" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.recipes' | translate }}</a>
+        <a routerLink="/persons" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.persons' | translate }}</a>
+        <a routerLink="/households" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.households' | translate }}</a>
+        <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
+        <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
+        <a routerLink="/expenses" routerLinkActive="font-semibold !text-green-400" [routerLinkActiveOptions]="{ exact: true }" class="text-stone-300 hover:text-white">{{ 'nav.expenses' | translate }}</a>
+        <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.reports' | translate }}</a>
       </nav>
     </div>
 
     @if (isNavOpen()) {
-      <nav class="border-t bg-white px-4 py-3 md:hidden sm:px-6">
+      <nav class="border-t border-stone-800 bg-stone-900 px-4 py-3 md:hidden sm:px-6">
         <div class="flex flex-col gap-3 text-sm">
-          <a routerLink="/recipes" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.recipes' | translate }}</a>
-          <a routerLink="/persons" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.persons' | translate }}</a>
-          <a routerLink="/households" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.households' | translate }}</a>
-          <a routerLink="/meal-plans" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.mealPlans' | translate }}</a>
-          <a routerLink="/shopping-lists" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
-          <a routerLink="/expenses" routerLinkActive="font-medium text-blue-600" [routerLinkActiveOptions]="{ exact: true }" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
-          <a routerLink="/expenses/report" routerLinkActive="font-medium text-blue-600" class="text-gray-600 hover:text-gray-900" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
+          <a routerLink="/recipes" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.recipes' | translate }}</a>
+          <a routerLink="/persons" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.persons' | translate }}</a>
+          <a routerLink="/households" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.households' | translate }}</a>
+          <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.mealPlans' | translate }}</a>
+          <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
+          <a routerLink="/expenses" routerLinkActive="font-semibold !text-green-400" [routerLinkActiveOptions]="{ exact: true }" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
+          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
         </div>
       </nav>
     }
