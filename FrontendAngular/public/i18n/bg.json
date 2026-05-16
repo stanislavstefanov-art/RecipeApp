@@ -102,7 +102,8 @@
     "recipeContext": "Контекст на рецептата",
     "dietaryGoal": "Хранителна цел",
     "householdId": "Домакинство",
-    "selectHouseholdPlaceholder": "Изберете домакинство…"
+    "selectHouseholdPlaceholder": "Изберете домакинство…",
+    "noHouseholdsForCreate": "Необходимо е домакинство, за да създадете рецепта."
   },
   "households": {
     "title": "Домакинства",

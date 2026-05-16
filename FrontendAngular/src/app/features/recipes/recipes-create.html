@@ -35,34 +35,39 @@
       }
     </div>
 
-    @if (showHouseholdSelect()) {
+    @if (householdsLoading()) {
+      <p class="text-sm text-gray-500">{{ 'households.loading' | translate }}</p>
+    } @else if (householdsError()) {
+      <p class="text-sm text-red-600">{{ 'households.failedToLoad' | translate }}</p>
+    } @else if (noHouseholds()) {
+      <div class="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+        {{ 'recipes.noHouseholdsForCreate' | translate }}
+        <a routerLink="/households/new" class="ml-1 font-medium underline">
+          {{ 'households.newHousehold' | translate }}
+        </a>
+      </div>
+    } @else if (showHouseholdSelect()) {
       <div>
         <label for="householdId" class="block text-sm font-medium">{{ 'recipes.householdId' | translate }}</label>
-        @if (householdsLoading()) {
-          <p class="mt-1 text-sm text-gray-500">{{ 'households.loading' | translate }}</p>
-        } @else if (householdsError()) {
-          <p class="mt-1 text-sm text-red-600">{{ 'households.failedToLoad' | translate }}</p>
-        } @else {
-          <select
-            id="householdId"
-            formControlName="householdId"
-            class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-          >
-            <option value="" disabled>{{ 'recipes.selectHouseholdPlaceholder' | translate }}</option>
-            @for (h of households(); track h.id) {
-              <option [value]="h.id">{{ h.name }}</option>
-            }
-          </select>
-          @if (form.controls.householdId.touched && form.controls.householdId.errors?.['required']) {
-            <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
+        <select
+          id="householdId"
+          formControlName="householdId"
+          class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+        >
+          <option value="" disabled>{{ 'recipes.selectHouseholdPlaceholder' | translate }}</option>
+          @for (h of households(); track h.id) {
+            <option [value]="h.id">{{ h.name }}</option>
           }
+        </select>
+        @if (form.controls.householdId.touched && form.controls.householdId.errors?.['required']) {
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
         }
       </div>
     }
 
     <button
       type="submit"
-      [disabled]="isSubmitting()"
+      [disabled]="isSubmitting() || !canSubmit()"
       class="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
     >
       {{ isSubmitting() ? ('recipes.creating' | translate) : ('common.create' | translate) }}

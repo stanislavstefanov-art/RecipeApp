@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { HouseholdListItemDto } from '../../api/households.dto';
@@ -28,7 +28,7 @@ type SubmitState =
 
 @Component({
   selector: 'app-recipes-create',
-  imports: [ReactiveFormsModule, TranslateModule],
+  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
   templateUrl: './recipes-create.html',
   styleUrl: './recipes-create.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,7 +58,13 @@ export class RecipesCreate {
   });
   protected readonly householdsLoading = computed(() => this.householdsState().kind === 'loading');
   protected readonly householdsError = computed(() => this.householdsState().kind === 'error');
+  protected readonly noHouseholds = computed(
+    () => this.householdsState().kind === 'loaded' && this.households().length === 0,
+  );
   protected readonly showHouseholdSelect = computed(() => this.households().length > 1);
+  protected readonly canSubmit = computed(
+    () => !this.householdsLoading() && !this.householdsError() && !this.noHouseholds(),
+  );
 
   private readonly submitState = signal<SubmitState>({ kind: 'idle' });
 

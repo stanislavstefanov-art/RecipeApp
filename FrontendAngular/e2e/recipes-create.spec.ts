@@ -19,6 +19,21 @@ test.describe('recipes create', () => {
     });
   });
 
+  test('shows no-household message and disables button when user has no households', async ({
+    page,
+  }) => {
+    await page.unroute(HOUSEHOLDS_API);
+    await page.route(HOUSEHOLDS_API, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    });
+
+    await page.goto('/recipes/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
+
+    await expect(page.getByText('You need a household to create recipes.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();
+  });
+
   test('client-side validation blocks empty submit and makes no request', async ({
     page,
   }) => {
