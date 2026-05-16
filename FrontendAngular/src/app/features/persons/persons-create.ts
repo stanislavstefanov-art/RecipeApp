@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,6 +12,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { PersonsClient } from '../../api/persons.client';
+import { extractApiError } from '../../core/api-error';
 
 type SubmitState =
   | { readonly kind: 'idle' }
@@ -94,19 +94,8 @@ export class PersonsCreate {
           void this.router.navigate(['/persons']);
         },
         error: (err: unknown) => {
-          this.submitState.set({ kind: 'error', message: this.toMessage(err) });
+          this.submitState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to create person.';
   }
 }

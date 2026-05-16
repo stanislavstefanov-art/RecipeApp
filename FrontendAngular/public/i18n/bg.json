@@ -100,7 +100,9 @@
     "directReplacement": "Директна замяна",
     "partialSubstitution": "Частична замяна",
     "recipeContext": "Контекст на рецептата",
-    "dietaryGoal": "Хранителна цел"
+    "dietaryGoal": "Хранителна цел",
+    "householdId": "Домакинство",
+    "selectHouseholdPlaceholder": "Изберете домакинство…"
   },
   "households": {
     "title": "Домакинства",

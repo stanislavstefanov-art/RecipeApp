@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,6 +16,7 @@ import { HouseholdsClient } from '../../api/households.client';
 import { MealPlanSuggestionDto } from '../../api/meal-plans.dto';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { RecipesClient } from '../../api/recipes.client';
+import { extractApiError } from '../../core/api-error';
 
 type SuggestState =
   | { readonly kind: 'idle' }
@@ -135,7 +135,7 @@ export class MealPlansSuggest {
           this.acceptState.set({ kind: 'idle' });
         },
         error: (err: unknown) => {
-          this.suggestState.set({ kind: 'error', message: this.toMessage(err) });
+          this.suggestState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
   }
@@ -175,19 +175,8 @@ export class MealPlansSuggest {
           void this.router.navigate(['/meal-plans', response.mealPlanId]);
         },
         error: (err: unknown) => {
-          this.acceptState.set({ kind: 'error', message: this.toMessage(err) });
+          this.acceptState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Something went wrong.';
   }
 }

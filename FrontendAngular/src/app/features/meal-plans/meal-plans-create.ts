@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,6 +14,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { HouseholdsClient } from '../../api/households.client';
 import { MealPlansClient } from '../../api/meal-plans.client';
+import { extractApiError } from '../../core/api-error';
 
 type SubmitState =
   | { readonly kind: 'idle' }
@@ -75,19 +75,8 @@ export class MealPlansCreate {
           void this.router.navigate(['/meal-plans', response.id]);
         },
         error: (err: unknown) => {
-          this.submitState.set({ kind: 'error', message: this.toMessage(err) });
+          this.submitState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to create meal plan.';
   }
 }

@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,7 +11,15 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { HouseholdListItemDto } from '../../api/households.dto';
+import { HouseholdsClient } from '../../api/households.client';
 import { RecipesClient } from '../../api/recipes.client';
+import { extractApiError } from '../../core/api-error';
+
+type HouseholdsState =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'loaded'; readonly items: HouseholdListItemDto[] }
+  | { readonly kind: 'error' };
 
 type SubmitState =
   | { readonly kind: 'idle' }
@@ -27,7 +34,8 @@ type SubmitState =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipesCreate {
-  private readonly client = inject(RecipesClient);
+  private readonly recipesClient = inject(RecipesClient);
+  private readonly householdsClient = inject(HouseholdsClient);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -36,7 +44,21 @@ export class RecipesCreate {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(200)],
     }),
+    householdId: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
+
+  private readonly householdsState = signal<HouseholdsState>({ kind: 'loading' });
+
+  protected readonly households = computed(() => {
+    const s = this.householdsState();
+    return s.kind === 'loaded' ? s.items : [];
+  });
+  protected readonly householdsLoading = computed(() => this.householdsState().kind === 'loading');
+  protected readonly householdsError = computed(() => this.householdsState().kind === 'error');
+  protected readonly showHouseholdSelect = computed(() => this.households().length > 1);
 
   private readonly submitState = signal<SubmitState>({ kind: 'idle' });
 
@@ -49,6 +71,21 @@ export class RecipesCreate {
     return state.kind === 'error' ? state.message : '';
   });
 
+  constructor() {
+    this.householdsClient
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          this.householdsState.set({ kind: 'loaded', items });
+          if (items.length === 1) {
+            this.form.controls.householdId.setValue(items[0].id);
+          }
+        },
+        error: () => this.householdsState.set({ kind: 'error' }),
+      });
+  }
+
   protected onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -56,29 +93,18 @@ export class RecipesCreate {
     }
 
     this.submitState.set({ kind: 'submitting' });
-    const payload = { name: this.form.controls.name.value };
+    const { name, householdId } = this.form.getRawValue();
 
-    this.client
-      .create(payload)
+    this.recipesClient
+      .create({ name, householdId })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           void this.router.navigate(['/recipes', response.id]);
         },
         error: (err: unknown) => {
-          this.submitState.set({ kind: 'error', message: this.toMessage(err) });
+          this.submitState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to create recipe.';
   }
 }

@@ -16,6 +16,7 @@ export interface RecipeListItemDto {
 
 export interface CreateRecipeRequest {
   readonly name: string;
+  readonly householdId: string;
 }
 
 export interface CreateRecipeResponse {

@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,6 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { IngredientSubstitutionSuggestionDto } from '../../api/recipes.dto';
+import { extractApiError } from '../../core/api-error';
 
 type SubstitutionState =
   | { readonly kind: 'idle' }
@@ -77,19 +77,8 @@ export class SuggestSubstitutionsForm {
           this.state.set({ kind: 'success', result });
         },
         error: (err: unknown) => {
-          this.state.set({ kind: 'error', message: this.toMessage(err) });
+          this.state.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    if (err instanceof HttpErrorResponse) {
-      const problem = err.error as { title?: string; detail?: string } | null;
-      return problem?.detail ?? problem?.title ?? err.message;
-    }
-    if (err instanceof Error) {
-      return err.message;
-    }
-    return 'Failed to fetch substitutions.';
   }
 }

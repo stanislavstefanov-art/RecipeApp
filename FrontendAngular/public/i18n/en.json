@@ -100,7 +100,9 @@
     "directReplacement": "Direct replacement",
     "partialSubstitution": "Partial substitution",
     "recipeContext": "Recipe context",
-    "dietaryGoal": "Dietary goal"
+    "dietaryGoal": "Dietary goal",
+    "householdId": "Household",
+    "selectHouseholdPlaceholder": "Select a household…"
   },
   "households": {
     "title": "Households",

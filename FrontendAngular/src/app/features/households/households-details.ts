@@ -16,6 +16,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HouseholdsClient } from '../../api/households.client';
 import { PersonsClient } from '../../api/persons.client';
 import { getErrorMessage } from '../../shared/get-error-message';
+import { extractApiError } from '../../core/api-error';
 
 type AddMemberState =
   | { readonly kind: 'idle' }
@@ -88,12 +89,8 @@ export class HouseholdsDetails {
           this.household.reload();
         },
         error: (err: unknown) => {
-          this.addMemberState.set({ kind: 'error', message: this.toMessage(err) });
+          this.addMemberState.set({ kind: 'error', message: extractApiError(err) });
         },
       });
-  }
-
-  private toMessage(err: unknown): string {
-    return getErrorMessage(err, this.translate, 'Failed to add member.');
   }
 }
