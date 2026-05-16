@@ -28,7 +28,19 @@ public sealed class RecipeImportOrchestrator : IRecipeImportOrchestrator
             text.Length,
             _recipeImportService.GetType().Name);
 
-        var firstExtraction = await _recipeImportService.ImportAsync(text, cancellationToken);
+        RecipeExtractionResult firstExtraction;
+        try
+        {
+            firstExtraction = await _recipeImportService.ImportAsync(text, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Recipe import service threw an exception on first attempt.");
+            return ex.Message.Contains("API key", StringComparison.OrdinalIgnoreCase)
+                ? Error.Failure("AI.configuration_error", "The AI service is not configured.")
+                : Error.Failure("AI.api_error", "The AI service returned an error.");
+        }
+
         var firstDto = Map(firstExtraction);
 
         var firstValidation = await _validator.ValidateAsync(firstDto, cancellationToken);
@@ -58,7 +70,19 @@ public sealed class RecipeImportOrchestrator : IRecipeImportOrchestrator
 
         _logger.LogInformation("Retrying recipe import with validation feedback.");
 
-        var secondExtraction = await _recipeImportService.ImportAsync(retryPrompt, cancellationToken);
+        RecipeExtractionResult secondExtraction;
+        try
+        {
+            secondExtraction = await _recipeImportService.ImportAsync(retryPrompt, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Recipe import service threw an exception on retry attempt.");
+            return ex.Message.Contains("API key", StringComparison.OrdinalIgnoreCase)
+                ? Error.Failure("AI.configuration_error", "The AI service is not configured.")
+                : Error.Failure("AI.api_error", "The AI service returned an error.");
+        }
+
         var secondDto = Map(secondExtraction);
 
         var secondValidation = await _validator.ValidateAsync(secondDto, cancellationToken);
