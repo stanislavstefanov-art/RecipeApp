@@ -11,6 +11,7 @@ export interface CreatePersonRequest {
   readonly dietaryPreferences: readonly number[];
   readonly healthConcerns: readonly number[];
   readonly notes?: string;
+  readonly householdId: string;
 }
 
 export interface CreatePersonResponse {

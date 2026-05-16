@@ -11,8 +11,15 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { HouseholdListItemDto } from '../../api/households.dto';
+import { HouseholdsClient } from '../../api/households.client';
 import { PersonsClient } from '../../api/persons.client';
 import { extractApiError } from '../../core/api-error';
+
+type HouseholdsState =
+  | { readonly kind: 'loading' }
+  | { readonly kind: 'loaded'; readonly items: HouseholdListItemDto[] }
+  | { readonly kind: 'error' };
 
 type SubmitState =
   | { readonly kind: 'idle' }
@@ -28,6 +35,7 @@ type SubmitState =
 })
 export class PersonsCreate {
   private readonly client = inject(PersonsClient);
+  private readonly householdsClient = inject(HouseholdsClient);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -35,6 +43,10 @@ export class PersonsCreate {
     name: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(200)],
+    }),
+    householdId: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
     }),
     vegetarian: new FormControl(false, { nonNullable: true }),
     pescatarian: new FormControl(false, { nonNullable: true }),
@@ -49,6 +61,22 @@ export class PersonsCreate {
     }),
   });
 
+  private readonly householdsState = signal<HouseholdsState>({ kind: 'loading' });
+
+  protected readonly households = computed(() => {
+    const s = this.householdsState();
+    return s.kind === 'loaded' ? s.items : [];
+  });
+  protected readonly householdsLoading = computed(() => this.householdsState().kind === 'loading');
+  protected readonly householdsError = computed(() => this.householdsState().kind === 'error');
+  protected readonly noHouseholds = computed(
+    () => this.householdsState().kind === 'loaded' && this.households().length === 0,
+  );
+  protected readonly showHouseholdSelect = computed(() => this.households().length > 1);
+  protected readonly canSubmit = computed(
+    () => !this.householdsLoading() && !this.householdsError() && !this.noHouseholds(),
+  );
+
   private readonly submitState = signal<SubmitState>({ kind: 'idle' });
 
   protected readonly isSubmitting = computed(
@@ -59,6 +87,21 @@ export class PersonsCreate {
     const state = this.submitState();
     return state.kind === 'error' ? state.message : '';
   });
+
+  constructor() {
+    this.householdsClient
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          this.householdsState.set({ kind: 'loaded', items });
+          if (items.length === 1) {
+            this.form.controls.householdId.setValue(items[0].id);
+          }
+        },
+        error: () => this.householdsState.set({ kind: 'error' }),
+      });
+  }
 
   protected onSubmit(): void {
     if (this.form.invalid) {
@@ -84,6 +127,7 @@ export class PersonsCreate {
     this.client
       .create({
         name: v.name,
+        householdId: v.householdId,
         dietaryPreferences,
         healthConcerns,
         notes: v.notes || undefined,

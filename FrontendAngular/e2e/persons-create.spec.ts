@@ -1,9 +1,38 @@
 import { expect, test } from './test';
 
 const PERSONS_URL = 'http://localhost:5106/api/persons';
+const HOUSEHOLDS_API = 'http://localhost:5106/api/households';
 const NEW_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
+const HOUSEHOLD_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+const ONE_HOUSEHOLD = [{ id: HOUSEHOLD_ID, name: 'Test Household', memberCount: 1 }];
 
 test.describe('persons create', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(HOUSEHOLDS_API, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(ONE_HOUSEHOLD),
+      });
+    });
+  });
+
+  test('shows no-household message and disables button when user has no households', async ({
+    page,
+  }) => {
+    await page.unroute(HOUSEHOLDS_API);
+    await page.route(HOUSEHOLDS_API, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    });
+
+    await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
+
+    await expect(page.getByText('You need a household to add a person.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();
+  });
+
   test('blank name shows inline error and issues no request', async ({ page }) => {
     let requested = false;
     await page.route(PERSONS_URL, async (route) => {
@@ -16,6 +45,7 @@ test.describe('persons create', () => {
     });
 
     await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page.getByText('This field is required.')).toBeVisible();
@@ -29,11 +59,13 @@ test.describe('persons create', () => {
       if (route.request().method() === 'POST') {
         const body = route.request().postDataJSON() as {
           name: string;
+          householdId: string;
           dietaryPreferences: number[];
           healthConcerns: number[];
           notes?: string;
         };
         expect(body.name).toBe('Alice');
+        expect(body.householdId).toBe(HOUSEHOLD_ID);
         expect(body.dietaryPreferences).toEqual([1, 3]);
         expect(body.healthConcerns).toEqual([1]);
         expect(body.notes).toBeUndefined();
@@ -48,6 +80,7 @@ test.describe('persons create', () => {
     });
 
     await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Alice');
     await page.getByLabel('Vegetarian').check();
     await page.getByLabel('Vegan').check();
@@ -73,6 +106,7 @@ test.describe('persons create', () => {
     });
 
     await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Bob');
     await page.getByLabel('Notes').fill('Prefers spicy food.');
     await page.getByRole('button', { name: 'Create' }).click();
@@ -94,6 +128,7 @@ test.describe('persons create', () => {
     });
 
     await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Alice');
     await page.getByRole('button', { name: 'Create' }).click();
 
@@ -115,6 +150,7 @@ test.describe('persons create', () => {
     });
 
     await page.goto('/persons/new');
+    await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Alice');
     await page.getByRole('button', { name: 'Create' }).click();
 

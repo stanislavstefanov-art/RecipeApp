@@ -151,7 +151,10 @@
     "failedToLoadSingle": "Грешка при зареждане на лице",
     "creating": "Създаване…",
     "optional": "(незадължително)",
-    "notesPlaceholder": "Допълнителни бележки…"
+    "notesPlaceholder": "Допълнителни бележки…",
+    "householdId": "Домакинство",
+    "selectHouseholdPlaceholder": "Изберете домакинство…",
+    "noHouseholdsForCreate": "Необходимо е домакинство, за да добавите лице."
   },
   "mealPlans": {
     "title": "Планове за хранене",

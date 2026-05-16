@@ -151,7 +151,10 @@
     "failedToLoadSingle": "Failed to load person",
     "creating": "Creating…",
     "optional": "(optional)",
-    "notesPlaceholder": "Any additional notes…"
+    "notesPlaceholder": "Any additional notes…",
+    "householdId": "Household",
+    "selectHouseholdPlaceholder": "Select a household…",
+    "noHouseholdsForCreate": "You need a household to add a person."
   },
   "mealPlans": {
     "title": "Meal plans",
