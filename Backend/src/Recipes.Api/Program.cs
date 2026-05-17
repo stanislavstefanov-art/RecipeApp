@@ -89,12 +89,29 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 {
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
-    if (db.Database.IsRelational())
-        await db.Database.MigrateAsync();
-    else
-        await db.Database.EnsureCreatedAsync();
+    const int maxAttempts = 5;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
+            if (db.Database.IsRelational())
+                await db.Database.MigrateAsync();
+            else
+                await db.Database.EnsureCreatedAsync();
+            break;
+        }
+        catch (Exception ex) when (attempt < maxAttempts)
+        {
+            var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+            var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+            startupLogger.LogWarning(ex,
+                "Database migration attempt {Attempt}/{Max} failed. Retrying in {Delay}s.",
+                attempt, maxAttempts, delay.TotalSeconds);
+            await Task.Delay(delay);
+        }
+    }
 }
 
 if (app.Environment.IsDevelopment())

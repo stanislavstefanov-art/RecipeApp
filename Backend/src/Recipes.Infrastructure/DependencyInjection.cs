@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -92,8 +93,9 @@ public static class DependencyInjection
             }
             else
             {
-                var connectionString = configuration.GetConnectionString("RecipesDb");
-                options.UseSqlServer(connectionString, sql =>
+                var rawCs = configuration.GetConnectionString("RecipesDb");
+                var csBuilder = new SqlConnectionStringBuilder(rawCs) { ConnectTimeout = 60 };
+                options.UseSqlServer(csBuilder.ConnectionString, sql =>
                     sql.EnableRetryOnFailure(
                         maxRetryCount: 5,
                         maxRetryDelay: TimeSpan.FromSeconds(30),

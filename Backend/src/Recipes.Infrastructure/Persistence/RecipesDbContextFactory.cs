@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Recipes.Application.Abstractions;
@@ -13,8 +14,9 @@ public sealed class RecipesDbContextFactory : IDesignTimeDbContextFactory<Recipe
             Environment.GetEnvironmentVariable("ConnectionStrings__RecipesDb")
             ?? "Server=(localdb)\\mssqllocaldb;Database=RecipesDb;Trusted_Connection=True;";
 
+        var csBuilder = new SqlConnectionStringBuilder(connectionString) { ConnectTimeout = 60 };
         var optionsBuilder = new DbContextOptionsBuilder<RecipesDbContext>();
-        optionsBuilder.UseSqlServer(connectionString, sql =>
+        optionsBuilder.UseSqlServer(csBuilder.ConnectionString, sql =>
             sql.EnableRetryOnFailure(
                 maxRetryCount: 5,
                 maxRetryDelay: TimeSpan.FromSeconds(30),
