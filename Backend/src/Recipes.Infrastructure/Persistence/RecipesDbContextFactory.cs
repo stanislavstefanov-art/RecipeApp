@@ -14,7 +14,11 @@ public sealed class RecipesDbContextFactory : IDesignTimeDbContextFactory<Recipe
             ?? "Server=(localdb)\\mssqllocaldb;Database=RecipesDb;Trusted_Connection=True;";
 
         var optionsBuilder = new DbContextOptionsBuilder<RecipesDbContext>();
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(connectionString, sql =>
+            sql.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null));
 
         return new RecipesDbContext(optionsBuilder.Options, new NoOpDomainEventDispatcher());
     }
