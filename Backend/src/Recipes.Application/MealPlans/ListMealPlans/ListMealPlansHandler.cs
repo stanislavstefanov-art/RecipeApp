@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Repositories;
 
 namespace Recipes.Application.MealPlans.ListMealPlans;
@@ -9,20 +10,24 @@ public sealed class ListMealPlansHandler
 {
     private readonly IMealPlanRepository _mealPlanRepository;
     private readonly IHouseholdRepository _householdRepository;
+    private readonly ICurrentUser _currentUser;
 
     public ListMealPlansHandler(
         IMealPlanRepository mealPlanRepository,
-        IHouseholdRepository householdRepository)
+        IHouseholdRepository householdRepository,
+        ICurrentUser currentUser)
     {
         _mealPlanRepository = mealPlanRepository;
         _householdRepository = householdRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<IReadOnlyList<MealPlanListItemDto>>> Handle(
         ListMealPlansQuery request,
         CancellationToken cancellationToken)
     {
-        var mealPlans = await _mealPlanRepository.GetAllAsync(cancellationToken);
+        var householdIds = await _currentUser.GetHouseholdIdsAsync(cancellationToken);
+        var mealPlans = await _mealPlanRepository.GetByHouseholdIdsAsync(householdIds, cancellationToken);
         var households = await _householdRepository.GetAllAsync(cancellationToken);
         var householdsById = households.ToDictionary(x => x.Id, x => x.Name);
 
