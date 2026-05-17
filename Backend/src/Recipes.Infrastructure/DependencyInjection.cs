@@ -97,7 +97,7 @@ public static class DependencyInjection
                 var csBuilder = new SqlConnectionStringBuilder(rawCs) { ConnectTimeout = 60 };
                 options.UseSqlServer(csBuilder.ConnectionString, sql =>
                     sql.EnableRetryOnFailure(
-                        maxRetryCount: 5,
+                        maxRetryCount: 8,
                         maxRetryDelay: TimeSpan.FromSeconds(30),
                         errorNumbersToAdd: null));
             }

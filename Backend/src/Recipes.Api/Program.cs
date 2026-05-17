@@ -89,7 +89,7 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 {
-    const int maxAttempts = 5;
+    const int maxAttempts = 8;
     for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {
         try
