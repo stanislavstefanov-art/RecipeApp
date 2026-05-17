@@ -18,6 +18,7 @@ public sealed class MealPlanRepository : IMealPlanRepository
     {
         return await _dbContext.MealPlans
             .Include(x => x.Entries)
+                .ThenInclude(e => e.PersonAssignments)
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
@@ -30,6 +31,7 @@ public sealed class MealPlanRepository : IMealPlanRepository
     {
         return await _dbContext.MealPlans
             .Include(x => x.Entries)
+                .ThenInclude(e => e.PersonAssignments)
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }

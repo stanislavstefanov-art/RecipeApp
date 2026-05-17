@@ -41,12 +41,6 @@ public sealed class GetMealPlanHandler
         }
 
         var household = await _householdRepository.GetByIdAsync(mealPlan.HouseholdId, cancellationToken);
-        if (household is null)
-        {
-            return Error.NotFound(
-                "Household.NotFound",
-                $"Household '{mealPlan.HouseholdId.Value}' was not found.");
-        }
 
         var recipes = await _recipeRepository.GetAllAsync(cancellationToken);
         var recipeById = recipes.ToDictionary(x => x.Id, x => x);
@@ -100,8 +94,8 @@ public sealed class GetMealPlanHandler
         return new MealPlanDetailsDto(
             mealPlan.Id.Value,
             mealPlan.Name,
-            household.Id.Value,
-            household.Name,
+            mealPlan.HouseholdId.Value,
+            household?.Name ?? string.Empty,
             entries);
     }
 }
