@@ -28,4 +28,17 @@
     <InternalsVisibleTo Include="Recipes.Api.Tests" />
   </ItemGroup>
 
+  <!-- Prompt + schema files live in Backend/Docs/ (outside the project tree).
+       Include them so they're copied to the publish output under Docs/. -->
+  <ItemGroup>
+    <Content Include="..\..\Docs\Prompts\*.md" Link="Docs\Prompts\%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\..\Docs\*.json" Link="Docs\%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
