@@ -93,14 +93,12 @@ public sealed class ClaudeMealPlanSuggestionClient : IClaudeMealPlanSuggestionCl
         var parsed = JsonSerializer.Deserialize<ClaudeMessagesResponse>(responseBody, JsonOptions)
                      ?? throw new InvalidOperationException("Claude response could not be deserialized.");
 
-        var text = ExtractText(parsed);
+        var cleanedJson = ClaudeResponseParser.StripMarkdownFences(ClaudeResponseParser.ExtractText(parsed));
 
-        if (string.IsNullOrWhiteSpace(text))
+        if (string.IsNullOrWhiteSpace(cleanedJson))
         {
             throw new InvalidOperationException("Claude response did not contain text content.");
         }
-
-        var cleanedJson = StripMarkdownFences(text);
 
         try
         {
@@ -115,7 +113,7 @@ public sealed class ClaudeMealPlanSuggestionClient : IClaudeMealPlanSuggestionCl
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to parse Claude meal plan JSON. Raw text: {Text}", text);
+            _logger.LogError(ex, "Failed to parse Claude meal plan JSON. Raw text: {Text}", cleanedJson);
             throw;
         }
     }
@@ -185,34 +183,4 @@ The JSON must match this schema exactly:
             """;
     }
 
-    private static string ExtractText(ClaudeMessagesResponse response)
-    {
-        var textBlocks = response.Content
-            .Where(x => string.Equals(x.Type, "text", StringComparison.OrdinalIgnoreCase))
-            .Select(x => x.Text)
-            .Where(x => !string.IsNullOrWhiteSpace(x));
-
-        return string.Join("\n", textBlocks!);
-    }
-
-    private static string StripMarkdownFences(string text)
-    {
-        var trimmed = text.Trim();
-
-        if (trimmed.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
-        {
-            trimmed = trimmed[7..].Trim();
-        }
-        else if (trimmed.StartsWith("```", StringComparison.OrdinalIgnoreCase))
-        {
-            trimmed = trimmed[3..].Trim();
-        }
-
-        if (trimmed.EndsWith("```", StringComparison.OrdinalIgnoreCase))
-        {
-            trimmed = trimmed[..^3].Trim();
-        }
-
-        return trimmed;
-    }
 }

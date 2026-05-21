@@ -89,7 +89,7 @@ public sealed class ClaudeRecipeImportClient : IClaudeRecipeImportClient
         var parsed = JsonSerializer.Deserialize<ClaudeMessagesResponse>(responseBody, JsonOptions)
                      ?? throw new InvalidOperationException("Claude response could not be deserialized.");
 
-        var text = StripMarkdownCodeFence(ExtractText(parsed));
+        var text = ClaudeResponseParser.StripMarkdownFences(ClaudeResponseParser.ExtractText(parsed));
 
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -127,28 +127,4 @@ The JSON must match this schema exactly:
 """;
     }
 
-    private static string ExtractText(ClaudeMessagesResponse response)
-    {
-        var textBlocks = response.Content
-            .Where(x => string.Equals(x.Type, "text", StringComparison.OrdinalIgnoreCase))
-            .Select(x => x.Text)
-            .Where(x => !string.IsNullOrWhiteSpace(x));
-
-        return string.Join("\n", textBlocks);
-    }
-
-    private static string StripMarkdownCodeFence(string text)
-    {
-        var trimmed = text.Trim();
-        if (!trimmed.StartsWith("```")) return trimmed;
-
-        var firstNewline = trimmed.IndexOf('\n');
-        if (firstNewline >= 0)
-            trimmed = trimmed[(firstNewline + 1)..];
-
-        if (trimmed.EndsWith("```"))
-            trimmed = trimmed[..^3].TrimEnd();
-
-        return trimmed.Trim();
-    }
 }
