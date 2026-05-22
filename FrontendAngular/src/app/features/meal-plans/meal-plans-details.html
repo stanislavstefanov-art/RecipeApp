@@ -57,11 +57,12 @@
         } @else {
           <form [formGroup]="addForm" (ngSubmit)="onSubmitAddEntry()" class="space-y-3">
             <div>
-              <label class="block text-xs font-medium text-gray-600">{{ 'mealPlans.recipe' | translate }}</label>
+              <label for="add-recipe" class="block text-xs font-medium text-gray-600">{{ 'mealPlans.recipe' | translate }}</label>
               @if (allRecipes.isLoading()) {
                 <p class="mt-1 text-xs text-gray-400">{{ 'mealPlans.loadingRecipes' | translate }}</p>
               } @else {
                 <select
+                  id="add-recipe"
                   formControlName="recipeId"
                   class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
                 >
@@ -77,8 +78,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-gray-600">{{ 'mealPlans.date' | translate }}</label>
+              <label for="add-date" class="block text-xs font-medium text-gray-600">{{ 'mealPlans.date' | translate }}</label>
               <input
+                id="add-date"
                 type="date"
                 formControlName="plannedDate"
                 class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm"
@@ -86,8 +88,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-gray-600">{{ 'mealPlans.mealType' | translate }}</label>
-              <select formControlName="mealType" class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm">
+              <label for="add-meal-type" class="block text-xs font-medium text-gray-600">{{ 'mealPlans.mealType' | translate }}</label>
+              <select id="add-meal-type" formControlName="mealType" class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm">
                 <option value="1">{{ 'enums.mealType.1' | translate }}</option>
                 <option value="2">{{ 'enums.mealType.2' | translate }}</option>
                 <option value="3">{{ 'enums.mealType.3' | translate }}</option>
