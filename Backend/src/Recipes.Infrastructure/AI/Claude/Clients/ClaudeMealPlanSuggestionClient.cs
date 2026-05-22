@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recipes.Application.MealPlans.SuggestMealPlan;
+using Recipes.Domain.Enums;
 using Recipes.Infrastructure.AI.Claude.Models;
 using Recipes.Infrastructure.Options;
 
@@ -152,7 +153,7 @@ The JSON must match this schema exactly:
         """;
             }));
 
-        var mealTypes = string.Join(", ", request.MealTypes);
+        var mealTypes = string.Join(", ", request.MealTypes.Select(m => ((MealType)m).ToString()));
 
         var householdMembers = string.Join(
             "\n",
@@ -160,8 +161,8 @@ The JSON must match this schema exactly:
                 $"""
                 - PersonId: {member.PersonId}
                 Name: {member.Name}
-                DietaryPreferences: {(member.DietaryPreferences.Count == 0 ? "None" : string.Join(", ", member.DietaryPreferences))}
-                HealthConcerns: {(member.HealthConcerns.Count == 0 ? "None" : string.Join(", ", member.HealthConcerns))}
+                DietaryPreferences: {(member.DietaryPreferences.Count == 0 ? "None" : string.Join(", ", member.DietaryPreferences.Select(p => ((DietaryPreference)p).ToString())))}
+                HealthConcerns: {(member.HealthConcerns.Count == 0 ? "None" : string.Join(", ", member.HealthConcerns.Select(h => ((HealthConcern)h).ToString())))}
                 Notes: {member.Notes ?? "N/A"}
                 """));
 
