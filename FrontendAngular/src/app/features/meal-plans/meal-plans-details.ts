@@ -17,15 +17,18 @@ import { of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ToastService } from '../../core/toast.service';
+import { HouseholdsClient } from '../../api/households.client';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { MealPlanEntryAssignmentDto } from '../../api/meal-plans.dto';
 import { RecipesClient } from '../../api/recipes.client';
 import { getErrorMessage } from '../../shared/get-error-message';
 
-type EditSubmitState =
+type FormState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'busy' }
   | { readonly kind: 'error'; readonly message: string };
+
+type EditSubmitState = FormState;
 
 type DeleteState =
   | { readonly kind: 'idle' }
@@ -42,6 +45,7 @@ type DeleteState =
 export class MealPlansDetails {
   private readonly client = inject(MealPlansClient);
   private readonly recipesClient = inject(RecipesClient);
+  private readonly householdsClient = inject(HouseholdsClient);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -56,6 +60,11 @@ export class MealPlansDetails {
 
   protected readonly allRecipes = rxResource({
     stream: () => this.recipesClient.list(),
+  });
+
+  protected readonly household = rxResource({
+    params: () => this.mealPlan.value()?.householdId,
+    stream: ({ params }) => (params ? this.householdsClient.get(params) : of(null)),
   });
 
   protected readonly editRecipeId = signal('');
@@ -95,6 +104,67 @@ export class MealPlansDetails {
     }),
     notes: new FormControl('', { nonNullable: true }),
   });
+
+  protected readonly showAddForm = signal(false);
+  protected readonly addEntryState = signal<FormState>({ kind: 'idle' });
+  protected readonly addForm = new FormGroup({
+    recipeId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    plannedDate: new FormControl(new Date().toISOString().slice(0, 10), {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    mealType: new FormControl('3', { nonNullable: true, validators: [Validators.required] }),
+  });
+
+  protected onToggleAddForm(): void {
+    this.showAddForm.update((v) => !v);
+    this.addEntryState.set({ kind: 'idle' });
+    this.addForm.reset({
+      recipeId: '',
+      plannedDate: new Date().toISOString().slice(0, 10),
+      mealType: '3',
+    });
+  }
+
+  protected onSubmitAddEntry(): void {
+    if (this.addForm.invalid) {
+      this.addForm.markAllAsTouched();
+      return;
+    }
+
+    const members = this.household.value()?.members ?? [];
+    const { recipeId, plannedDate, mealType } = this.addForm.getRawValue();
+
+    this.addEntryState.set({ kind: 'busy' });
+    this.client
+      .addEntry(this.id(), {
+        recipeId,
+        plannedDate,
+        mealType: parseInt(mealType, 10),
+        scope: 1,
+        assignments: members.map((m) => ({
+          personId: m.personId,
+          assignedRecipeId: recipeId,
+          recipeVariationId: null,
+          portionMultiplier: 1,
+          notes: null,
+        })),
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.addEntryState.set({ kind: 'idle' });
+          this.showAddForm.set(false);
+          this.mealPlan.reload();
+        },
+        error: (err: unknown) => {
+          this.addEntryState.set({
+            kind: 'error',
+            message: getErrorMessage(err, this.translate, 'Failed to add entry'),
+          });
+        },
+      });
+  }
 
   private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
 

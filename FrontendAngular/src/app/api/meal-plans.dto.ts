@@ -111,3 +111,19 @@ export interface UpdateMealPlanPersonAssignmentRequest {
   readonly portionMultiplier: number;
   readonly notes: string | null;
 }
+
+export interface AddMealPlanEntryAssignmentRequest {
+  readonly personId: string;
+  readonly assignedRecipeId: string;
+  readonly recipeVariationId: string | null;
+  readonly portionMultiplier: number;
+  readonly notes: string | null;
+}
+
+export interface AddMealPlanEntryRequest {
+  readonly recipeId: string;
+  readonly plannedDate: string;
+  readonly mealType: number;
+  readonly scope: number;
+  readonly assignments: readonly AddMealPlanEntryAssignmentRequest[];
+}

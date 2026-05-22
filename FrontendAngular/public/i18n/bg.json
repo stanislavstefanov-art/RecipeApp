@@ -230,7 +230,10 @@
     "saving": "Запазване…",
     "selectRecipePlaceholder": "Избери рецепта",
     "noSuggestionEntries": "Няма предложени записи.",
-    "baseRecipeId": "Рецепта: {{id}}"
+    "baseRecipeId": "Рецепта: {{id}}",
+    "addEntry": "Добави запис",
+    "addingEntry": "Добавяне…",
+    "noHouseholdMembers": "Домакинството няма членове. Добавете членове преди да добавите записи."
   },
   "shoppingLists": {
     "title": "Списъци за пазаруване",

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import {
   AcceptMealPlanSuggestionRequest,
   AcceptMealPlanSuggestionResponse,
+  AddMealPlanEntryRequest,
   CreateMealPlanRequest,
   CreateMealPlanResponse,
   MealPlanDetailsDto,
@@ -59,6 +60,13 @@ export class MealPlansClient {
     return this.http.post<void>(
       `${API_BASE_URL}/api/meal-plans/${mealPlanId}/shopping-lists/${shoppingListId}/regenerate`,
       null,
+    );
+  }
+
+  addEntry(mealPlanId: string, payload: AddMealPlanEntryRequest): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/meal-plans/${mealPlanId}/entries`,
+      payload,
     );
   }
 

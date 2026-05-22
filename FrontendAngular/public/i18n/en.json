@@ -230,7 +230,10 @@
     "saving": "Saving…",
     "selectRecipePlaceholder": "Select recipe",
     "noSuggestionEntries": "No entries suggested.",
-    "baseRecipeId": "Recipe: {{id}}"
+    "baseRecipeId": "Recipe: {{id}}",
+    "addEntry": "Add entry",
+    "addingEntry": "Adding…",
+    "noHouseholdMembers": "This household has no members. Add members before adding entries."
   },
   "shoppingLists": {
     "title": "Shopping lists",
