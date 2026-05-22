@@ -68,6 +68,7 @@ test.describe('shopping lists list', () => {
 
     await page.goto('/shopping-lists');
     await page.getByPlaceholder('New list name…').fill('Party Shopping');
+    await page.getByLabel('Household').selectOption({ index: 1 });
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page.getByRole('link', { name: 'Party Shopping' })).toBeVisible();

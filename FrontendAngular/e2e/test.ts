@@ -36,6 +36,18 @@ const test = base.extend<object>({
       await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     });
 
+    // Auto-stub households — loaded on init by several list pages; individual tests
+    // can override with a more specific route if they need different data.
+    await page.route('**/api/households', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', name: 'Test Household', memberCount: 2 },
+        ]),
+      });
+    });
+
     await use(page);
   },
 });
