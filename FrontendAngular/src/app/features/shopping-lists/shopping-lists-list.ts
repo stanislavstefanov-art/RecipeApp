@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ToastService } from '../../core/toast.service';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
+import { HouseholdsClient } from '../../api/households.client';
 import { getErrorMessage } from '../../shared/get-error-message';
 
 type SubmitState =
@@ -24,12 +25,17 @@ type SubmitState =
 })
 export class ShoppingListsList {
   private readonly client = inject(ShoppingListsClient);
+  private readonly householdsClient = inject(HouseholdsClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
   protected readonly shoppingLists = rxResource({
     stream: () => this.client.list(),
+  });
+
+  protected readonly households = rxResource({
+    stream: () => this.householdsClient.list(),
   });
 
   protected readonly isEmpty = computed(
@@ -46,6 +52,10 @@ export class ShoppingListsList {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(1)],
     }),
+    householdId: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
@@ -54,8 +64,9 @@ export class ShoppingListsList {
     if (this.form.invalid) return;
     this.submitState.set({ kind: 'submitting' });
 
+    const { name, householdId } = this.form.getRawValue();
     this.client
-      .create({ name: this.form.getRawValue().name })
+      .create({ name, householdId })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

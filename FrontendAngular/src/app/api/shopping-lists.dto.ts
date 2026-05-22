@@ -15,6 +15,7 @@ export interface ShoppingListDto {
 
 export interface CreateShoppingListRequest {
   name: string;
+  householdId: string;
 }
 
 export interface CreateShoppingListResponse {

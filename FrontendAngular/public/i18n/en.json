@@ -282,6 +282,7 @@
     "savePurchase": "Save purchase",
     "descriptionOptional": "Description (optional)",
     "selectMealPlanPlaceholder": "Select a meal plan…",
+    "selectHouseholdPlaceholder": "Select a household…",
     "noItemsYet": "No items yet."
   },
   "expenses": {

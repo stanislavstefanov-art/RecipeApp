@@ -282,6 +282,7 @@
     "savePurchase": "Запази покупката",
     "descriptionOptional": "Описание (незадължително)",
     "selectMealPlanPlaceholder": "Избери план за хранене…",
+    "selectHouseholdPlaceholder": "Избери домакинство…",
     "noItemsYet": "Все още няма артикули."
   },
   "expenses": {

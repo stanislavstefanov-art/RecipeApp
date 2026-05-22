@@ -3,20 +3,35 @@
     <h1 class="text-2xl font-semibold">{{ 'shoppingLists.title' | translate }}</h1>
   </header>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-6 flex gap-2">
-    <input
-      formControlName="name"
-      type="text"
-      [placeholder]="'shoppingLists.newListPlaceholder' | translate"
-      class="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
-    />
-    <button
-      type="submit"
-      [disabled]="form.invalid || submitState().kind === 'submitting'"
-      class="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:opacity-50"
-    >
-      {{ submitState().kind === 'submitting' ? ('shoppingLists.creating' | translate) : ('common.create' | translate) }}
-    </button>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-6 space-y-2">
+    <div class="flex gap-2">
+      <input
+        formControlName="name"
+        type="text"
+        [placeholder]="'shoppingLists.newListPlaceholder' | translate"
+        class="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+      <button
+        type="submit"
+        [disabled]="form.invalid || submitState().kind === 'submitting'"
+        class="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:opacity-50"
+      >
+        {{ submitState().kind === 'submitting' ? ('shoppingLists.creating' | translate) : ('common.create' | translate) }}
+      </button>
+    </div>
+    <div>
+      <label for="sl-household" class="mb-1 block text-sm font-medium text-gray-700">{{ 'shoppingLists.householdId' | translate }}</label>
+      <select
+        id="sl-household"
+        formControlName="householdId"
+        class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      >
+        <option value="">{{ 'shoppingLists.selectHouseholdPlaceholder' | translate }}</option>
+        @for (h of households.value(); track h.id) {
+          <option [value]="h.id">{{ h.name }}</option>
+        }
+      </select>
+    </div>
   </form>
 
   @if (submitState().kind === 'error') {
