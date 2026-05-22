@@ -9,7 +9,7 @@
     </a>
   </header>
 
-  <form (ngSubmit)="onSubmit()" class="mb-6 flex flex-wrap items-end gap-3">
+  <form [formGroup]="queryForm" (ngSubmit)="onSubmit()" class="mb-6 flex flex-wrap items-end gap-3">
     <div>
       <label for="report-year" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.year' | translate }}</label>
       <input

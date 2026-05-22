@@ -11,7 +11,7 @@
 
   <div class="mb-6 rounded-xl border border-gray-200 bg-white p-5">
     <h2 class="mb-4 text-base font-semibold">{{ 'expenses.addExpenseTitle' | translate }}</h2>
-    <form (ngSubmit)="onSubmit()" class="space-y-3">
+    <form [formGroup]="createForm" (ngSubmit)="onSubmit()" class="space-y-3">
       <div class="flex gap-3">
         <div class="flex-1">
           <label for="expense-amount" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.amount' | translate }}</label>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -41,23 +41,25 @@ export class ShoppingListsList {
     return err ? getErrorMessage(err, this.translate) : '';
   });
 
-  protected readonly nameControl = new FormControl('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.minLength(1)],
+  protected readonly form = new FormGroup({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(1)],
+    }),
   });
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
 
   protected onSubmit(): void {
-    if (this.nameControl.invalid) return;
+    if (this.form.invalid) return;
     this.submitState.set({ kind: 'submitting' });
 
     this.client
-      .create({ name: this.nameControl.value })
+      .create({ name: this.form.getRawValue().name })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.nameControl.reset();
+          this.form.reset();
           this.submitState.set({ kind: 'idle' });
           this.shoppingLists.reload();
           this.toast.show('success', this.translate.instant('shoppingLists.listCreated'));

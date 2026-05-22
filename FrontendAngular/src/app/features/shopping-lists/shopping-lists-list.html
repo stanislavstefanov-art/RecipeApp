@@ -3,16 +3,16 @@
     <h1 class="text-2xl font-semibold">{{ 'shoppingLists.title' | translate }}</h1>
   </header>
 
-  <form (ngSubmit)="onSubmit()" class="mb-6 flex gap-2">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-6 flex gap-2">
     <input
-      [formControl]="nameControl"
+      formControlName="name"
       type="text"
       [placeholder]="'shoppingLists.newListPlaceholder' | translate"
       class="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
     />
     <button
       type="submit"
-      [disabled]="nameControl.invalid || submitState().kind === 'submitting'"
+      [disabled]="form.invalid || submitState().kind === 'submitting'"
       class="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:opacity-50"
     >
       {{ submitState().kind === 'submitting' ? ('shoppingLists.creating' | translate) : ('common.create' | translate) }}
