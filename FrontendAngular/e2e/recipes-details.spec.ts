@@ -13,12 +13,12 @@ test.describe('recipe details', () => {
           id: ID,
           name: 'Pancakes',
           ingredients: [
-            { name: 'Flour', quantity: 200, unit: 'g' },
-            { name: 'Milk', quantity: 300, unit: 'ml' },
+            { id: '11111111-1111-1111-1111-111111111111', name: 'Flour', quantity: 200, unit: 'g' },
+            { id: '22222222-2222-2222-2222-222222222222', name: 'Milk', quantity: 300, unit: 'ml' },
           ],
           steps: [
-            { order: 1, instruction: 'Mix dry ingredients.' },
-            { order: 2, instruction: 'Whisk in the milk.' },
+            { id: '33333333-3333-3333-3333-333333333333', order: 1, instruction: 'Mix dry ingredients.' },
+            { id: '44444444-4444-4444-4444-444444444444', order: 2, instruction: 'Whisk in the milk.' },
           ],
           averageStars: null,
           ratingCount: 0,
@@ -32,9 +32,9 @@ test.describe('recipe details', () => {
 
     await expect(page.getByRole('heading', { name: 'Pancakes' })).toBeVisible();
     await expect(page.getByText('Flour', { exact: true })).toBeVisible();
-    await expect(page.getByText('200 g')).toBeVisible();
+    await expect(page.getByText('200 gram')).toBeVisible();
     await expect(page.getByText('Milk', { exact: true })).toBeVisible();
-    await expect(page.getByText('300 ml')).toBeVisible();
+    await expect(page.getByText('300 milliliter')).toBeVisible();
     await expect(page.getByText('Mix dry ingredients.')).toBeVisible();
     await expect(page.getByText('Whisk in the milk.')).toBeVisible();
   });
