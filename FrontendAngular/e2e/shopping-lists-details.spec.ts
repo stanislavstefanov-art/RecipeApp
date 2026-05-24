@@ -5,6 +5,21 @@ const ITEM_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 const SHOPPING_LIST_URL = `http://localhost:5106/api/shopping-lists/${LIST_ID}`;
 const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
 
+function makeItem(overrides: Record<string, unknown> = {}) {
+  return {
+    id: ITEM_ID,
+    productId: 'product-1',
+    productName: 'Milk',
+    quantity: 2,
+    unit: 'L',
+    sourceType: 1,
+    isPurchased: false,
+    notes: null,
+    sourceReferenceId: null,
+    ...overrides,
+  };
+}
+
 function stubShoppingList(page: import('@playwright/test').Page, items: object[]) {
   return page.route(SHOPPING_LIST_URL, async (route) => {
     await route.fulfill({
@@ -27,16 +42,14 @@ function stubMealPlans(page: import('@playwright/test').Page) {
 
 test.describe('shopping list details', () => {
   test('renders list name and items', async ({ page }) => {
-    await stubShoppingList(page, [
-      { id: ITEM_ID, name: 'Milk', quantity: '2L', sourceType: 1, isPending: false, isPurchased: false },
-    ]);
+    await stubShoppingList(page, [makeItem()]);
     await stubMealPlans(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
 
     await expect(page.getByRole('heading', { name: 'Weekly Groceries' })).toBeVisible();
     await expect(page.getByText('Milk')).toBeVisible();
-    await expect(page.getByText('2L')).toBeVisible();
+    await expect(page.getByText('2 L')).toBeVisible();
     await expect(page.getByText('Manual')).toBeVisible();
   });
 
@@ -64,30 +77,22 @@ test.describe('shopping list details', () => {
     await expect(page.getByText('Shopping list not found.')).toBeVisible();
   });
 
-  test('mark pending updates item badge', async ({ page }) => {
-    let reloaded = false;
-    await page.route(SHOPPING_LIST_URL, async (route) => {
-      if (route.request().method() === 'GET') {
-        const items = reloaded
-          ? [{ id: ITEM_ID, name: 'Milk', sourceType: 1, isPending: true, isPurchased: false }]
-          : [{ id: ITEM_ID, name: 'Milk', sourceType: 1, isPending: false, isPurchased: false }];
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ id: LIST_ID, name: 'Weekly Groceries', items }),
-        });
-        reloaded = true;
-      }
-    });
+  test('mark pending calls the API and keeps item visible', async ({ page }) => {
+    await stubShoppingList(page, [makeItem()]);
     await page.route(`${SHOPPING_LIST_URL}/items/${ITEM_ID}/pending`, async (route) => {
       await route.fulfill({ status: 204 });
     });
     await stubMealPlans(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
-    await page.getByRole('button', { name: 'Mark as pending' }).click();
 
-    await expect(page.getByText('Pending')).toBeVisible();
+    const pendingRequest = page.waitForRequest(
+      (req) => req.url().includes(`/items/${ITEM_ID}/pending`) && req.method() === 'POST',
+    );
+    await page.getByRole('button', { name: 'Mark as pending' }).click();
+    await pendingRequest;
+
+    await expect(page.getByText('Milk')).toBeVisible();
   });
 
   test('purchase panel opens and submits', async ({ page }) => {
@@ -95,8 +100,8 @@ test.describe('shopping list details', () => {
     await page.route(SHOPPING_LIST_URL, async (route) => {
       if (route.request().method() === 'GET') {
         const items = reloaded
-          ? [{ id: ITEM_ID, name: 'Milk', sourceType: 1, isPending: false, isPurchased: true }]
-          : [{ id: ITEM_ID, name: 'Milk', sourceType: 1, isPending: false, isPurchased: false }];
+          ? [makeItem({ isPurchased: true })]
+          : [makeItem()];
         await route.fulfill({
           status: 200,
           contentType: 'application/json',

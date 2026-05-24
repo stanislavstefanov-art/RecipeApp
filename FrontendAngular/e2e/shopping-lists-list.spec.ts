@@ -15,8 +15,8 @@ test.describe('shopping lists list', () => {
             id: LIST_ID,
             name: 'Weekly Groceries',
             items: [
-              { id: 'i1', name: 'Milk', sourceType: 1, isPending: false, isPurchased: false },
-              { id: 'i2', name: 'Eggs', sourceType: 1, isPending: false, isPurchased: false },
+              { id: 'i1', productId: 'p1', productName: 'Milk', quantity: 1, unit: 'pcs', sourceType: 1, isPurchased: false, notes: null, sourceReferenceId: null },
+              { id: 'i2', productId: 'p2', productName: 'Eggs', quantity: 6, unit: 'pcs', sourceType: 1, isPurchased: false, notes: null, sourceReferenceId: null },
             ],
           },
         ]),
