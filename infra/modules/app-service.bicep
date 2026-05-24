@@ -3,6 +3,7 @@ param prefix string
 param tags object = {}
 param keyVaultName string
 param appInsightsConnectionString string
+param documentIntelligenceEndpoint string
 param corsOrigins array = []
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
@@ -70,6 +71,11 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'RecipeBatchAnalysis__Provider', value: 'Claude' }
         { name: 'RecipeDraftReview__Provider', value: 'Claude' }
         { name: 'ExpenseInsight__Provider', value: 'Claude' }
+
+        // Document Intelligence (receipt scanning)
+        { name: 'ReceiptExtraction__Provider', value: 'Azure' }
+        { name: 'ReceiptExtraction__Endpoint', value: documentIntelligenceEndpoint }
+        { name: 'ReceiptExtraction__ApiKey', value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=DocumentIntelligence--ApiKey)' }
       ]
     }
   }

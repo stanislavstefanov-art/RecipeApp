@@ -11,6 +11,8 @@ param jwtSigningKey string
 param mcpServerToken string
 @secure()
 param blobStorageConnectionString string
+@secure()
+param documentIntelligenceApiKey string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${prefix}-kv'
@@ -66,6 +68,14 @@ resource secretBlobStorageConnectionString 'Microsoft.KeyVault/vaults/secrets@20
   name: 'BlobStorage--ConnectionString'
   properties: {
     value: blobStorageConnectionString
+  }
+}
+
+resource secretDocumentIntelligenceApiKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'DocumentIntelligence--ApiKey'
+  properties: {
+    value: documentIntelligenceApiKey
   }
 }
 
