@@ -53,9 +53,11 @@ export class ShoppingListsDetails {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
+  private readonly _refresh = signal(0);
+
   protected readonly shoppingList = rxResource({
-    params: () => this.id(),
-    stream: ({ params }) => this.client.get(params),
+    params: () => ({ id: this.id(), r: this._refresh() }),
+    stream: ({ params }) => this.client.get(params.id),
   });
 
   protected readonly mealPlans = rxResource({
@@ -121,7 +123,7 @@ export class ShoppingListsDetails {
       .subscribe({
         next: () => {
           this.markPendingState.set({ kind: 'idle' });
-          this.shoppingList.reload();
+          this._refresh.update(n => n + 1);
           this.toast.show('success', `"${item.productName}" marked as pending`);
         },
         error: (err: unknown) => {
@@ -163,7 +165,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.purchasingItem.set(null);
           this.purchaseState.set({ kind: 'idle' });
-          this.shoppingList.reload();
+          this._refresh.update(n => n + 1);
           this.toast.show('success', this.translate.instant('shoppingLists.itemPurchased'));
         },
         error: (err: unknown) => {
@@ -183,7 +185,7 @@ export class ShoppingListsDetails {
       .subscribe({
         next: () => {
           this.generateState.set({ kind: 'idle' });
-          this.shoppingList.reload();
+          this._refresh.update(n => n + 1);
           this.toast.show('success', this.translate.instant('shoppingLists.listGenerated'));
         },
         error: (err: unknown) => {
@@ -203,7 +205,7 @@ export class ShoppingListsDetails {
       .subscribe({
         next: () => {
           this.regenerateState.set({ kind: 'idle' });
-          this.shoppingList.reload();
+          this._refresh.update(n => n + 1);
           this.toast.show('success', this.translate.instant('shoppingLists.listRegenerated'));
         },
         error: (err: unknown) => {

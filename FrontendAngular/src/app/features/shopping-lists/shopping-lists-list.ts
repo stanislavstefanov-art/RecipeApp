@@ -30,7 +30,10 @@ export class ShoppingListsList {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
+  private readonly _refresh = signal(0);
+
   protected readonly shoppingLists = rxResource({
+    params: () => this._refresh(),
     stream: () => this.client.list(),
   });
 
@@ -72,7 +75,7 @@ export class ShoppingListsList {
         next: () => {
           this.form.reset();
           this.submitState.set({ kind: 'idle' });
-          this.shoppingLists.reload();
+          this._refresh.update(n => n + 1);
           this.toast.show('success', this.translate.instant('shoppingLists.listCreated'));
         },
         error: (err: unknown) => {
