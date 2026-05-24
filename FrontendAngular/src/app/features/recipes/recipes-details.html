@@ -106,7 +106,7 @@
               <div class="flex min-w-0 flex-1 items-center gap-3">
                 <span class="min-w-0">{{ ingredient.name }}</span>
                 <span class="shrink-0 text-sm text-gray-500">
-                  {{ ingredient.quantity }} {{ ingredient.unit }}
+                  {{ ingredient.quantity }} {{ ingredient.unit | unitName }}
                 </span>
               </div>
               <button

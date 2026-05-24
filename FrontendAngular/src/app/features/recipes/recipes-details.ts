@@ -18,6 +18,7 @@ import { RecipesClient } from '../../api/recipes.client';
 import { ToastService } from '../../core/toast.service';
 import { getErrorMessage } from '../../shared/get-error-message';
 import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
+import { UnitNamePipe } from '../../shared/unit-name.pipe';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
 import { LogCookingFormComponent } from './log-cooking-form';
@@ -41,7 +42,7 @@ type ImageState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent],
+  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, UnitNamePipe],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

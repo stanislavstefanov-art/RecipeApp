@@ -6,9 +6,11 @@ import { MeasurementUnitDto } from '../api/units.dto';
 export class UnitNamePipe implements PipeTransform {
   private readonly translate = inject(TranslateService);
 
-  transform(unit: MeasurementUnitDto): string {
-    const key = `enums.unit.${unit.abbreviation}`;
+  transform(unit: MeasurementUnitDto | string): string {
+    const abbreviation = typeof unit === 'string' ? unit : unit.abbreviation;
+    const fallback = typeof unit === 'string' ? unit : unit.name;
+    const key = `enums.unit.${abbreviation}`;
     const result = this.translate.instant(key);
-    return result === key ? unit.name : result;
+    return result === key ? fallback : result;
   }
 }
