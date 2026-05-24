@@ -114,6 +114,13 @@ app.UseStatusCodePages();
     }
 }
 
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
+    var unitSeeder = new MeasurementUnitSeeder(db);
+    await unitSeeder.SeedAsync(default);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
