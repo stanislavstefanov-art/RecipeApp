@@ -12,6 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { UnitsClient } from '../../api/units.client';
+import { UnitNamePipe } from '../../shared/unit-name.pipe';
 import { getErrorMessage } from '../../shared/get-error-message';
 
 type ActionState =
@@ -23,7 +24,7 @@ type ActionState =
   selector: 'app-units-settings',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TranslateModule],
+  imports: [ReactiveFormsModule, TranslateModule, UnitNamePipe],
   templateUrl: './units-settings.html',
 })
 export class UnitsSettings {

@@ -93,7 +93,7 @@
         >
           <option value="">{{ 'shoppingLists.unitPlaceholder' | translate }}</option>
           @for (unit of units.value(); track unit.id) {
-            <option [value]="unit.abbreviation">{{ unit.name }} ({{ unit.abbreviation }})</option>
+            <option [value]="unit.abbreviation">{{ unit | unitName }} ({{ unit.abbreviation }})</option>
           }
         </select>
         <button

@@ -355,6 +355,20 @@
     "passwordDigit": "Password must contain at least one digit."
   },
   "enums": {
+    "unit": {
+      "g":     "gram",
+      "kg":    "kilogram",
+      "ml":    "milliliter",
+      "l":     "liter",
+      "tsp":   "teaspoon",
+      "tbsp":  "tablespoon",
+      "pcs":   "piece",
+      "pinch": "pinch",
+      "cup":   "cup",
+      "cloves":"clove",
+      "pack":  "pack",
+      "mg":    "milligram"
+    },
     "dietaryPreference": {
       "1": "Vegetarian",
       "2": "Pescatarian",

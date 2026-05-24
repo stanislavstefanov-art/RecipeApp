@@ -53,7 +53,7 @@
       >
         <option value="">{{ 'recipes.selectUnit' | translate }}</option>
         @for (unit of units.value(); track unit.id) {
-          <option [value]="unit.abbreviation">{{ unit.name }} ({{ unit.abbreviation }})</option>
+          <option [value]="unit.abbreviation">{{ unit | unitName }} ({{ unit.abbreviation }})</option>
         }
       </select>
       @if (form.controls.unit.touched && form.controls.unit.errors; as errors) {

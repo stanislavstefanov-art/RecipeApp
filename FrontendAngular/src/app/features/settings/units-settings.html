@@ -48,7 +48,7 @@
       @for (unit of units.value(); track unit.id) {
         <li class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
           <div>
-            <span class="font-medium">{{ unit.name }}</span>
+            <span class="font-medium">{{ unit | unitName }}</span>
             <span class="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ unit.abbreviation }}</span>
           </div>
           <button

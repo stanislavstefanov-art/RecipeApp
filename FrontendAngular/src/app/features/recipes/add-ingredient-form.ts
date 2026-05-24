@@ -22,6 +22,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
 import { UnitsClient } from '../../api/units.client';
+import { UnitNamePipe } from '../../shared/unit-name.pipe';
 import { extractApiError } from '../../core/api-error';
 
 type SubmitState =
@@ -41,7 +42,7 @@ const INITIAL_VALUES = { name: '', quantity: 1, unit: '' };
 
 @Component({
   selector: 'app-add-ingredient-form',
-  imports: [ReactiveFormsModule, TranslateModule],
+  imports: [ReactiveFormsModule, TranslateModule, UnitNamePipe],
   templateUrl: './add-ingredient-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -18,6 +18,7 @@ import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
 import { UnitsClient } from '../../api/units.client';
+import { UnitNamePipe } from '../../shared/unit-name.pipe';
 import { ShoppingListDetailsItemDto } from '../../api/shopping-lists.dto';
 import { getErrorMessage } from '../../shared/get-error-message';
 
@@ -40,7 +41,7 @@ type DeleteState =
   selector: 'app-shopping-lists-details',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, TranslateModule],
+  imports: [RouterLink, ReactiveFormsModule, TranslateModule, UnitNamePipe],
   templateUrl: './shopping-lists-details.html',
   styleUrl: './shopping-lists-details.css',
 })
