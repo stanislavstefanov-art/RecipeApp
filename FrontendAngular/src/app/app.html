@@ -29,6 +29,7 @@
         <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
         <a routerLink="/expenses" routerLinkActive="font-semibold !text-green-400" [routerLinkActiveOptions]="{ exact: true }" class="text-stone-300 hover:text-white">{{ 'nav.expenses' | translate }}</a>
         <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.reports' | translate }}</a>
+        <a routerLink="/settings/units" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white">{{ 'nav.settings' | translate }}</a>
       </nav>
     </div>
 
@@ -42,6 +43,7 @@
           <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
           <a routerLink="/expenses" routerLinkActive="font-semibold !text-green-400" [routerLinkActiveOptions]="{ exact: true }" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
           <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
+          <a routerLink="/settings/units" routerLinkActive="font-semibold !text-green-400" class="text-stone-300 hover:text-white" (click)="closeNav()">{{ 'nav.settings' | translate }}</a>
           <div class="mt-1 flex items-center justify-between border-t border-stone-800 pt-3">
             <app-language-switcher />
             <app-user-menu />

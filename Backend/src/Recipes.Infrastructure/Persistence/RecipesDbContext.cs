@@ -36,6 +36,7 @@ public sealed class RecipesDbContext : DbContext, IRecipesDbContext
     public DbSet<RecipeVariationIngredientOverride> RecipeVariationIngredientOverrides => Set<RecipeVariationIngredientOverride>();
     public DbSet<RecipeRating> RecipeRatings => Set<RecipeRating>();
     public DbSet<CookingLogEntry> CookingLogEntries => Set<CookingLogEntry>();
+    public DbSet<MeasurementUnit> MeasurementUnits => Set<MeasurementUnit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

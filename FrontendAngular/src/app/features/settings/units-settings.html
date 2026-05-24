@@ -1,0 +1,66 @@
+<section class="mx-auto max-w-2xl p-6">
+  <h1 class="mb-6 text-2xl font-semibold">{{ 'settings.units.title' | translate }}</h1>
+
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4">
+    <p class="mb-3 text-sm font-medium text-gray-700">{{ 'settings.units.addUnit' | translate }}</p>
+    <form [formGroup]="addForm" (ngSubmit)="onAdd()" class="flex flex-wrap gap-2">
+      <input
+        formControlName="name"
+        type="text"
+        [placeholder]="'settings.units.namePlaceholder' | translate"
+        class="flex-1 min-w-32 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+      <input
+        formControlName="abbreviation"
+        type="text"
+        [placeholder]="'settings.units.abbreviationPlaceholder' | translate"
+        class="w-24 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      />
+      <button
+        type="submit"
+        [disabled]="addForm.invalid || addState().kind === 'busy'"
+        class="rounded bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+      >
+        {{ addState().kind === 'busy' ? ('common.saving' | translate) : ('common.add' | translate) }}
+      </button>
+    </form>
+    @if (addState().kind === 'error') {
+      <p class="mt-2 text-sm text-red-700">{{ $any(addState()).message }}</p>
+    }
+  </div>
+
+  @if (deleteState().kind === 'error') {
+    <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900" role="alert">
+      {{ $any(deleteState()).message }}
+    </div>
+  }
+
+  @if (units.isLoading()) {
+    <p class="text-gray-500">{{ 'common.loading' | translate }}</p>
+  } @else if (units.error()) {
+    <p class="text-red-700">{{ 'settings.units.failedToLoad' | translate }}</p>
+  } @else if (units.value()?.length === 0) {
+    <div class="rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="text-sm text-gray-500">{{ 'settings.units.empty' | translate }}</p>
+    </div>
+  } @else {
+    <ul class="space-y-2">
+      @for (unit of units.value(); track unit.id) {
+        <li class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
+          <div>
+            <span class="font-medium">{{ unit.name }}</span>
+            <span class="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ unit.abbreviation }}</span>
+          </div>
+          <button
+            type="button"
+            (click)="onDelete(unit.id, unit.name)"
+            [disabled]="deleteState().kind === 'busy'"
+            class="rounded border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+          >
+            {{ 'common.delete' | translate }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

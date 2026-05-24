@@ -17,6 +17,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
+import { UnitsClient } from '../../api/units.client';
 import { ShoppingListDetailsItemDto } from '../../api/shopping-lists.dto';
 import { getErrorMessage } from '../../shared/get-error-message';
 
@@ -48,6 +49,7 @@ export class ShoppingListsDetails {
 
   private readonly client = inject(ShoppingListsClient);
   private readonly mealPlansClient = inject(MealPlansClient);
+  private readonly unitsClient = inject(UnitsClient);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -62,6 +64,10 @@ export class ShoppingListsDetails {
 
   protected readonly mealPlans = rxResource({
     stream: () => this.mealPlansClient.list(),
+  });
+
+  protected readonly units = rxResource({
+    stream: () => this.unitsClient.list(),
   });
 
   protected readonly is404 = computed(() => {

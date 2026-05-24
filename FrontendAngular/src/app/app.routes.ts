@@ -106,6 +106,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
       },
+      {
+        path: 'settings/units',
+        loadComponent: () =>
+          import('./features/settings/units-settings').then((m) => m.UnitsSettings),
+      },
     ],
   },
 ];

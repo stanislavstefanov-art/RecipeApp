@@ -8,6 +8,7 @@
     "shoppingLists": "Shopping lists",
     "expenses": "Expenses",
     "reports": "Reports",
+    "settings": "Settings",
     "tagline": "Recipes, meal plans, shopping, expenses"
   },
   "common": {
@@ -110,7 +111,8 @@
     "uploadImage": "Upload image",
     "deleteImage": "Delete image",
     "confirmDeleteImage": "Delete the recipe image?",
-    "imageUploading": "Uploading…"
+    "imageUploading": "Uploading…",
+    "selectUnit": "Select unit…"
   },
   "households": {
     "title": "Households",
@@ -426,6 +428,17 @@
     "welcomeBack": "Welcome back",
     "welcome": "Create your account",
     "logout": "Log out"
+  },
+  "settings": {
+    "units": {
+      "title": "Measurement units",
+      "addUnit": "Add unit",
+      "namePlaceholder": "e.g. gram",
+      "abbreviationPlaceholder": "e.g. g",
+      "confirmDelete": "Delete unit \"{{name}}\"?",
+      "empty": "No units configured yet.",
+      "failedToLoad": "Failed to load units."
+    }
   },
   "errors": {
     "AI.timeout": "The AI service did not respond in time.",

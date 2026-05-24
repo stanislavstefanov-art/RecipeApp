@@ -87,12 +87,15 @@
           [placeholder]="'shoppingLists.quantityPlaceholder' | translate"
           class="w-24 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
         />
-        <input
+        <select
           formControlName="unit"
-          type="text"
-          [placeholder]="'shoppingLists.unitPlaceholder' | translate"
-          class="w-20 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
-        />
+          class="w-28 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        >
+          <option value="">{{ 'shoppingLists.unitPlaceholder' | translate }}</option>
+          @for (unit of units.value(); track unit.id) {
+            <option [value]="unit.abbreviation">{{ unit.name }} ({{ unit.abbreviation }})</option>
+          }
+        </select>
         <button
           type="submit"
           [disabled]="addItemForm.invalid || addItemState().kind === 'busy'"

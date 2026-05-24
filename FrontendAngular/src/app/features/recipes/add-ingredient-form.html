@@ -46,17 +46,19 @@
 
     <div>
       <label for="ingredient-unit" class="block text-sm font-medium">{{ 'recipes.unit' | translate }}</label>
-      <input
+      <select
         id="ingredient-unit"
-        type="text"
         formControlName="unit"
         class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-      />
+      >
+        <option value="">{{ 'recipes.selectUnit' | translate }}</option>
+        @for (unit of units.value(); track unit.id) {
+          <option [value]="unit.abbreviation">{{ unit.name }} ({{ unit.abbreviation }})</option>
+        }
+      </select>
       @if (form.controls.unit.touched && form.controls.unit.errors; as errors) {
         @if (errors['required']) {
           <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
-        } @else if (errors['maxlength']) {
-          <p class="mt-1 text-sm text-red-600">{{ 'validation.maxLength' | translate:{max: 50} }}</p>
         }
       }
     </div>

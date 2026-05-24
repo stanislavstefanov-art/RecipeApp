@@ -113,6 +113,7 @@ public static class DependencyInjection
         services.AddScoped<IExpenseRepository, ExpenseRepository>();
         services.AddScoped<IPersonRepository, PersonRepository>();
         services.AddScoped<IHouseholdRepository, HouseholdRepository>();
+        services.AddScoped<IMeasurementUnitRepository, MeasurementUnitRepository>();
 
         services.AddScoped<StubRecipeImportService>();
         services.AddScoped<ClaudeRecipeImportService>();

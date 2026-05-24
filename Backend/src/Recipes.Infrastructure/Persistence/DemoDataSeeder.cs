@@ -279,6 +279,22 @@ public sealed class DemoDataSeeder
             new Expense(28.50m,  "EUR", lastMonth.AddDays(20),  ExpenseCategory.Health,        "Pharmacy",                          ExpenseSourceType.Manual,       null,                  stefanovs.Id));
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        _db.MeasurementUnits.AddRange(
+            new MeasurementUnit("gram", "g",       1),
+            new MeasurementUnit("kilogram", "kg",  2),
+            new MeasurementUnit("milliliter", "ml", 3),
+            new MeasurementUnit("liter", "l",      4),
+            new MeasurementUnit("teaspoon", "tsp", 5),
+            new MeasurementUnit("tablespoon", "tbsp", 6),
+            new MeasurementUnit("piece", "pcs",    7),
+            new MeasurementUnit("pinch", "pinch",  8),
+            new MeasurementUnit("cup", "cup",      9),
+            new MeasurementUnit("clove", "cloves", 10),
+            new MeasurementUnit("pack", "pack",    11),
+            new MeasurementUnit("milligram", "mg", 12));
+
+        await _db.SaveChangesAsync(cancellationToken);
     }
 
     private static void AddSharedDinner(MealPlan plan, Recipe recipe, DateOnly date, IReadOnlyList<Person> members)

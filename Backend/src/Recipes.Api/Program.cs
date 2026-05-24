@@ -150,5 +150,6 @@ app.MapHouseholdsEndpoints();
 app.MapAdminEndpoints();
 app.MapCookingLogEndpoints();
 app.MapUserEndpoints();
+app.MapUnitsEndpoints();
 
 app.Run();

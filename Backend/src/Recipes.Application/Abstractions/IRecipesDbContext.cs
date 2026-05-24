@@ -22,6 +22,7 @@ public interface IRecipesDbContext
     DbSet<MealPlanPersonAssignment> MealPlanPersonAssignments { get; }
     DbSet<RecipeVariation> RecipeVariations { get; }
     DbSet<RecipeVariationIngredientOverride> RecipeVariationIngredientOverrides { get; }
+    DbSet<MeasurementUnit> MeasurementUnits { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

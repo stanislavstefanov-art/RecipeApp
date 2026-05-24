@@ -8,7 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormControl,
@@ -21,6 +21,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { UnitsClient } from '../../api/units.client';
 import { extractApiError } from '../../core/api-error';
 
 type SubmitState =
@@ -46,7 +47,12 @@ const INITIAL_VALUES = { name: '', quantity: 1, unit: '' };
 })
 export class AddIngredientForm {
   private readonly client = inject(RecipesClient);
+  private readonly unitsClient = inject(UnitsClient);
   private readonly destroyRef = inject(DestroyRef);
+
+  protected readonly units = rxResource({
+    stream: () => this.unitsClient.list(),
+  });
 
   readonly recipeId = input.required<string>();
   readonly added = output<void>();
