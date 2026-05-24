@@ -44,6 +44,12 @@ export interface ShoppingListDetailsItemDto {
   sourceReferenceId: string | null;
 }
 
+export interface AddManualItemRequest {
+  productName: string;
+  quantity: number;
+  unit: string;
+}
+
 export interface PurchaseWithExpenseRequest {
   amount: number;
   currency: string;

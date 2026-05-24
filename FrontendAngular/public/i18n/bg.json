@@ -283,7 +283,12 @@
     "descriptionOptional": "Описание (незадължително)",
     "selectMealPlanPlaceholder": "Избери план за хранене…",
     "selectHouseholdPlaceholder": "Избери домакинство…",
-    "noItemsYet": "Все още няма артикули."
+    "noItemsYet": "Все още няма артикули.",
+    "addItem": "Добави артикул ръчно",
+    "productNamePlaceholder": "Наименование на продукт",
+    "quantityPlaceholder": "Количество",
+    "unitPlaceholder": "Единица",
+    "itemAdded": "Артикулът е добавен в списъка."
   },
   "expenses": {
     "title": "Разходи",

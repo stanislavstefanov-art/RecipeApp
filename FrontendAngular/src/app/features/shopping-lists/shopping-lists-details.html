@@ -70,6 +70,42 @@
       }
     </div>
 
+    <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4">
+      <p class="mb-2 text-sm font-medium text-gray-700">{{ 'shoppingLists.addItem' | translate }}</p>
+      <form [formGroup]="addItemForm" (ngSubmit)="onAddItem()" class="flex flex-wrap gap-2">
+        <input
+          formControlName="productName"
+          type="text"
+          [placeholder]="'shoppingLists.productNamePlaceholder' | translate"
+          class="flex-1 min-w-36 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        />
+        <input
+          formControlName="quantity"
+          type="number"
+          step="0.01"
+          min="0.01"
+          [placeholder]="'shoppingLists.quantityPlaceholder' | translate"
+          class="w-24 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        />
+        <input
+          formControlName="unit"
+          type="text"
+          [placeholder]="'shoppingLists.unitPlaceholder' | translate"
+          class="w-20 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        />
+        <button
+          type="submit"
+          [disabled]="addItemForm.invalid || addItemState().kind === 'busy'"
+          class="rounded bg-black px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+        >
+          {{ addItemState().kind === 'busy' ? ('common.saving' | translate) : ('common.add' | translate) }}
+        </button>
+      </form>
+      @if (addItemState().kind === 'error') {
+        <p class="mt-2 text-sm text-red-700">{{ $any(addItemState()).message }}</p>
+      }
+    </div>
+
     @if (data.items.length === 0) {
       <div class="rounded border border-gray-200 bg-white p-6 text-center">
         <p class="text-sm text-gray-500">{{ 'shoppingLists.noItemsYet' | translate }}</p>

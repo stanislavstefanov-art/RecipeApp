@@ -115,6 +115,35 @@ export class ShoppingListsDetails {
 
   protected readonly selectedMealPlanId = new FormControl('', { nonNullable: true });
 
+  protected readonly addItemForm = new FormGroup({
+    productName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
+    quantity: new FormControl<number | null>(null, { validators: [Validators.required, Validators.min(0.01)] }),
+    unit: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(50)] }),
+  });
+
+  protected readonly addItemState = signal<GenerateState>({ kind: 'idle' });
+
+  protected onAddItem(): void {
+    if (this.addItemForm.invalid) return;
+    const { productName, quantity, unit } = this.addItemForm.getRawValue();
+    this.addItemState.set({ kind: 'busy' });
+
+    this.client
+      .addManualItem(this.id(), { productName, quantity: quantity!, unit })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.addItemForm.reset();
+          this.addItemState.set({ kind: 'idle' });
+          this._refresh.update(n => n + 1);
+          this.toast.show('success', this.translate.instant('shoppingLists.itemAdded'));
+        },
+        error: (err: unknown) => {
+          this.addItemState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
+        },
+      });
+  }
+
   protected onMarkPending(item: ShoppingListDetailsItemDto): void {
     this.markPendingState.set({ kind: 'busy', itemId: item.id });
     this.client

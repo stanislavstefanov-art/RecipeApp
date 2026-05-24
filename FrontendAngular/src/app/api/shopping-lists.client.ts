@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import {
+  AddManualItemRequest,
   CreateShoppingListRequest,
   CreateShoppingListResponse,
   PurchaseWithExpenseRequest,
@@ -28,6 +29,13 @@ export class ShoppingListsClient {
 
   create(payload: CreateShoppingListRequest): Observable<CreateShoppingListResponse> {
     return this.http.post<CreateShoppingListResponse>(`${API_BASE_URL}/api/shopping-lists`, payload);
+  }
+
+  addManualItem(shoppingListId: string, payload: AddManualItemRequest): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/shopping-lists/${shoppingListId}/items/manual`,
+      payload,
+    );
   }
 
   markPending(shoppingListId: string, itemId: string): Observable<void> {

@@ -283,7 +283,12 @@
     "descriptionOptional": "Description (optional)",
     "selectMealPlanPlaceholder": "Select a meal plan…",
     "selectHouseholdPlaceholder": "Select a household…",
-    "noItemsYet": "No items yet."
+    "noItemsYet": "No items yet.",
+    "addItem": "Add item manually",
+    "productNamePlaceholder": "Product name",
+    "quantityPlaceholder": "Qty",
+    "unitPlaceholder": "Unit",
+    "itemAdded": "Item added to shopping list."
   },
   "expenses": {
     "title": "Expenses",
