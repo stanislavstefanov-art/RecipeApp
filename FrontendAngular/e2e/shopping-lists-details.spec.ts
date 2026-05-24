@@ -67,7 +67,7 @@ test.describe('shopping list details', () => {
     await expect(page.getByRole('heading', { name: 'Weekly Groceries' })).toBeVisible();
     await expect(page.getByText('Milk')).toBeVisible();
     await expect(page.getByText('2 L')).toBeVisible();
-    await expect(page.getByText('Manual')).toBeVisible();
+    await expect(page.getByText('Manual', { exact: true })).toBeVisible();
   });
 
   test('shows empty items message when no items', async ({ page }) => {
@@ -146,6 +146,6 @@ test.describe('shopping list details', () => {
     await page.locator('input[type="date"]').fill('2025-01-15');
     await page.getByRole('button', { name: 'Save purchase' }).click();
 
-    await expect(page.getByText('Purchased')).toBeVisible();
+    await expect(page.getByText('Purchased', { exact: true })).toBeVisible();
   });
 });
