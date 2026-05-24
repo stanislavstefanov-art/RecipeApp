@@ -4,6 +4,12 @@ const LIST_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const ITEM_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 const SHOPPING_LIST_URL = `http://localhost:5106/api/shopping-lists/${LIST_ID}`;
 const MEAL_PLANS_URL = 'http://localhost:5106/api/meal-plans';
+const UNITS_URL = 'http://localhost:5106/api/units';
+
+const STUB_UNITS = [
+  { id: '11111111-1111-1111-1111-111111111111', name: 'liter', abbreviation: 'L', sortOrder: 1 },
+  { id: '22222222-2222-2222-2222-222222222222', name: 'gram', abbreviation: 'g', sortOrder: 2 },
+];
 
 function makeItem(overrides: Record<string, unknown> = {}) {
   return {
@@ -40,10 +46,21 @@ function stubMealPlans(page: import('@playwright/test').Page) {
   });
 }
 
+function stubUnits(page: import('@playwright/test').Page) {
+  return page.route(UNITS_URL, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(STUB_UNITS),
+    });
+  });
+}
+
 test.describe('shopping list details', () => {
   test('renders list name and items', async ({ page }) => {
     await stubShoppingList(page, [makeItem()]);
     await stubMealPlans(page);
+    await stubUnits(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
 
@@ -56,6 +73,7 @@ test.describe('shopping list details', () => {
   test('shows empty items message when no items', async ({ page }) => {
     await stubShoppingList(page, []);
     await stubMealPlans(page);
+    await stubUnits(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
 
@@ -71,6 +89,7 @@ test.describe('shopping list details', () => {
       });
     });
     await stubMealPlans(page);
+    await stubUnits(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
 
@@ -83,6 +102,7 @@ test.describe('shopping list details', () => {
       await route.fulfill({ status: 204 });
     });
     await stubMealPlans(page);
+    await stubUnits(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
 
@@ -114,6 +134,7 @@ test.describe('shopping list details', () => {
       await route.fulfill({ status: 204 });
     });
     await stubMealPlans(page);
+    await stubUnits(page);
 
     await page.goto(`/shopping-lists/${LIST_ID}`);
     await page.getByRole('button', { name: 'Purchase' }).click();

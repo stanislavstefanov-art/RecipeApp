@@ -3,17 +3,20 @@ import { expect, test } from './test';
 const ID = '66666666-6666-6666-6666-666666666666';
 const DETAIL = `http://localhost:5106/api/recipes/${ID}`;
 const INGREDIENTS = `http://localhost:5106/api/recipes/${ID}/ingredients`;
+const UNITS = 'http://localhost:5106/api/units';
+
+const STUB_UNITS = [
+  { id: '11111111-1111-1111-1111-111111111111', name: 'gram', abbreviation: 'g', sortOrder: 1 },
+  { id: '22222222-2222-2222-2222-222222222222', name: 'kilogram', abbreviation: 'kg', sortOrder: 2 },
+];
+
+const EMPTY_RECIPE = { id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null };
 
 test.describe('add ingredient', () => {
   test('empty name shows inline error and issues no request', async ({ page }) => {
     let requested = false;
-    await page.route(DETAIL, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
-      });
-    });
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
+    await page.route(DETAIL, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY_RECIPE) }));
     await page.route(INGREDIENTS, async (route) => {
       requested = true;
       await route.fulfill({ status: 204, body: '' });
@@ -23,7 +26,7 @@ test.describe('add ingredient', () => {
     await page.goto(`/recipes/${ID}`);
     await expect(page.getByText('No ingredients')).toBeVisible();
     await form.getByLabel('Quantity').fill('100');
-    await form.getByLabel('Unit').fill('g');
+    await form.getByLabel('Unit').selectOption('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     await expect(page.getByText('This field is required.')).toBeVisible();
@@ -32,13 +35,8 @@ test.describe('add ingredient', () => {
 
   test('empty unit shows inline error and issues no request', async ({ page }) => {
     let requested = false;
-    await page.route(DETAIL, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
-      });
-    });
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
+    await page.route(DETAIL, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY_RECIPE) }));
     await page.route(INGREDIENTS, async (route) => {
       requested = true;
       await route.fulfill({ status: 204, body: '' });
@@ -49,7 +47,7 @@ test.describe('add ingredient', () => {
     await expect(page.getByText('No ingredients')).toBeVisible();
     await form.getByLabel('Ingredient name').fill('Flour');
     await form.getByLabel('Quantity').fill('100');
-    await form.getByLabel('Unit').fill('');
+    // unit select left at default empty option
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     await expect(page.getByText('This field is required.')).toBeVisible();
@@ -58,13 +56,8 @@ test.describe('add ingredient', () => {
 
   test('quantity of 0 shows inline error and issues no request', async ({ page }) => {
     let requested = false;
-    await page.route(DETAIL, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
-      });
-    });
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
+    await page.route(DETAIL, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY_RECIPE) }));
     await page.route(INGREDIENTS, async (route) => {
       requested = true;
       await route.fulfill({ status: 204, body: '' });
@@ -75,7 +68,7 @@ test.describe('add ingredient', () => {
     await expect(page.getByText('No ingredients')).toBeVisible();
     await form.getByLabel('Ingredient name').fill('Flour');
     await form.getByLabel('Quantity').fill('0');
-    await form.getByLabel('Unit').fill('g');
+    await form.getByLabel('Unit').selectOption('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     await expect(page.getByText('Value must be greater than 0.')).toBeVisible();
@@ -84,6 +77,7 @@ test.describe('add ingredient', () => {
 
   test('on 204 the new ingredient appears and the form resets', async ({ page }) => {
     let getCount = 0;
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
     await page.route(DETAIL, async (route) => {
       getCount += 1;
       const ingredients =
@@ -91,25 +85,12 @@ test.describe('add ingredient', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          id: ID,
-          name: 'Cake',
-          ingredients,
-          steps: [],
-          averageStars: null,
-          ratingCount: 0,
-          ratings: [],
-          myRating: null,
-        }),
+        body: JSON.stringify({ ...EMPTY_RECIPE, ingredients }),
       });
     });
     await page.route(INGREDIENTS, async (route) => {
       expect(route.request().method()).toBe('POST');
-      expect(route.request().postDataJSON()).toEqual({
-        name: 'Flour',
-        quantity: 200,
-        unit: 'g',
-      });
+      expect(route.request().postDataJSON()).toEqual({ name: 'Flour', quantity: 200, unit: 'g' });
       await route.fulfill({ status: 204, body: '' });
     });
 
@@ -119,7 +100,7 @@ test.describe('add ingredient', () => {
 
     await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
-    await page.getByLabel('Unit').fill('g');
+    await page.getByLabel('Unit').selectOption('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     await expect(page.getByText('Flour', { exact: true })).toBeVisible();
@@ -130,29 +111,19 @@ test.describe('add ingredient', () => {
   });
 
   test('on 400 shows a server error and preserves entered values', async ({ page }) => {
-    await page.route(DETAIL, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
-      });
-    });
-    await page.route(INGREDIENTS, async (route) => {
-      await route.fulfill({
-        status: 400,
-        contentType: 'application/problem+json',
-        body: JSON.stringify({
-          title: 'Validation failed',
-          detail: 'Ingredient name already exists.',
-        }),
-      });
-    });
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
+    await page.route(DETAIL, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY_RECIPE) }));
+    await page.route(INGREDIENTS, route => route.fulfill({
+      status: 400,
+      contentType: 'application/problem+json',
+      body: JSON.stringify({ title: 'Validation failed', detail: 'Ingredient name already exists.' }),
+    }));
 
     const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
     await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
-    await page.getByLabel('Unit').fill('g');
+    await page.getByLabel('Unit').selectOption('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     const alert = form.locator('[role="alert"]');
@@ -163,26 +134,19 @@ test.describe('add ingredient', () => {
   });
 
   test('on 500 shows a server error and keeps form interactive', async ({ page }) => {
-    await page.route(DETAIL, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: ID, name: 'Cake', ingredients: [], steps: [], averageStars: null, ratingCount: 0, ratings: [], myRating: null }),
-      });
-    });
-    await page.route(INGREDIENTS, async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/problem+json',
-        body: JSON.stringify({ title: 'Server error' }),
-      });
-    });
+    await page.route(UNITS, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(STUB_UNITS) }));
+    await page.route(DETAIL, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY_RECIPE) }));
+    await page.route(INGREDIENTS, route => route.fulfill({
+      status: 500,
+      contentType: 'application/problem+json',
+      body: JSON.stringify({ title: 'Server error' }),
+    }));
 
     const form = page.locator('app-add-ingredient-form');
     await page.goto(`/recipes/${ID}`);
     await form.getByLabel('Ingredient name').fill('Flour');
     await page.getByLabel('Quantity').fill('200');
-    await page.getByLabel('Unit').fill('g');
+    await page.getByLabel('Unit').selectOption('g');
     await page.getByRole('button', { name: 'Add ingredient' }).click();
 
     const alert = form.locator('[role="alert"]');
