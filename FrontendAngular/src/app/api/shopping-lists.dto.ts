@@ -1,10 +1,13 @@
 export interface ShoppingListItemDto {
   id: string;
-  name: string;
-  quantity?: string;
-  sourceType: number;
-  isPending: boolean;
+  productId: string;
+  productName: string;
+  quantity: number;
+  unit: string;
   isPurchased: boolean;
+  notes: string | null;
+  sourceType: number;
+  sourceReferenceId: string | null;
 }
 
 export interface ShoppingListDto {
@@ -31,11 +34,14 @@ export interface ShoppingListDetailsDto {
 
 export interface ShoppingListDetailsItemDto {
   id: string;
-  name: string;
-  quantity?: string;
-  sourceType: number;
-  isPending: boolean;
+  productId: string;
+  productName: string;
+  quantity: number;
+  unit: string;
   isPurchased: boolean;
+  notes: string | null;
+  sourceType: number;
+  sourceReferenceId: string | null;
 }
 
 export interface PurchaseWithExpenseRequest {

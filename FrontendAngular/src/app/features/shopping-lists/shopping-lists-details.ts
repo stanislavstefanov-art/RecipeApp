@@ -122,7 +122,7 @@ export class ShoppingListsDetails {
         next: () => {
           this.markPendingState.set({ kind: 'idle' });
           this.shoppingList.reload();
-          this.toast.show('success', `"${item.name}" marked as pending`);
+          this.toast.show('success', `"${item.productName}" marked as pending`);
         },
         error: (err: unknown) => {
           this.markPendingState.set({
