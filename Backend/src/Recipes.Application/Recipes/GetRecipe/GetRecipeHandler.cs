@@ -47,8 +47,8 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<R
         return new RecipeDto(
             recipe.Id.Value,
             recipe.Name.Value,
-            recipe.Ingredients.Select(i => new IngredientDto(i.Name, i.Quantity, i.Unit)).ToList(),
-            recipe.Steps.Select(s => new RecipeStepDto(s.Order, s.Instruction)).ToList(),
+            recipe.Ingredients.Select(i => new IngredientDto(i.Id.Value, i.Name, i.Quantity, i.Unit)).ToList(),
+            recipe.Steps.Select(s => new RecipeStepDto(s.Id.Value, s.Order, s.Instruction)).ToList(),
             recipe.AverageStars,
             recipe.RatingCount,
             ratingDtos,

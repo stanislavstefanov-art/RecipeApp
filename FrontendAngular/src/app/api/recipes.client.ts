@@ -58,6 +58,18 @@ export class RecipesClient {
     );
   }
 
+  removeIngredient(recipeId: string, ingredientId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/ingredients/${ingredientId}`,
+    );
+  }
+
+  removeStep(recipeId: string, stepId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/steps/${stepId}`,
+    );
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/recipes/${id}`);
   }

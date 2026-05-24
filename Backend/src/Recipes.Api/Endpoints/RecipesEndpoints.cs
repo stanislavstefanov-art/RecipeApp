@@ -22,6 +22,8 @@ using Recipes.Application.Recipes.UploadRecipeImage;
 using Recipes.Application.Recipes.DeleteRecipeRating;
 using Recipes.Application.Recipes.RateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
+using Recipes.Application.Recipes.RemoveIngredientFromRecipe;
+using Recipes.Application.Recipes.RemoveStepFromRecipe;
 
 namespace Recipes.Api.Endpoints;
 
@@ -88,6 +90,18 @@ public static class RecipesEndpoints
             var result = await sender.Send(
                 new AddStepToRecipeCommand(id, request.Instruction),
                 ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapDelete("/{id:guid}/ingredients/{ingredientId:guid}", async (Guid id, Guid ingredientId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new RemoveIngredientFromRecipeCommand(id, ingredientId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapDelete("/{id:guid}/steps/{stepId:guid}", async (Guid id, Guid stepId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new RemoveStepFromRecipeCommand(id, stepId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 

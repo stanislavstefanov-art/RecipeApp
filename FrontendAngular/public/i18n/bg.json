@@ -64,6 +64,8 @@
     "deleting": "Изтриване…",
     "deleteRecipe": "Изтрий рецептата",
     "confirmDelete": "Изтрий тази рецепта?",
+    "confirmDeleteIngredient": "Изтрий тази съставка?",
+    "confirmDeleteStep": "Изтрий тази стъпка?",
     "importRecipe": "Импортирай рецепта",
     "importText": "Текст за импортиране",
     "importTextPlaceholder": "Постави текст на рецепта тук…",

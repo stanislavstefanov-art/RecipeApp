@@ -83,6 +83,41 @@ export class RecipesDetails {
     this.recipe.reload();
   }
 
+  protected readonly deletingIngredientId = signal<string | null>(null);
+  protected readonly deletingStepId = signal<string | null>(null);
+
+  protected onDeleteIngredient(ingredientId: string): void {
+    if (!window.confirm(this.translate.instant('recipes.confirmDeleteIngredient'))) return;
+
+    this.deletingIngredientId.set(ingredientId);
+    this.client
+      .removeIngredient(this.id(), ingredientId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deletingIngredientId.set(null);
+          this.recipe.reload();
+        },
+        error: () => this.deletingIngredientId.set(null),
+      });
+  }
+
+  protected onDeleteStep(stepId: string): void {
+    if (!window.confirm(this.translate.instant('recipes.confirmDeleteStep'))) return;
+
+    this.deletingStepId.set(stepId);
+    this.client
+      .removeStep(this.id(), stepId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deletingStepId.set(null);
+          this.recipe.reload();
+        },
+        error: () => this.deletingStepId.set(null),
+      });
+  }
+
   protected onDelete(): void {
     if (!window.confirm(this.translate.instant('recipes.confirmDelete'))) {
       return;

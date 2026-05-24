@@ -87,6 +87,28 @@ public sealed class Recipe : Entity
         RaiseDomainEvent(new StepAdded(Id, step.Order, step.Instruction));
     }
 
+    public bool RemoveIngredient(RecipeIngredientId ingredientId)
+    {
+        var ingredient = _ingredients.SingleOrDefault(i => i.Id == ingredientId);
+        if (ingredient is null) return false;
+
+        _ingredients.Remove(ingredient);
+        return true;
+    }
+
+    public bool RemoveStep(RecipeStepId stepId)
+    {
+        var step = _steps.SingleOrDefault(s => s.Id == stepId);
+        if (step is null) return false;
+
+        _steps.Remove(step);
+        var remaining = _steps.OrderBy(s => s.Order).ToList();
+        for (var i = 0; i < remaining.Count; i++)
+            remaining[i].SetOrder(i + 1);
+
+        return true;
+    }
+
     public RecipeVariation AddVariation(
         string name,
         string? notes = null,

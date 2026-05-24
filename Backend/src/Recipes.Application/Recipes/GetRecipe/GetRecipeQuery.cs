@@ -16,6 +16,6 @@ public sealed record RecipeDto(
     RecipeRatingDto? MyRating,
     string? ImageUrl);
 
-public sealed record IngredientDto(string Name, decimal Quantity, string Unit);
+public sealed record IngredientDto(Guid Id, string Name, decimal Quantity, string Unit);
 
-public sealed record RecipeStepDto(int Order, string Instruction);
+public sealed record RecipeStepDto(Guid Id, int Order, string Instruction);

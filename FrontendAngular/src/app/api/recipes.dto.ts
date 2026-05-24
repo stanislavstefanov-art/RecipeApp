@@ -39,12 +39,14 @@ export interface AddStepRequest {
 }
 
 export interface IngredientDto {
+  readonly id: string;
   readonly name: string;
   readonly quantity: number;
   readonly unit: string;
 }
 
 export interface RecipeStepDto {
+  readonly id: string;
   readonly order: number;
   readonly instruction: string;
 }

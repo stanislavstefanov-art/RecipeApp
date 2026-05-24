@@ -64,6 +64,8 @@
     "deleting": "Deleting…",
     "deleteRecipe": "Delete recipe",
     "confirmDelete": "Delete this recipe?",
+    "confirmDeleteIngredient": "Delete this ingredient?",
+    "confirmDeleteStep": "Delete this step?",
     "importRecipe": "Import recipe",
     "importText": "Text to import",
     "importTextPlaceholder": "Paste recipe text here…",
