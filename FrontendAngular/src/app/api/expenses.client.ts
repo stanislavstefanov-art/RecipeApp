@@ -7,6 +7,7 @@ import {
   CreateExpenseResponse,
   ExpenseDto,
   ExpenseInsightDto,
+  ExtractedReceiptDto,
   MonthlyExpenseReportDto,
 } from './expenses.dto';
 
@@ -40,5 +41,11 @@ export class ExpensesClient {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/expenses/${id}`);
+  }
+
+  extractReceipt(file: File): Observable<ExtractedReceiptDto> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<ExtractedReceiptDto>(`${API_BASE_URL}/api/expenses/extract-receipt`, form);
   }
 }

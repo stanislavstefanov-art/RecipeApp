@@ -40,3 +40,10 @@ export interface ExpenseInsightDto {
   month: number;
   insights: string[];
 }
+
+export interface ExtractedReceiptDto {
+  readonly amount: number | null;
+  readonly currency: string | null;
+  readonly date: string | null;
+  readonly merchantName: string | null;
+}

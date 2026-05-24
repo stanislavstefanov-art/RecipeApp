@@ -25,6 +25,7 @@
   "RecipeBatchAnalysis":   { "Provider": "Stub" },
   "RecipeDraftReview":     { "Provider": "Stub" },
   "ExpenseInsight":        { "Provider": "Stub" },
+  "ReceiptExtraction":     { "Provider": "Stub" },
 
   "Claude": {
     "Model": "claude-haiku-4-5-20251001",

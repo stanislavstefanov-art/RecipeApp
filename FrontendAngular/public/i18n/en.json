@@ -342,7 +342,9 @@
     "selectCategory": "Select…",
     "optionalNote": "Optional note…",
     "descriptionOptional": "Description (optional)",
-    "loadInsights": "Loading insights…"
+    "loadInsights": "Loading insights…",
+    "scanReceipt": "Scan receipt",
+    "scanningReceipt": "Scanning…"
   },
   "validation": {
     "required": "This field is required.",

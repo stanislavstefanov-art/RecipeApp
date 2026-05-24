@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recipes.Application.Abstractions;
 using Recipes.Application.Common.AI;
+using Recipes.Application.Expenses.ExtractReceipt;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.MealPlans.PlanningWorkflow;
@@ -30,6 +31,7 @@ using Recipes.Infrastructure.Telemetry;
 using Recipes.Infrastructure.AI.Claude.Assets;
 using Recipes.Infrastructure.AI.Claude.Clients;
 using Recipes.Infrastructure.AI.Claude.Services;
+using Recipes.Infrastructure.AI.Azure;
 using Recipes.Infrastructure.AI.Claude.Services.Stubs;
 using Recipes.Infrastructure.Events;
 using Recipes.Infrastructure.Options;
@@ -82,6 +84,10 @@ public static class DependencyInjection
         services.Configure<BlobStorageOptions>(options =>
         {
             configuration.GetSection(BlobStorageOptions.SectionName).Bind(options);
+        });
+        services.Configure<ReceiptExtractionOptions>(options =>
+        {
+            configuration.GetSection(ReceiptExtractionOptions.SectionName).Bind(options);
         });
 
         var dbProvider = configuration["Database:Provider"] ?? "SqlServer";
@@ -227,6 +233,20 @@ public static class DependencyInjection
             {
                 "Claude" => sp.GetRequiredService<ClaudeRecipeDraftReviewService>(),
                 _ => sp.GetRequiredService<StubRecipeDraftReviewService>()
+            };
+        });
+
+        services.AddScoped<StubReceiptExtractionService>();
+        services.AddScoped<AzureReceiptExtractionService>();
+        services.AddScoped<IReceiptExtractionService>(sp =>
+        {
+            var options = sp.GetRequiredService<
+                Microsoft.Extensions.Options.IOptions<ReceiptExtractionOptions>>().Value;
+
+            return options.Provider switch
+            {
+                "Azure" => sp.GetRequiredService<AzureReceiptExtractionService>(),
+                _ => sp.GetRequiredService<StubReceiptExtractionService>()
             };
         });
 

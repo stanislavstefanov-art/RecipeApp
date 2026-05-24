@@ -16,6 +16,11 @@ type SubmitState =
   | { readonly kind: 'submitting' }
   | { readonly kind: 'error'; readonly message: string };
 
+type ScanState =
+  | { readonly kind: 'idle' }
+  | { readonly kind: 'scanning' }
+  | { readonly kind: 'error'; readonly message: string };
+
 type DeleteState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'deleting'; readonly id: string }
@@ -69,6 +74,13 @@ export class ExpensesList {
   });
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
+  protected readonly scanState = signal<ScanState>({ kind: 'idle' });
+
+  protected readonly isScanning = computed(() => this.scanState().kind === 'scanning');
+  protected readonly scanError = computed(() => {
+    const s = this.scanState();
+    return s.kind === 'error' ? s.message : '';
+  });
 
   private readonly deleteState = signal<DeleteState>({ kind: 'idle' });
 
@@ -93,6 +105,31 @@ export class ExpensesList {
         error: (err: unknown) => {
           this.deleteState.set({ kind: 'error', id, message: getErrorMessage(err, this.translate, 'Failed to delete') });
           this.toast.show('error', getErrorMessage(err, this.translate, 'Failed to delete'));
+        },
+      });
+  }
+
+  protected onScanReceipt(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    input.value = '';
+    this.scanState.set({ kind: 'scanning' });
+
+    this.client
+      .extractReceipt(file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.scanState.set({ kind: 'idle' });
+          if (result.amount != null) this.createForm.controls.amount.setValue(String(result.amount));
+          if (result.currency) this.createForm.controls.currency.setValue(result.currency);
+          if (result.date) this.createForm.controls.expenseDate.setValue(result.date);
+          if (result.merchantName) this.createForm.controls.description.setValue(result.merchantName);
+        },
+        error: (err: unknown) => {
+          this.scanState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to scan receipt') });
         },
       });
   }

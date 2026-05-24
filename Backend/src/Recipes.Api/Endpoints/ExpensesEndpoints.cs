@@ -2,6 +2,7 @@ using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Expenses.CreateExpense;
 using Recipes.Application.Expenses.DeleteExpense;
+using Recipes.Application.Expenses.ExtractReceipt;
 using Recipes.Application.Expenses.GetExpenseInsights;
 using Recipes.Application.Expenses.GetMonthlyExpenseReport;
 using Recipes.Application.Expenses.ListExpenses;
@@ -56,6 +57,23 @@ public static class ExpensesEndpoints
             var result = await sender.Send(new DeleteExpenseCommand(expenseId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
+
+        group.MapPost("/extract-receipt", async (IFormFile file, ISender sender, CancellationToken ct) =>
+        {
+            const long maxBytes = 10 * 1024 * 1024;
+            if (file.Length > maxBytes)
+                return Results.BadRequest("File exceeds maximum size of 10 MB.");
+
+            var allowed = new[] { "image/jpeg", "image/png", "image/webp", "application/pdf" };
+            if (!allowed.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+                return Results.BadRequest("Only JPEG, PNG, WebP, and PDF files are accepted.");
+
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms, ct);
+
+            var result = await sender.Send(new ExtractReceiptCommand(ms.ToArray(), file.ContentType), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        }).DisableAntiforgery();
 
         return app;
     }

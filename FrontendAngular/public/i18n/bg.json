@@ -342,7 +342,9 @@
     "selectCategory": "Избери…",
     "optionalNote": "Незадължителна бележка…",
     "descriptionOptional": "Описание (незадължително)",
-    "loadInsights": "Зареждане на анализ…"
+    "loadInsights": "Зареждане на анализ…",
+    "scanReceipt": "Сканирай касова бележка",
+    "scanningReceipt": "Сканиране…"
   },
   "cookingLog": {
     "title": "История на готвене",
