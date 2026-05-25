@@ -1,11 +1,18 @@
 import { expect, test } from './test';
 
 const EXPENSES_URL = 'http://localhost:5106/api/expenses';
+const HOUSEHOLDS_URL = 'http://localhost:5106/api/households';
 
 const EXPENSE_ID = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
+const HOUSEHOLD_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+const SINGLE_HOUSEHOLD = [{ id: HOUSEHOLD_ID, name: 'Home', memberCount: 1 }];
 
 test.describe('expenses list', () => {
   test('renders list of expenses', async ({ page }) => {
+    await page.route(HOUSEHOLDS_URL, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(SINGLE_HOUSEHOLD) });
+    });
     await page.route(EXPENSES_URL, async (route) => {
       await route.fulfill({
         status: 200,
@@ -32,6 +39,9 @@ test.describe('expenses list', () => {
   });
 
   test('shows empty state when no expenses', async ({ page }) => {
+    await page.route(HOUSEHOLDS_URL, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(SINGLE_HOUSEHOLD) });
+    });
     await page.route(EXPENSES_URL, async (route) => {
       await route.fulfill({
         status: 200,
@@ -46,6 +56,9 @@ test.describe('expenses list', () => {
   });
 
   test('creates a new expense and shows it', async ({ page }) => {
+    await page.route(HOUSEHOLDS_URL, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(SINGLE_HOUSEHOLD) });
+    });
     let callCount = 0;
     await page.route(EXPENSES_URL, async (route) => {
       if (route.request().method() === 'POST') {
@@ -81,13 +94,16 @@ test.describe('expenses list', () => {
     await page.getByPlaceholder('0.00').fill('5');
     await page.getByPlaceholder('USD').fill('EUR');
     await page.locator('input[type="date"]').fill('2025-02-01');
-    await page.locator('select').selectOption('2');
+    await page.locator('select#expense-category').selectOption('2');
     await page.getByRole('button', { name: 'Add expense' }).click();
 
     await expect(page.locator('ul').getByText('Transport', { exact: true })).toBeVisible();
   });
 
   test('monthly report link is visible', async ({ page }) => {
+    await page.route(HOUSEHOLDS_URL, async (route) => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(SINGLE_HOUSEHOLD) });
+    });
     await page.route(EXPENSES_URL, async (route) => {
       await route.fulfill({
         status: 200,

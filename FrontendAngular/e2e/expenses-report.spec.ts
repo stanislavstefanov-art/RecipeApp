@@ -25,7 +25,7 @@ test.describe('expenses report', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ year: 2025, month: 3, insights: ['Food spending up 20%'] }),
+        body: JSON.stringify({ summary: 'Monthly analysis.', keyFindings: ['Food spending up 20%'], recommendations: [], confidence: 0.8, needsReview: false, notes: null }),
       });
     });
 
@@ -57,11 +57,7 @@ test.describe('expenses report', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          year: 2025,
-          month: 3,
-          insights: ['You spent more on food this month.'],
-        }),
+        body: JSON.stringify({ summary: 'Monthly analysis.', keyFindings: ['You spent more on food this month.'], recommendations: [], confidence: 0.8, needsReview: false, notes: null }),
       });
     });
 
@@ -85,7 +81,7 @@ test.describe('expenses report', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ year: 2025, month: 1, insights: [] }),
+        body: JSON.stringify({ summary: '', keyFindings: [], recommendations: [], confidence: 0, needsReview: false, notes: null }),
       });
     });
 
