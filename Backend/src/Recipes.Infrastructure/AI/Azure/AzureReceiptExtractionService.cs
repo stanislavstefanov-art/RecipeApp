@@ -45,7 +45,8 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
         var result = operation.Value;
         var doc = result.Documents.FirstOrDefault();
         if (doc is null)
-            return new ExtractedReceiptDto(null, null, null, null);
+            throw new InvalidOperationException(
+                "No receipt was recognized in the image. Make sure the photo shows a clear, readable receipt.");
 
         decimal? amount = null;
         string? currency = null;

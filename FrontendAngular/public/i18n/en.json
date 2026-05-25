@@ -345,7 +345,8 @@
     "loadInsights": "Loading insights…",
     "scanReceipt": "Scan receipt",
     "scanningReceipt": "Scanning…",
-    "scanFileTooLarge": "Image is too large. Maximum size is 4 MB."
+    "scanFileTooLarge": "Image is too large. Maximum size is 4 MB.",
+    "scanNoReceipt": "No receipt was recognized. Make sure the photo shows a clear, readable receipt."
   },
   "validation": {
     "required": "This field is required.",
