@@ -257,13 +257,13 @@
                     <tr class="border-t border-gray-100">
                       <td class="px-3 py-1.5">{{ item.description }}</td>
                       <td class="px-3 py-1.5 text-right text-gray-600">
-                        {{ item.quantity != null ? (item.quantity | number: '1.0-3') : '—' }}
+                        {{ item.quantity !== null ? (item.quantity | number: '1.0-3') : '—' }}
                       </td>
                       <td class="px-3 py-1.5 text-right text-gray-600">
-                        {{ item.unitPrice != null ? (item.unitPrice | number: '1.2-2') : '—' }}
+                        {{ item.unitPrice !== null ? (item.unitPrice | number: '1.2-2') : '—' }}
                       </td>
                       <td class="px-3 py-1.5 text-right font-medium">
-                        {{ item.totalPrice != null ? (item.totalPrice | number: '1.2-2') : '—' }}
+                        {{ item.totalPrice !== null ? (item.totalPrice | number: '1.2-2') : '—' }}
                       </td>
                     </tr>
                   }
