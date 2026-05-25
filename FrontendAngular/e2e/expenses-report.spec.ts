@@ -30,8 +30,8 @@ test.describe('expenses report', () => {
     });
 
     await page.goto('/expenses/report');
-    await page.locator('input[type="number"]').first().fill('2025');
-    await page.locator('input[type="number"]').last().fill('3');
+    await page.locator('#report-year').fill('2025');
+    await page.locator('#report-month').selectOption('3');
     await page.getByRole('button', { name: 'Load' }).click();
 
     await expect(page.getByText('250.00 USD')).toBeVisible();
@@ -62,8 +62,8 @@ test.describe('expenses report', () => {
     });
 
     await page.goto('/expenses/report');
-    await page.locator('input[type="number"]').first().fill('2025');
-    await page.locator('input[type="number"]').last().fill('3');
+    await page.locator('#report-year').fill('2025');
+    await page.locator('#report-month').selectOption('3');
     await page.getByRole('button', { name: 'Load' }).click();
 
     await expect(page.getByText('You spent more on food this month.')).toBeVisible();

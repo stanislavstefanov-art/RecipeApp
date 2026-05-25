@@ -22,14 +22,15 @@
     </div>
     <div>
       <label for="report-month" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.month' | translate }}</label>
-      <input
+      <select
         id="report-month"
         [formControl]="queryForm.controls.month"
-        type="number"
-        min="1"
-        max="12"
-        class="w-20 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
-      />
+        class="rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      >
+        @for (m of months(); track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+        }
+      </select>
     </div>
     <button
       type="submit"

@@ -1,10 +1,11 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, resource, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom, map } from 'rxjs';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ExpensesClient } from '../../api/expenses.client';
 
@@ -18,22 +19,36 @@ import { ExpensesClient } from '../../api/expenses.client';
 })
 export class ExpensesReport {
   private readonly client = inject(ExpensesClient);
+  private readonly translate = inject(TranslateService);
 
   private readonly now = new Date();
+
+  private readonly lang = toSignal(
+    this.translate.onLangChange.pipe(map((e) => e.lang)),
+    { initialValue: this.translate.currentLang ?? 'en' },
+  );
+
+  protected readonly months = computed(() => {
+    const lang = this.lang();
+    return Array.from({ length: 12 }, (_, i) => ({
+      value: i + 1,
+      label: new Intl.DateTimeFormat(lang, { month: 'long' }).format(new Date(2000, i, 1)),
+    }));
+  });
 
   protected readonly query = signal({
     year: this.now.getFullYear(),
     month: this.now.getMonth() + 1,
   });
 
-  protected readonly report = rxResource({
+  protected readonly report = resource({
     params: () => this.query(),
-    stream: ({ params }) => this.client.monthlyReport(params.year, params.month),
+    loader: ({ params }) => firstValueFrom(this.client.monthlyReport(params.year, params.month)),
   });
 
-  protected readonly insights = rxResource({
+  protected readonly insights = resource({
     params: () => this.query(),
-    stream: ({ params }) => this.client.insights(params.year, params.month),
+    loader: ({ params }) => firstValueFrom(this.client.insights(params.year, params.month)),
   });
 
   protected readonly queryForm = new FormGroup({
@@ -50,6 +65,6 @@ export class ExpensesReport {
   protected onSubmit(): void {
     if (this.queryForm.invalid) return;
     const { year, month } = this.queryForm.getRawValue();
-    this.query.set({ year, month });
+    this.query.set({ year: +year, month: +month });
   }
 }
