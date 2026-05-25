@@ -26,6 +26,7 @@ test.describe('expenses list', () => {
             category: 1,
             description: 'Groceries run',
             sourceType: 1,
+            items: [],
           },
         ]),
       });
@@ -80,6 +81,7 @@ test.describe('expenses list', () => {
                   expenseDate: '2025-02-01',
                   category: 2,
                   sourceType: 1,
+                  items: [],
                 },
               ];
         await route.fulfill({
