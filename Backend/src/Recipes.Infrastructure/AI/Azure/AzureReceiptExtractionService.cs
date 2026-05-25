@@ -66,18 +66,26 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
         string? date = null;
         string? merchantName = null;
 
-        if (doc.Fields.TryGetValue("Total", out var totalField)
-            && totalField.FieldType == DocumentFieldType.Currency)
+        if (doc.Fields.TryGetValue("Total", out var totalField))
         {
-            var cv = totalField.Value.AsCurrency();
-            amount = (decimal)cv.Amount;
-            // Prefer the ISO code embedded in the currency value; fall back to the
-            // top-level "Currency" string field below if the code is absent.
-            if (!string.IsNullOrWhiteSpace(cv.Symbol))
-                currency = CurrencySymbolToCode(cv.Symbol);
+            if (totalField.FieldType == DocumentFieldType.Currency)
+            {
+                var cv = totalField.Value.AsCurrency();
+                amount = (decimal)cv.Amount;
+                if (!string.IsNullOrWhiteSpace(cv.Symbol))
+                    currency = CurrencySymbolToCode(cv.Symbol);
+            }
+            else if (totalField.FieldType == DocumentFieldType.Double)
+            {
+                amount = (decimal)totalField.Value.AsDouble();
+                // Try to derive the currency symbol from the raw content (e.g. "$31.3").
+                var content = totalField.Content?.Trim();
+                if (!string.IsNullOrEmpty(content))
+                    currency = CurrencySymbolToCode(ExtractLeadingSymbol(content));
+            }
         }
 
-        // Top-level "Currency" field (ISO code) overrides the symbol-derived value.
+        // Top-level "Currency" field (ISO code) overrides any symbol-derived value.
         if (doc.Fields.TryGetValue("Currency", out var currencyField)
             && currencyField.FieldType == DocumentFieldType.String)
         {
@@ -103,6 +111,18 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
                 "The receipt was found but no data could be extracted. Try a clearer or better-lit photo.");
 
         return new ExtractedReceiptDto(amount, currency, date, merchantName);
+    }
+
+    // Returns the leading non-digit, non-space prefix of a string like "$31.3" → "$".
+    private static string ExtractLeadingSymbol(string content)
+    {
+        var sb = new System.Text.StringBuilder();
+        foreach (var c in content)
+        {
+            if (char.IsDigit(c) || c == '.' || c == ',') break;
+            sb.Append(c);
+        }
+        return sb.ToString().Trim();
     }
 
     private static string CurrencySymbolToCode(string symbol) => symbol.Trim() switch
