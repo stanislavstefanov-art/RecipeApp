@@ -48,7 +48,7 @@ test.describe('persons create', () => {
     await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByRole('button', { name: 'Create' }).click();
 
-    await expect(page.getByText('This field is required.')).toBeVisible();
+    await expect(page.getByText('This field is required.').first()).toBeVisible();
     expect(requested).toBe(false);
   });
 
@@ -85,6 +85,8 @@ test.describe('persons create', () => {
     await page.getByLabel('Vegetarian').check();
     await page.getByLabel('Vegan').check();
     await page.getByLabel('Diabetes').check();
+    await page.getByLabel('Date of birth').fill('2000-01-01');
+    await page.getByLabel('Gender').selectOption('1');
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page).toHaveURL('/persons');
@@ -109,6 +111,8 @@ test.describe('persons create', () => {
     await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Bob');
     await page.getByLabel('Notes').fill('Prefers spicy food.');
+    await page.getByLabel('Date of birth').fill('1990-05-15');
+    await page.getByLabel('Gender').selectOption('2');
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page).toHaveURL('/persons');
@@ -130,6 +134,8 @@ test.describe('persons create', () => {
     await page.goto('/persons/new');
     await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Date of birth').fill('1990-01-01');
+    await page.getByLabel('Gender').selectOption('1');
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page.getByRole('alert')).toContainText('Name is required.');
@@ -152,6 +158,8 @@ test.describe('persons create', () => {
     await page.goto('/persons/new');
     await page.waitForResponse(HOUSEHOLDS_API);
     await page.getByLabel('Name').fill('Alice');
+    await page.getByLabel('Date of birth').fill('1990-01-01');
+    await page.getByLabel('Gender').selectOption('1');
     await page.getByRole('button', { name: 'Create' }).click();
 
     await expect(page.getByRole('alert')).toBeVisible();
