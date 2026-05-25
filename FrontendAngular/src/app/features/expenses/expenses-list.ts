@@ -188,7 +188,7 @@ export class ExpensesList {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.createForm.reset({ currency: 'USD' });
+          this.createForm.reset({ currency: 'USD', householdId: this.singleHousehold()?.id ?? '' });
           this.submitState.set({ kind: 'idle' });
           this.expenses.reload();
           this.toast.show('success', this.translate.instant('expenses.expenseRecorded'));
