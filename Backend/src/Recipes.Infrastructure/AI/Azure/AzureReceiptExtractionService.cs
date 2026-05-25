@@ -160,6 +160,14 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
                     totalPrice = (decimal)totalPriceField.Value.AsDouble();
             }
 
+            // Single-unit items have no printed multiplier — Azure omits Quantity and Price.
+            // Infer them so the UI never shows dashes for a clean single-unit receipt line.
+            if (quantity is null && unitPrice is null && totalPrice is not null)
+            {
+                quantity = 1m;
+                unitPrice = totalPrice;
+            }
+
             if (description is not null)
                 result.Add(new ExtractedReceiptItemDto(description, quantity, unitPrice, totalPrice));
         }
