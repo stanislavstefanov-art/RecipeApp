@@ -1,5 +1,6 @@
 using Azure;
 using Azure.AI.FormRecognizer.DocumentAnalysis;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recipes.Application.Expenses.ExtractReceipt;
 using Recipes.Infrastructure.Options;
@@ -9,13 +10,17 @@ namespace Recipes.Infrastructure.AI.Azure;
 public sealed class AzureReceiptExtractionService : IReceiptExtractionService
 {
     private readonly DocumentAnalysisClient _client;
+    private readonly ILogger<AzureReceiptExtractionService> _logger;
 
-    public AzureReceiptExtractionService(IOptions<ReceiptExtractionOptions> options)
+    public AzureReceiptExtractionService(
+        IOptions<ReceiptExtractionOptions> options,
+        ILogger<AzureReceiptExtractionService> logger)
     {
         var opts = options.Value;
         _client = new DocumentAnalysisClient(
             new Uri(opts.Endpoint),
             new AzureKeyCredential(opts.ApiKey));
+        _logger = logger;
     }
 
     public async Task<ExtractedReceiptDto> ExtractAsync(Stream imageStream, string contentType, CancellationToken cancellationToken)
@@ -45,8 +50,16 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
         var result = operation.Value;
         var doc = result.Documents.FirstOrDefault();
         if (doc is null)
+        {
+            _logger.LogWarning("Azure DI returned no documents for the uploaded image.");
             throw new InvalidOperationException(
                 "No receipt was recognized in the image. Make sure the photo shows a clear, readable receipt.");
+        }
+
+        // Log every field so we can diagnose extraction issues in Application Insights.
+        foreach (var (key, field) in doc.Fields)
+            _logger.LogInformation("ReceiptField {Key}: type={Type} value={Value}",
+                key, field.FieldType, field.Content);
 
         decimal? amount = null;
         string? currency = null;
