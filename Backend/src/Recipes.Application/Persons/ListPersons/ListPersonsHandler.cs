@@ -29,6 +29,8 @@ public sealed class ListPersonsHandler
             x.Name,
             x.DietaryPreferences.Select(y => (int)y).ToList(),
             x.HealthConcerns.Select(y => (int)y).ToList(),
-            x.Notes)).ToList();
+            x.Notes,
+            x.DateOfBirth,
+            x.Gender.HasValue ? (int)x.Gender.Value : null)).ToList();
     }
 }

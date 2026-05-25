@@ -5,4 +5,6 @@ public sealed record PersonDetailsDto(
     string Name,
     IReadOnlyList<int> DietaryPreferences,
     IReadOnlyList<int> HealthConcerns,
-    string? Notes);
+    string? Notes,
+    DateOnly? DateOfBirth,
+    int? Gender);

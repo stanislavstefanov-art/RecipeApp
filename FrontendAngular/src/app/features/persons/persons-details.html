@@ -34,6 +34,23 @@
     }
 
     <div class="space-y-5 rounded-xl border border-gray-200 bg-white p-6">
+      @if (data.dateOfBirth || data.gender) {
+        <div class="flex gap-6">
+          @if (data.dateOfBirth) {
+            <div>
+              <p class="text-sm font-medium text-gray-700">{{ 'persons.age' | translate }}</p>
+              <p class="mt-1 text-sm text-gray-600">{{ 'persons.yearsOld' | translate:{ age: age(data.dateOfBirth) } }}</p>
+            </div>
+          }
+          @if (data.gender) {
+            <div>
+              <p class="text-sm font-medium text-gray-700">{{ 'persons.gender' | translate }}</p>
+              <p class="mt-1 text-sm text-gray-600">{{ 'enums.gender.' + data.gender | translate }}</p>
+            </div>
+          }
+        </div>
+      }
+
       <div>
         <p class="text-sm font-medium text-gray-700">{{ 'persons.dietaryPreferences' | translate }}</p>
         @if (data.dietaryPreferences.length === 0) {

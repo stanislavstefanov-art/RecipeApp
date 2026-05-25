@@ -37,7 +37,9 @@ public sealed class CreatePersonHandler
             request.DietaryPreferences.Select(x => (DietaryPreference)x),
             request.HealthConcerns.Select(x => (HealthConcern)x),
             request.Notes,
-            householdId);
+            householdId,
+            request.DateOfBirth,
+            request.Gender.HasValue ? (Domain.Enums.Gender)request.Gender.Value : null);
 
         await _personRepository.AddAsync(person, cancellationToken);
         await _personRepository.SaveChangesAsync(cancellationToken);

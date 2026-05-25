@@ -37,6 +37,13 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
         builder.HasIndex(x => x.HouseholdId)
             .HasFilter("[HouseholdId] IS NOT NULL");
 
+        builder.Property(x => x.DateOfBirth)
+            .IsRequired(false);
+
+        builder.Property(x => x.Gender)
+            .HasConversion<int?>()
+            .IsRequired(false);
+
         builder.Property<List<DietaryPreference>>("_dietaryPreferences")
             .HasColumnName("DietaryPreferences")
             .HasConversion(

@@ -59,6 +59,8 @@ export class PersonsCreate {
       nonNullable: true,
       validators: [Validators.maxLength(1000)],
     }),
+    dateOfBirth: new FormControl('', { nonNullable: true }),
+    gender: new FormControl('', { nonNullable: true }),
   });
 
   private readonly householdsState = signal<HouseholdsState>({ kind: 'loading' });
@@ -131,6 +133,8 @@ export class PersonsCreate {
         dietaryPreferences,
         healthConcerns,
         notes: v.notes || undefined,
+        dateOfBirth: v.dateOfBirth || undefined,
+        gender: v.gender ? parseInt(v.gender, 10) : undefined,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

@@ -4,6 +4,8 @@ export interface PersonDto {
   readonly dietaryPreferences: readonly number[];
   readonly healthConcerns: readonly number[];
   readonly notes?: string;
+  readonly dateOfBirth?: string;
+  readonly gender?: number;
 }
 
 export interface CreatePersonRequest {
@@ -12,6 +14,8 @@ export interface CreatePersonRequest {
   readonly healthConcerns: readonly number[];
   readonly notes?: string;
   readonly householdId: string;
+  readonly dateOfBirth?: string;
+  readonly gender?: number;
 }
 
 export interface CreatePersonResponse {
@@ -25,4 +29,6 @@ export interface PersonDetailsDto {
   readonly dietaryPreferences: readonly number[];
   readonly healthConcerns: readonly number[];
   readonly notes?: string;
+  readonly dateOfBirth?: string;
+  readonly gender?: number;
 }

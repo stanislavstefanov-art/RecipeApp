@@ -165,7 +165,12 @@
     "notesPlaceholder": "Допълнителни бележки…",
     "householdId": "Домакинство",
     "selectHouseholdPlaceholder": "Изберете домакинство…",
-    "noHouseholdsForCreate": "Необходимо е домакинство, за да добавите лице."
+    "noHouseholdsForCreate": "Необходимо е домакинство, за да добавите лице.",
+    "dateOfBirth": "Дата на раждане",
+    "gender": "Пол",
+    "selectGender": "Изберете…",
+    "age": "Възраст",
+    "yearsOld": "{{age}} години"
   },
   "mealPlans": {
     "title": "Планове за хранене",
@@ -422,6 +427,11 @@
       "cloves":"скилидка",
       "pack":  "пакет",
       "mg":    "милиграм"
+    },
+    "gender": {
+      "1": "Мъж",
+      "2": "Жена",
+      "3": "Друго"
     },
     "dietaryPreference": {
       "1": "Вегетарианец",

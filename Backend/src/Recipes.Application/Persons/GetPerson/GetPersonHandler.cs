@@ -35,6 +35,8 @@ public sealed class GetPersonHandler
             person.Name,
             person.DietaryPreferences.Select(x => (int)x).ToList(),
             person.HealthConcerns.Select(x => (int)x).ToList(),
-            person.Notes);
+            person.Notes,
+            person.DateOfBirth,
+            person.Gender.HasValue ? (int)person.Gender.Value : null);
     }
 }

@@ -61,6 +61,15 @@ export class PersonsDetails {
     return s.kind === 'error' ? s.message : '';
   });
 
+  protected age(dateOfBirth: string): number {
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+    return age;
+  }
+
   protected onDelete(): void {
     const confirmed = window.confirm(this.translate.instant('persons.confirmDelete'));
     if (!confirmed) return;
