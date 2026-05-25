@@ -56,14 +56,21 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
         if (doc.Fields.TryGetValue("Total", out var totalField)
             && totalField.FieldType == DocumentFieldType.Currency)
         {
-            var currencyValue = totalField.Value.AsCurrency();
-            amount = (decimal)currencyValue.Amount;
+            var cv = totalField.Value.AsCurrency();
+            amount = (decimal)cv.Amount;
+            // Prefer the ISO code embedded in the currency value; fall back to the
+            // top-level "Currency" string field below if the code is absent.
+            if (!string.IsNullOrWhiteSpace(cv.Symbol))
+                currency = CurrencySymbolToCode(cv.Symbol);
         }
 
+        // Top-level "Currency" field (ISO code) overrides the symbol-derived value.
         if (doc.Fields.TryGetValue("Currency", out var currencyField)
             && currencyField.FieldType == DocumentFieldType.String)
         {
-            currency = currencyField.Value.AsString();
+            var code = currencyField.Value.AsString();
+            if (!string.IsNullOrWhiteSpace(code))
+                currency = code;
         }
 
         if (doc.Fields.TryGetValue("TransactionDate", out var dateField)
@@ -78,6 +85,20 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
             merchantName = merchantField.Value.AsString();
         }
 
+        if (amount is null && date is null && merchantName is null)
+            throw new InvalidOperationException(
+                "The receipt was found but no data could be extracted. Try a clearer or better-lit photo.");
+
         return new ExtractedReceiptDto(amount, currency, date, merchantName);
     }
+
+    private static string CurrencySymbolToCode(string symbol) => symbol.Trim() switch
+    {
+        "$"  => "USD",
+        "€"  => "EUR",
+        "£"  => "GBP",
+        "¥"  => "JPY",
+        "лв" => "BGN",
+        _    => symbol,   // already a code or unknown symbol — pass through
+    };
 }
