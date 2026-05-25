@@ -1,18 +1,122 @@
 @import "tailwindcss";
 
-/* Warm & Earthy theme — remap the green palette to amber so every existing
-   bg-green-* / text-green-* / border-green-* utility renders as amber
-   without touching individual component templates. */
+/* ─── Theme palettes ──────────────────────────────────────────────────────── */
+
+:root {
+  /* Warm & Earthy (amber) — default */
+  --brand-50:  #fffbeb;
+  --brand-100: #fef3c7;
+  --brand-200: #fde68a;
+  --brand-300: #fcd34d;
+  --brand-400: #fbbf24;
+  --brand-500: #f59e0b;
+  --brand-600: #d97706;
+  --brand-700: #b45309;
+  --brand-800: #92400e;
+  --brand-900: #78350f;
+  --brand-950: #451a03;
+
+  --shell-bg:           #fffbeb;
+  --shell-header-from:  #451a03;
+  --shell-header-to:    #78350f;
+  --shell-nav-text:     #fde68a;
+  --shell-nav-active:   #fbbf24;
+  --shell-tagline:      #fcd34d;
+  --shell-border:       #92400e;
+  --shell-mob-border:   #78350f;
+}
+
+[data-theme="fresh"] {
+  /* Fresh & Green (emerald) */
+  --brand-50:  #ecfdf5;
+  --brand-100: #d1fae5;
+  --brand-200: #a7f3d0;
+  --brand-300: #6ee7b7;
+  --brand-400: #34d399;
+  --brand-500: #10b981;
+  --brand-600: #059669;
+  --brand-700: #047857;
+  --brand-800: #065f46;
+  --brand-900: #064e3b;
+  --brand-950: #022c22;
+
+  --shell-bg:           #ecfdf5;
+  --shell-header-from:  #022c22;
+  --shell-header-to:    #064e3b;
+  --shell-nav-text:     #a7f3d0;
+  --shell-nav-active:   #34d399;
+  --shell-tagline:      #6ee7b7;
+  --shell-border:       #065f46;
+  --shell-mob-border:   #064e3b;
+}
+
+[data-theme="indigo"] {
+  /* Indigo Modern */
+  --brand-50:  #eef2ff;
+  --brand-100: #e0e7ff;
+  --brand-200: #c7d2fe;
+  --brand-300: #a5b4fc;
+  --brand-400: #818cf8;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-800: #3730a3;
+  --brand-900: #312e81;
+  --brand-950: #1e1b4b;
+
+  --shell-bg:           #eef2ff;
+  --shell-header-from:  #1e1b4b;
+  --shell-header-to:    #312e81;
+  --shell-nav-text:     #c7d2fe;
+  --shell-nav-active:   #818cf8;
+  --shell-tagline:      #a5b4fc;
+  --shell-border:       #3730a3;
+  --shell-mob-border:   #312e81;
+}
+
+/* ─── Wire the built-in green palette to the active brand variables ─────── */
+/* Every bg-green-* / text-green-* / border-green-* utility across all
+   templates automatically tracks the current theme at runtime.             */
 @theme {
-  --color-green-50:  #fffbeb;
-  --color-green-100: #fef3c7;
-  --color-green-200: #fde68a;
-  --color-green-300: #fcd34d;
-  --color-green-400: #fbbf24;
-  --color-green-500: #f59e0b;
-  --color-green-600: #d97706;
-  --color-green-700: #b45309;
-  --color-green-800: #92400e;
-  --color-green-900: #78350f;
-  --color-green-950: #451a03;
+  --color-green-50:  var(--brand-50);
+  --color-green-100: var(--brand-100);
+  --color-green-200: var(--brand-200);
+  --color-green-300: var(--brand-300);
+  --color-green-400: var(--brand-400);
+  --color-green-500: var(--brand-500);
+  --color-green-600: var(--brand-600);
+  --color-green-700: var(--brand-700);
+  --color-green-800: var(--brand-800);
+  --color-green-900: var(--brand-900);
+  --color-green-950: var(--brand-950);
+}
+
+/* ─── Shell utilities ─────────────────────────────────────────────────────── */
+/* Used only in app.html so the shell colours change with the theme.        */
+@utility bg-shell {
+  background-color: var(--shell-bg);
+}
+
+@utility bg-header {
+  background: linear-gradient(to right, var(--shell-header-from), var(--shell-header-to));
+}
+
+@utility text-nav {
+  color: var(--shell-nav-text);
+}
+
+@utility text-nav-active {
+  color: var(--shell-nav-active);
+}
+
+@utility text-shell-tagline {
+  color: var(--shell-tagline);
+}
+
+@utility border-shell {
+  border-color: var(--shell-border);
+}
+
+@utility border-shell-mob {
+  border-color: var(--shell-mob-border);
 }

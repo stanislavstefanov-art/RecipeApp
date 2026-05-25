@@ -1,13 +1,14 @@
-<div class="min-h-screen bg-amber-50">
-  <header class="sticky top-0 z-50 bg-gradient-to-r from-amber-950 to-amber-900">
+<div class="min-h-screen bg-shell">
+  <header class="sticky top-0 z-50 bg-header">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
       <div>
         <a routerLink="/" class="text-lg font-semibold text-white sm:text-xl">RecipeApp</a>
-        <p class="text-xs text-amber-300 sm:text-sm">{{ 'nav.tagline' | translate }}</p>
+        <p class="text-xs text-shell-tagline sm:text-sm">{{ 'nav.tagline' | translate }}</p>
       </div>
 
       <div class="flex items-center gap-3">
         <div class="hidden md:flex md:items-center md:gap-3">
+          <app-theme-switcher />
           <app-language-switcher />
           <app-user-menu />
         </div>
@@ -15,38 +16,41 @@
         <button
           type="button"
           (click)="toggleNav()"
-          class="rounded-lg border border-amber-800 px-3 py-2 text-sm text-amber-200 md:hidden"
+          class="rounded-lg border border-shell px-3 py-2 text-sm text-nav md:hidden"
         >
           {{ isNavOpen() ? ('common.close' | translate) : ('common.menu' | translate) }}
         </button>
       </div>
 
       <nav class="hidden gap-5 text-sm md:flex">
-        <a routerLink="/households" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.households' | translate }}</a>
-        <a routerLink="/persons" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.persons' | translate }}</a>
-        <a routerLink="/recipes" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.recipes' | translate }}</a>
-        <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
-        <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
-        <a routerLink="/expenses" routerLinkActive="font-semibold !text-amber-400" [routerLinkActiveOptions]="{ exact: true }" class="text-amber-200 hover:text-white">{{ 'nav.expenses' | translate }}</a>
-        <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.reports' | translate }}</a>
-        <a routerLink="/settings/units" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white">{{ 'nav.settings' | translate }}</a>
+        <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.households' | translate }}</a>
+        <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.persons' | translate }}</a>
+        <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.recipes' | translate }}</a>
+        <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
+        <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
+        <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white">{{ 'nav.expenses' | translate }}</a>
+        <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.reports' | translate }}</a>
+        <a routerLink="/settings/units" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.settings' | translate }}</a>
       </nav>
     </div>
 
     @if (isNavOpen()) {
-      <nav class="border-t border-amber-900 bg-amber-950 px-4 py-3 md:hidden sm:px-6">
+      <nav class="border-t border-shell-mob bg-header px-4 py-3 md:hidden sm:px-6">
         <div class="flex flex-col gap-3 text-sm">
-          <a routerLink="/households" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.households' | translate }}</a>
-          <a routerLink="/persons" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.persons' | translate }}</a>
-          <a routerLink="/recipes" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.recipes' | translate }}</a>
-          <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.mealPlans' | translate }}</a>
-          <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
-          <a routerLink="/expenses" routerLinkActive="font-semibold !text-amber-400" [routerLinkActiveOptions]="{ exact: true }" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
-          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
-          <a routerLink="/settings/units" routerLinkActive="font-semibold !text-amber-400" class="text-amber-200 hover:text-white" (click)="closeNav()">{{ 'nav.settings' | translate }}</a>
-          <div class="mt-1 flex items-center justify-between border-t border-amber-900 pt-3">
-            <app-language-switcher />
-            <app-user-menu />
+          <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.households' | translate }}</a>
+          <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.persons' | translate }}</a>
+          <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.recipes' | translate }}</a>
+          <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.mealPlans' | translate }}</a>
+          <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
+          <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
+          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
+          <a routerLink="/settings/units" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.settings' | translate }}</a>
+          <div class="mt-1 flex items-center justify-between border-t border-shell-mob pt-3">
+            <app-theme-switcher />
+            <div class="flex items-center gap-3">
+              <app-language-switcher />
+              <app-user-menu />
+            </div>
           </div>
         </div>
       </nav>
