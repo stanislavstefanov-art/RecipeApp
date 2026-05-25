@@ -14,9 +14,11 @@ public sealed class ExpenseRepository : IExpenseRepository
         _dbContext = dbContext;
     }
 
+    private IQueryable<Expense> WithItems() => _dbContext.Expenses.Include(x => x.Items);
+
     public async Task<Expense?> GetByIdAsync(ExpenseId id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Expenses.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+        return await WithItems().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
     public async Task AddAsync(Expense expense, CancellationToken cancellationToken = default)
@@ -26,7 +28,7 @@ public sealed class ExpenseRepository : IExpenseRepository
 
     public async Task<IReadOnlyList<Expense>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Expenses
+        return await WithItems()
             .OrderByDescending(x => x.ExpenseDate)
             .ThenByDescending(x => x.Amount)
             .ToListAsync(cancellationToken);
@@ -39,7 +41,7 @@ public sealed class ExpenseRepository : IExpenseRepository
         // EF Core can't translate any operation against a nullable strongly-typed
         // ID with a value conversion — filter client-side. Volumes are small.
         var ids = householdIds.Select(h => h.Value).ToHashSet();
-        var all = await _dbContext.Expenses.ToListAsync(cancellationToken);
+        var all = await WithItems().ToListAsync(cancellationToken);
         return all
             .Where(x => x.HouseholdId.HasValue && ids.Contains(x.HouseholdId.Value.Value))
             .OrderByDescending(x => x.ExpenseDate)
@@ -49,7 +51,7 @@ public sealed class ExpenseRepository : IExpenseRepository
 
     public async Task<IReadOnlyList<Expense>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Expenses
+        return await WithItems()
             .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
             .OrderByDescending(x => x.ExpenseDate)
             .ThenByDescending(x => x.Amount)
@@ -65,7 +67,7 @@ public sealed class ExpenseRepository : IExpenseRepository
         // Keep the year/month filter server-side (translates fine), apply the
         // nullable strongly-typed HouseholdId filter client-side (see notes above).
         var ids = householdIds.Select(h => h.Value).ToHashSet();
-        var monthRows = await _dbContext.Expenses
+        var monthRows = await WithItems()
             .Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month)
             .ToListAsync(cancellationToken);
         return monthRows

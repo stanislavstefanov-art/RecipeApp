@@ -51,7 +51,8 @@ public sealed class GetExpenseInsightsHandler
             (int)x.Category,
             x.Description,
             (int)x.SourceType,
-            x.SourceReferenceId)).ToList();
+            x.SourceReferenceId,
+            [])).ToList();
 
         var input = new ExpenseInsightInputDto(
             monthlyReportResult.Value,

@@ -19,6 +19,10 @@ public static class ExpensesEndpoints
 
         group.MapPost("/", async (CreateExpenseRequest request, ISender sender, CancellationToken ct) =>
         {
+            var items = request.Items?
+                .Select(i => new CreateExpenseItemDto(i.Description, i.Quantity, i.UnitPrice, i.TotalPrice))
+                .ToList();
+
             var result = await sender.Send(
                 new CreateExpenseCommand(
                     request.Amount,
@@ -28,7 +32,8 @@ public static class ExpensesEndpoints
                     request.Description,
                     request.SourceType,
                     request.SourceReferenceId,
-                    request.HouseholdId),
+                    request.HouseholdId,
+                    items),
                 ct);
 
             return result.ToHttpResult(response => Results.Created($"/api/expenses/{response.Id}", response));
@@ -87,4 +92,11 @@ public sealed record CreateExpenseRequest(
     string? Description,
     int SourceType,
     Guid? SourceReferenceId,
-    Guid HouseholdId);
+    Guid HouseholdId,
+    IReadOnlyList<CreateExpenseItemRequest>? Items = null);
+
+public sealed record CreateExpenseItemRequest(
+    string Description,
+    decimal? Quantity,
+    decimal? UnitPrice,
+    decimal? TotalPrice);

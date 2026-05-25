@@ -26,6 +26,7 @@ public sealed class RecipesDbContext : DbContext, IRecipesDbContext
     public DbSet<MealPlan> MealPlans => Set<MealPlan>();
     public DbSet<MealPlanEntry> MealPlanEntries => Set<MealPlanEntry>();
     public DbSet<Expense> Expenses => Set<Expense>();
+    public DbSet<ReceiptItem> ReceiptItems => Set<ReceiptItem>();
     public DbSet<Person> Persons => Set<Person>();
     public DbSet<Household> Households => Set<Household>();
     public DbSet<PersonMembership> PersonMemberships => Set<PersonMembership>();

@@ -113,7 +113,58 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
             throw new InvalidOperationException(
                 "The receipt was found but no data could be extracted. Try a clearer or better-lit photo.");
 
-        return new ExtractedReceiptDto(amount, currency, date, merchantName);
+        var items = ExtractItems(doc);
+
+        return new ExtractedReceiptDto(amount, currency, date, merchantName, items);
+    }
+
+    private static IReadOnlyList<ExtractedReceiptItemDto> ExtractItems(AnalyzedDocument doc)
+    {
+        var result = new List<ExtractedReceiptItemDto>();
+
+        if (!doc.Fields.TryGetValue("Items", out var itemsField)
+            || itemsField.FieldType != DocumentFieldType.List)
+            return result;
+
+        foreach (var itemField in itemsField.Value.AsList())
+        {
+            if (itemField.FieldType != DocumentFieldType.Dictionary) continue;
+            var dict = itemField.Value.AsDictionary();
+
+            string? description = null;
+            decimal? quantity = null;
+            decimal? unitPrice = null;
+            decimal? totalPrice = null;
+
+            if (dict.TryGetValue("Description", out var descField)
+                && descField.FieldType == DocumentFieldType.String)
+                description = descField.Value.AsString();
+
+            if (dict.TryGetValue("Quantity", out var qtyField)
+                && qtyField.FieldType == DocumentFieldType.Double)
+                quantity = (decimal)qtyField.Value.AsDouble();
+
+            if (dict.TryGetValue("Price", out var priceField))
+            {
+                if (priceField.FieldType == DocumentFieldType.Currency)
+                    unitPrice = (decimal)priceField.Value.AsCurrency().Amount;
+                else if (priceField.FieldType == DocumentFieldType.Double)
+                    unitPrice = (decimal)priceField.Value.AsDouble();
+            }
+
+            if (dict.TryGetValue("TotalPrice", out var totalPriceField))
+            {
+                if (totalPriceField.FieldType == DocumentFieldType.Currency)
+                    totalPrice = (decimal)totalPriceField.Value.AsCurrency().Amount;
+                else if (totalPriceField.FieldType == DocumentFieldType.Double)
+                    totalPrice = (decimal)totalPriceField.Value.AsDouble();
+            }
+
+            if (description is not null)
+                result.Add(new ExtractedReceiptItemDto(description, quantity, unitPrice, totalPrice));
+        }
+
+        return result;
     }
 
     // Returns the leading non-digit, non-space prefix of a string like "$31.3" → "$".

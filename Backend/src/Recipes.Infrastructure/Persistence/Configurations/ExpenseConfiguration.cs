@@ -54,5 +54,10 @@ public sealed class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
 
         builder.HasIndex(x => x.ExpenseDate);
         builder.HasIndex(x => x.Category);
+
+        builder.HasMany(x => x.Items)
+            .WithOne()
+            .HasForeignKey(i => i.ExpenseId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

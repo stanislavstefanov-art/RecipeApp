@@ -349,7 +349,14 @@
     "scanReceipt": "Scan receipt",
     "scanningReceipt": "Scanning…",
     "scanFileTooLarge": "Image is too large. Maximum size is 4 MB.",
-    "scanNoReceipt": "No receipt was recognized. Make sure the photo shows a clear, readable receipt."
+    "scanNoReceipt": "No receipt was recognized. Make sure the photo shows a clear, readable receipt.",
+    "receiptItems": "Receipt items",
+    "itemDescription": "Description",
+    "itemQty": "Qty",
+    "itemUnitPrice": "Unit price",
+    "itemTotal": "Total",
+    "showItems": "{{count}} items",
+    "hideItems": "Hide items"
   },
   "validation": {
     "required": "This field is required.",

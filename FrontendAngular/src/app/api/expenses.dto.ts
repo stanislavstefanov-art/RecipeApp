@@ -1,3 +1,11 @@
+export interface ExpenseItemDto {
+  id: string;
+  description: string;
+  quantity: number | null;
+  unitPrice: number | null;
+  totalPrice: number | null;
+}
+
 export interface ExpenseDto {
   id: string;
   amount: number;
@@ -6,6 +14,14 @@ export interface ExpenseDto {
   category: number;
   description?: string;
   sourceType: number;
+  items: ExpenseItemDto[];
+}
+
+export interface CreateExpenseItemRequest {
+  description: string;
+  quantity: number | null;
+  unitPrice: number | null;
+  totalPrice: number | null;
 }
 
 export interface CreateExpenseRequest {
@@ -16,6 +32,7 @@ export interface CreateExpenseRequest {
   category: number;
   description?: string;
   sourceType: 1;
+  items?: CreateExpenseItemRequest[];
 }
 
 export interface CreateExpenseResponse {
@@ -49,9 +66,17 @@ export interface ExpenseInsightDto {
   notes: string | null;
 }
 
+export interface ExtractedReceiptItemDto {
+  readonly description: string;
+  readonly quantity: number | null;
+  readonly unitPrice: number | null;
+  readonly totalPrice: number | null;
+}
+
 export interface ExtractedReceiptDto {
   readonly amount: number | null;
   readonly currency: string | null;
   readonly date: string | null;
   readonly merchantName: string | null;
+  readonly items: ExtractedReceiptItemDto[];
 }

@@ -42,6 +42,17 @@ public sealed class CreateExpenseHandler
             request.SourceReferenceId,
             householdId);
 
+        if (request.Items is { Count: > 0 })
+        {
+            var items = request.Items.Select(i => new Domain.Entities.ReceiptItem(
+                expense.Id,
+                i.Description,
+                i.Quantity,
+                i.UnitPrice,
+                i.TotalPrice));
+            expense.SetItems(items);
+        }
+
         await _expenseRepository.AddAsync(expense, cancellationToken);
         await _expenseRepository.SaveChangesAsync(cancellationToken);
 

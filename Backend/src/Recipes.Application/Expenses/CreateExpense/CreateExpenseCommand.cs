@@ -11,4 +11,11 @@ public sealed record CreateExpenseCommand(
     string? Description,
     int SourceType,
     Guid? SourceReferenceId,
-    Guid HouseholdId) : IRequest<ErrorOr<CreateExpenseResponse>>;
+    Guid HouseholdId,
+    IReadOnlyList<CreateExpenseItemDto>? Items = null) : IRequest<ErrorOr<CreateExpenseResponse>>;
+
+public sealed record CreateExpenseItemDto(
+    string Description,
+    decimal? Quantity,
+    decimal? UnitPrice,
+    decimal? TotalPrice);

@@ -16,6 +16,9 @@ public sealed class Expense : Entity
     public ExpenseSourceType SourceType { get; private set; }
     public Guid? SourceReferenceId { get; private set; }
 
+    private readonly List<ReceiptItem> _items = [];
+    public IReadOnlyList<ReceiptItem> Items => _items;
+
     private Expense() { }
 
     public Expense(
@@ -46,6 +49,12 @@ public sealed class Expense : Entity
             Category,
             SourceType,
             SourceReferenceId));
+    }
+
+    public void SetItems(IEnumerable<ReceiptItem> items)
+    {
+        _items.Clear();
+        _items.AddRange(items);
     }
 
     public void UpdateDescription(string? description)

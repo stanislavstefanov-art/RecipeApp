@@ -32,6 +32,12 @@ public sealed class ListExpensesHandler
             (int)x.Category,
             x.Description,
             (int)x.SourceType,
-            x.SourceReferenceId)).ToList();
+            x.SourceReferenceId,
+            x.Items.Select(i => new ExpenseItemDto(
+                i.Id.Value,
+                i.Description,
+                i.Quantity,
+                i.UnitPrice,
+                i.TotalPrice)).ToList())).ToList();
     }
 }
