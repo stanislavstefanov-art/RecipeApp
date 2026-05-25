@@ -59,8 +59,8 @@ export class PersonsCreate {
       nonNullable: true,
       validators: [Validators.maxLength(1000)],
     }),
-    dateOfBirth: new FormControl('', { nonNullable: true }),
-    gender: new FormControl('', { nonNullable: true }),
+    dateOfBirth: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    gender: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
   private readonly householdsState = signal<HouseholdsState>({ kind: 'loading' });

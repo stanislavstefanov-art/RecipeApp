@@ -125,32 +125,32 @@
 
     <div class="flex gap-3">
       <div class="flex-1">
-        <label for="dateOfBirth" class="block text-sm font-medium">
-          {{ 'persons.dateOfBirth' | translate }}
-          <span class="font-normal text-gray-400">{{ 'persons.optional' | translate }}</span>
-        </label>
+        <label for="dateOfBirth" class="block text-sm font-medium">{{ 'persons.dateOfBirth' | translate }}</label>
         <input
           id="dateOfBirth"
           type="date"
           formControlName="dateOfBirth"
           class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
         />
+        @if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.errors?.['required']) {
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
+        }
       </div>
       <div class="flex-1">
-        <label for="gender" class="block text-sm font-medium">
-          {{ 'persons.gender' | translate }}
-          <span class="font-normal text-gray-400">{{ 'persons.optional' | translate }}</span>
-        </label>
+        <label for="gender" class="block text-sm font-medium">{{ 'persons.gender' | translate }}</label>
         <select
           id="gender"
           formControlName="gender"
           class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
         >
-          <option value="">{{ 'persons.selectGender' | translate }}</option>
+          <option value="" disabled>{{ 'persons.selectGender' | translate }}</option>
           <option value="1">{{ 'enums.gender.1' | translate }}</option>
           <option value="2">{{ 'enums.gender.2' | translate }}</option>
           <option value="3">{{ 'enums.gender.3' | translate }}</option>
         </select>
+        @if (form.controls.gender.touched && form.controls.gender.errors?.['required']) {
+          <p class="mt-1 text-sm text-red-600">{{ 'validation.required' | translate }}</p>
+        }
       </div>
     </div>
 

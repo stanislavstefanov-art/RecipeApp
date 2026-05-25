@@ -16,11 +16,13 @@ public sealed class CreatePersonValidator : AbstractValidator<CreatePersonComman
         RuleFor(x => x.Notes).MaximumLength(1000);
         RuleFor(x => x.HouseholdId).NotEmpty();
         RuleFor(x => x.DateOfBirth)
+            .NotNull()
             .Must(d => d == null || d.Value <= DateOnly.FromDateTime(DateTime.UtcNow))
             .WithMessage("Date of birth cannot be in the future.")
             .Must(d => d == null || d.Value.Year >= 1900)
             .WithMessage("Date of birth is not plausible.");
         RuleFor(x => x.Gender)
+            .NotNull()
             .Must(g => g == null || Enum.IsDefined(typeof(Gender), g))
             .WithMessage("Invalid gender value.");
     }

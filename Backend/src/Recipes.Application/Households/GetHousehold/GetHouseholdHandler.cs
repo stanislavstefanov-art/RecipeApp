@@ -53,14 +53,15 @@ public sealed class GetHouseholdHandler
             .Select(m =>
             {
                 personsById.TryGetValue(m.PersonId, out var person);
-
-                return new HouseholdMemberDto(
-                    m.PersonId.Value,
-                    person?.Name ?? m.PersonId.Value.ToString(),
-                    person?.DietaryPreferences.Select(x => (int)x).ToList() ?? [],
-                    person?.HealthConcerns.Select(x => (int)x).ToList() ?? [],
-                    person?.Notes);
+                return (member: m, person);
             })
+            .Where(x => x.person is not null)
+            .Select(x => new HouseholdMemberDto(
+                x.member.PersonId.Value,
+                x.person!.Name,
+                x.person.DietaryPreferences.Select(p => (int)p).ToList(),
+                x.person.HealthConcerns.Select(p => (int)p).ToList(),
+                x.person.Notes))
             .OrderBy(x => x.PersonName)
             .ToList();
 
