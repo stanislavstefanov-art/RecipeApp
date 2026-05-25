@@ -195,8 +195,9 @@ export class ExpensesList {
           this.scanState.set({ kind: 'idle' });
           if (result.amount != null) this.createForm.controls.amount.setValue(String(result.amount));
           if (result.currency) this.createForm.controls.currency.setValue(result.currency);
-          if (result.date) this.createForm.controls.expenseDate.setValue(result.date);
+          this.createForm.controls.expenseDate.setValue(result.date ?? new Date().toISOString().slice(0, 10));
           if (result.merchantName) this.createForm.controls.description.setValue(result.merchantName);
+          if (!this.createForm.controls.category.value) this.createForm.controls.category.setValue('1');
 
           this.itemsForm.clear();
           for (const item of result.items ?? []) {
