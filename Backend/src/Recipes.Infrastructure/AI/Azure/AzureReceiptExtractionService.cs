@@ -20,11 +20,27 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
 
     public async Task<ExtractedReceiptDto> ExtractAsync(Stream imageStream, string contentType, CancellationToken cancellationToken)
     {
-        var operation = await _client.AnalyzeDocumentAsync(
-            WaitUntil.Completed,
-            "prebuilt-receipt",
-            imageStream,
-            cancellationToken: cancellationToken);
+        // Ensure the stream is at the beginning in case it was read earlier.
+        if (imageStream.CanSeek)
+            imageStream.Seek(0, SeekOrigin.Begin);
+
+        AnalyzeDocumentOperation operation;
+        try
+        {
+            operation = await _client.AnalyzeDocumentAsync(
+                WaitUntil.Completed,
+                "prebuilt-receipt",
+                imageStream,
+                cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex)
+        {
+            throw new InvalidOperationException(
+                ex.ErrorCode == "InvalidContentLength"
+                    ? "The image is too large for the receipt scanner (maximum 4 MB for the free tier)."
+                    : $"Receipt extraction failed: {ex.Message}",
+                ex);
+        }
 
         var result = operation.Value;
         var doc = result.Documents.FirstOrDefault();

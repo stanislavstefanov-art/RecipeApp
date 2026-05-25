@@ -60,9 +60,9 @@ public static class ExpensesEndpoints
 
         group.MapPost("/extract-receipt", async (IFormFile file, ISender sender, CancellationToken ct) =>
         {
-            const long maxBytes = 10 * 1024 * 1024;
+            const long maxBytes = 4 * 1024 * 1024;
             if (file.Length > maxBytes)
-                return Results.BadRequest("File exceeds maximum size of 10 MB.");
+                return Results.BadRequest("File exceeds the maximum size of 4 MB (Azure Document Intelligence free tier limit).");
 
             var allowed = new[] { "image/jpeg", "image/png", "image/webp", "application/pdf" };
             if (!allowed.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))

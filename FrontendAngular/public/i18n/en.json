@@ -344,7 +344,8 @@
     "descriptionOptional": "Description (optional)",
     "loadInsights": "Loading insights…",
     "scanReceipt": "Scan receipt",
-    "scanningReceipt": "Scanning…"
+    "scanningReceipt": "Scanning…",
+    "scanFileTooLarge": "Image is too large. Maximum size is 4 MB."
   },
   "validation": {
     "required": "This field is required.",

@@ -14,8 +14,14 @@ public sealed class ExtractReceiptHandler : IRequestHandler<ExtractReceiptComman
 
     public async Task<ErrorOr<ExtractedReceiptDto>> Handle(ExtractReceiptCommand request, CancellationToken cancellationToken)
     {
-        using var stream = new MemoryStream(request.ImageBytes);
-        var result = await _service.ExtractAsync(stream, request.ContentType, cancellationToken);
-        return result;
+        try
+        {
+            using var stream = new MemoryStream(request.ImageBytes);
+            return await _service.ExtractAsync(stream, request.ContentType, cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Error.Failure("ReceiptExtraction.Failed", ex.Message);
+        }
     }
 }

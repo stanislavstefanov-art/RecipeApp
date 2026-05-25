@@ -344,7 +344,8 @@
     "descriptionOptional": "Описание (незадължително)",
     "loadInsights": "Зареждане на анализ…",
     "scanReceipt": "Сканирай касова бележка",
-    "scanningReceipt": "Сканиране…"
+    "scanningReceipt": "Сканиране…",
+    "scanFileTooLarge": "Изображението е твърде голямо. Максималният размер е 4 MB."
   },
   "cookingLog": {
     "title": "История на готвене",

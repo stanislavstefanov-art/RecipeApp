@@ -115,6 +115,16 @@ export class ExpensesList {
     if (!file) return;
 
     input.value = '';
+
+    const maxBytes = 4 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.scanState.set({
+        kind: 'error',
+        message: this.translate.instant('expenses.scanFileTooLarge'),
+      });
+      return;
+    }
+
     this.scanState.set({ kind: 'scanning' });
 
     this.client
