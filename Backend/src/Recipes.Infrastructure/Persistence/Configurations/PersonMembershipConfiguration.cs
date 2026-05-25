@@ -33,5 +33,10 @@ public sealed class PersonMembershipConfiguration : IEntityTypeConfiguration<Per
 
         builder.HasIndex(x => new { x.HouseholdId, x.PersonId })
             .IsUnique();
+
+        builder.HasOne<Person>()
+            .WithMany()
+            .HasForeignKey(x => x.PersonId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
