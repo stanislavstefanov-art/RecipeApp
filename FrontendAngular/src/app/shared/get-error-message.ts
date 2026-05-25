@@ -29,13 +29,14 @@ export function getErrorMessage(
         }
       }
 
+      // Field-level validation errors are more specific than the generic title.
+      if (data.errors) {
+        const messages = Object.values(data.errors).flat();
+        if (messages.length > 0) return messages.join(' ');
+      }
+
       if (data.detail) return data.detail;
       if (data.title) return data.title;
-
-      if (data.errors) {
-        const firstMessages = Object.values(data.errors).flat();
-        if (firstMessages.length > 0) return firstMessages[0];
-      }
     }
 
     if (typeof data === 'string' && data) return data;

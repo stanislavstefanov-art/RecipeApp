@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -87,6 +87,15 @@ export class ExpensesList {
     const list = this.households.value();
     return list?.length === 1 ? list[0] : null;
   });
+
+  constructor() {
+    effect(() => {
+      const single = this.singleHousehold();
+      if (single) {
+        this.createForm.controls.householdId.setValue(single.id);
+      }
+    });
+  }
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
   protected readonly scanState = signal<ScanState>({ kind: 'idle' });
