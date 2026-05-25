@@ -1,0 +1,22 @@
+<section class="mx-auto max-w-2xl p-6">
+  <h1 class="mb-6 text-2xl font-semibold">{{ 'nav.settings' | translate }}</h1>
+
+  <nav class="mb-6 flex gap-1 border-b border-gray-200">
+    <a
+      routerLink="appearance"
+      routerLinkActive="border-b-2 border-green-600 text-green-700 font-medium"
+      class="-mb-px px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+    >
+      {{ 'settings.tabs.appearance' | translate }}
+    </a>
+    <a
+      routerLink="units"
+      routerLinkActive="border-b-2 border-green-600 text-green-700 font-medium"
+      class="-mb-px px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+    >
+      {{ 'settings.tabs.units' | translate }}
+    </a>
+  </nav>
+
+  <router-outlet />
+</section>

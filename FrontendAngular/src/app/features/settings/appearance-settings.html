@@ -1,0 +1,53 @@
+<div class="space-y-8">
+  <!-- Theme -->
+  <div>
+    <h2 class="mb-4 text-base font-medium text-gray-800">{{ 'settings.appearance.theme' | translate }}</h2>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      @for (t of themes; track t.id) {
+        <button
+          type="button"
+          (click)="themeService.set(t.id)"
+          class="flex flex-col items-center gap-3 rounded-xl border-2 p-4 transition-all hover:shadow-md"
+          [class.border-green-600]="themeService.current() === t.id"
+          [class.ring-2]="themeService.current() === t.id"
+          [class.ring-green-200]="themeService.current() === t.id"
+          [class.border-gray-200]="themeService.current() !== t.id"
+          [attr.aria-pressed]="themeService.current() === t.id"
+        >
+          <div class="flex gap-1.5">
+            @for (swatch of t.swatches; track swatch) {
+              <span
+                class="h-7 w-7 rounded-full border border-black/10"
+                [style.background-color]="swatch"
+              ></span>
+            }
+          </div>
+          <span class="text-sm font-medium text-gray-700">{{ t.labelKey | translate }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Language -->
+  <div>
+    <h2 class="mb-4 text-base font-medium text-gray-800">{{ 'settings.appearance.language' | translate }}</h2>
+    <div class="flex gap-2">
+      @for (lang of languages; track lang.code) {
+        <button
+          type="button"
+          (click)="langService.set(lang.code)"
+          class="rounded-full border px-5 py-2 text-sm font-medium transition-colors"
+          [class.bg-green-600]="langService.current() === lang.code"
+          [class.text-white]="langService.current() === lang.code"
+          [class.border-green-600]="langService.current() === lang.code"
+          [class.border-gray-300]="langService.current() !== lang.code"
+          [class.text-gray-700]="langService.current() !== lang.code"
+          [class.hover:bg-gray-50]="langService.current() !== lang.code"
+          [attr.aria-pressed]="langService.current() === lang.code"
+        >
+          {{ lang.label }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

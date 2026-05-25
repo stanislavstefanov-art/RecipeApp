@@ -1,6 +1,4 @@
-<section class="mx-auto max-w-2xl p-6">
-  <h1 class="mb-6 text-2xl font-semibold">{{ 'settings.units.title' | translate }}</h1>
-
+<div>
   <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4">
     <p class="mb-3 text-sm font-medium text-gray-700">{{ 'settings.units.addUnit' | translate }}</p>
     <form [formGroup]="addForm" (ngSubmit)="onAdd()" class="flex flex-wrap gap-2">
@@ -63,4 +61,4 @@
       }
     </ul>
   }
-</section>
+</div>

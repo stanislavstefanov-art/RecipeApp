@@ -3,14 +3,13 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Toast } from './shared/ui/toast';
-import { LanguageSwitcher } from './shared/ui/language-switcher/language-switcher';
 import { UserMenu } from './shared/ui/user-menu/user-menu';
-import { ThemeSwitcher } from './shared/ui/theme-switcher/theme-switcher';
 import { ThemeService } from './core/theme.service';
+import { LanguageService } from './core/language.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Toast, TranslateModule, LanguageSwitcher, UserMenu, ThemeSwitcher],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Toast, TranslateModule, UserMenu],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +19,7 @@ export class App {
 
   constructor() {
     inject(ThemeService);
+    inject(LanguageService);
   }
 
   protected toggleNav(): void {

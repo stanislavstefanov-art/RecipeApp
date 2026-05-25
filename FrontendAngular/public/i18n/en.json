@@ -453,6 +453,19 @@
     "logout": "Log out"
   },
   "settings": {
+    "tabs": {
+      "appearance": "Appearance",
+      "units": "Units"
+    },
+    "appearance": {
+      "theme": "Theme",
+      "language": "Language"
+    },
+    "themes": {
+      "warm": "Warm & Earthy",
+      "fresh": "Fresh & Green",
+      "indigo": "Indigo Modern"
+    },
     "units": {
       "title": "Measurement units",
       "addUnit": "Add unit",

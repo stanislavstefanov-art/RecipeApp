@@ -107,9 +107,22 @@ export const routes: Routes = [
           import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
       },
       {
-        path: 'settings/units',
+        path: 'settings',
         loadComponent: () =>
-          import('./features/settings/units-settings').then((m) => m.UnitsSettings),
+          import('./features/settings/settings').then((m) => m.Settings),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'appearance' },
+          {
+            path: 'appearance',
+            loadComponent: () =>
+              import('./features/settings/appearance-settings').then((m) => m.AppearanceSettings),
+          },
+          {
+            path: 'units',
+            loadComponent: () =>
+              import('./features/settings/units-settings').then((m) => m.UnitsSettings),
+          },
+        ],
       },
     ],
   },

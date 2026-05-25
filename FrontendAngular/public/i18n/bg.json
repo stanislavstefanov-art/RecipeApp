@@ -453,6 +453,19 @@
     }
   },
   "settings": {
+    "tabs": {
+      "appearance": "Изглед",
+      "units": "Мерки"
+    },
+    "appearance": {
+      "theme": "Тема",
+      "language": "Език"
+    },
+    "themes": {
+      "warm": "Топло и земно",
+      "fresh": "Свежо и зелено",
+      "indigo": "Индиго модерно"
+    },
     "units": {
       "title": "Мерни единици",
       "addUnit": "Добавяне на мерна единица",
