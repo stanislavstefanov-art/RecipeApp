@@ -46,9 +46,14 @@ export class ExpensesReport {
     loader: ({ params }) => firstValueFrom(this.client.monthlyReport(params.year, params.month)),
   });
 
+  private readonly insightsTrigger = signal<{ year: number; month: number } | null>(null);
+
+  protected readonly insightsRequested = computed(() => this.insightsTrigger() !== null);
+
   protected readonly insights = resource({
-    params: () => this.query(),
-    loader: ({ params }) => firstValueFrom(this.client.insights(params.year, params.month)),
+    params: () => this.insightsTrigger(),
+    loader: ({ params }) =>
+      params ? firstValueFrom(this.client.insights(params.year, params.month)) : Promise.resolve(null),
   });
 
   protected readonly queryForm = new FormGroup({
@@ -66,5 +71,16 @@ export class ExpensesReport {
     if (this.queryForm.invalid) return;
     const { year, month } = this.queryForm.getRawValue();
     this.query.set({ year: +year, month: +month });
+    this.insightsTrigger.set(null);
+  }
+
+  protected onAnalyse(): void {
+    const q = this.query();
+    const current = this.insightsTrigger();
+    if (current?.year === q.year && current?.month === q.month) {
+      this.insights.reload();
+    } else {
+      this.insightsTrigger.set(q);
+    }
   }
 }

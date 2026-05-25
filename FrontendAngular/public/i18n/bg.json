@@ -349,6 +349,8 @@
     "selectHousehold": "Избери домакинство…",
     "optionalNote": "Незадължителна бележка…",
     "descriptionOptional": "Описание (незадължително)",
+    "analyseSpending": "Анализирай разходите",
+    "reanalyse": "Анализирай отново",
     "loadInsights": "Зареждане на анализ…",
     "failedToLoadInsights": "Грешка при зареждане на анализ.",
     "scanReceipt": "Сканирай касова бележка",

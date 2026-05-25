@@ -349,6 +349,8 @@
     "selectHousehold": "Select household…",
     "optionalNote": "Optional note…",
     "descriptionOptional": "Description (optional)",
+    "analyseSpending": "Analyse spending",
+    "reanalyse": "Re-analyse",
     "loadInsights": "Loading insights…",
     "failedToLoadInsights": "Failed to load insights.",
     "scanReceipt": "Scan receipt",
