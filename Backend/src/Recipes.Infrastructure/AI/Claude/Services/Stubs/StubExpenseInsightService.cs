@@ -11,7 +11,7 @@ public sealed class StubExpenseInsightService : IExpenseInsightService
         var findings = new List<string>
         {
             $"Total spending for the month is {input.MonthlyReport.TotalAmount} {input.MonthlyReport.Currency}.",
-            $"Top category is {input.MonthlyReport.TopCategory ?? "N/A"}.",
+            $"Top category is {input.MonthlyReport.TopCategory?.ToString() ?? "N/A"}.",
             $"Food accounts for {input.MonthlyReport.FoodPercentage}% of total spending."
         };
 

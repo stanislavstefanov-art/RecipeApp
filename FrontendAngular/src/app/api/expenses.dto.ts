@@ -27,6 +27,9 @@ export interface MonthlyExpenseReportDto {
   month: number;
   totalAmount: number;
   currency: string;
+  expenseCount: number;
+  averageExpenseAmount: number;
+  topCategory: number | null;
   byCategory: MonthlyExpenseByCategoryDto[];
 }
 
@@ -34,12 +37,16 @@ export interface MonthlyExpenseByCategoryDto {
   category: number;
   totalAmount: number;
   count: number;
+  percentage: number;
 }
 
 export interface ExpenseInsightDto {
-  year: number;
-  month: number;
-  insights: string[];
+  summary: string;
+  keyFindings: string[];
+  recommendations: string[];
+  confidence: number;
+  needsReview: boolean;
+  notes: string | null;
 }
 
 export interface ExtractedReceiptDto {

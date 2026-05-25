@@ -345,6 +345,7 @@
     "optionalNote": "Optional note…",
     "descriptionOptional": "Description (optional)",
     "loadInsights": "Loading insights…",
+    "failedToLoadInsights": "Failed to load insights.",
     "scanReceipt": "Scan receipt",
     "scanningReceipt": "Scanning…",
     "scanFileTooLarge": "Image is too large. Maximum size is 4 MB.",

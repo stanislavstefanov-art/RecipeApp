@@ -7,18 +7,19 @@ public sealed record MonthlyExpenseReportDto(
     string Currency,
     int ExpenseCount,
     decimal AverageExpenseAmount,
-    string? TopCategory,
+    int? TopCategory,
     decimal FoodPercentage,
     MonthlyExpenseLargestItemDto? LargestExpense,
-    IReadOnlyList<MonthlyExpenseCategoryBreakdownDto> Categories);
+    IReadOnlyList<MonthlyExpenseCategoryBreakdownDto> ByCategory);
 
 public sealed record MonthlyExpenseCategoryBreakdownDto(
-    string Category,
-    decimal Amount,
+    int Category,
+    decimal TotalAmount,
+    int Count,
     decimal Percentage);
 
 public sealed record MonthlyExpenseLargestItemDto(
     decimal Amount,
     string Description,
     DateOnly ExpenseDate,
-    string Category);
+    int Category);

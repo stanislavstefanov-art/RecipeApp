@@ -73,16 +73,31 @@
 
   @if (insights.isLoading()) {
     <p class="text-gray-500">{{ 'expenses.loadInsights' | translate }}</p>
+  } @else if (insights.error()) {
+    <p class="text-sm text-red-700">{{ 'expenses.failedToLoadInsights' | translate }}</p>
   } @else if (insights.value(); as insightData) {
-    @if (insightData.insights.length > 0) {
-      <div class="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 class="mb-3 text-base font-semibold">{{ 'expenses.insights' | translate }}</h2>
-        <ul class="space-y-2">
-          @for (insight of insightData.insights; track $index) {
-            <li class="text-sm text-gray-700">{{ insight }}</li>
+    <div class="rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="mb-3 text-base font-semibold">{{ 'expenses.insights' | translate }}</h2>
+      @if (insightData.summary) {
+        <p class="mb-3 text-sm text-gray-600">{{ insightData.summary }}</p>
+      }
+      @if (insightData.keyFindings.length > 0) {
+        <ul class="mb-3 space-y-1">
+          @for (finding of insightData.keyFindings; track $index) {
+            <li class="text-sm text-gray-700">{{ finding }}</li>
           }
         </ul>
-      </div>
-    }
+      }
+      @if (insightData.recommendations.length > 0) {
+        <div class="border-t border-gray-100 pt-3">
+          <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">{{ 'expenses.recommendations' | translate }}</p>
+          <ul class="space-y-1">
+            @for (rec of insightData.recommendations; track $index) {
+              <li class="text-sm text-gray-600">{{ rec }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
   }
 </section>

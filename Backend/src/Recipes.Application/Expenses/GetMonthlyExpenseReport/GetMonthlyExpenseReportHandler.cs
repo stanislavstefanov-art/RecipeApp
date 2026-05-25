@@ -50,17 +50,19 @@ public sealed class GetMonthlyExpenseReportHandler
             .Select(g =>
             {
                 var amount = g.Sum(x => x.Amount);
+                var count = g.Count();
                 var percentage = total == 0 ? 0 : Math.Round((amount / total) * 100, 2);
 
                 return new MonthlyExpenseCategoryBreakdownDto(
-                    g.Key.ToString(),
+                    (int)g.Key,
                     amount,
+                    count,
                     percentage);
             })
-            .OrderByDescending(x => x.Amount)
+            .OrderByDescending(x => x.TotalAmount)
             .ToList();
 
-        var topCategory = grouped.FirstOrDefault()?.Category;
+        var topCategory = grouped.Count > 0 ? grouped[0].Category : (int?)null;
 
         var foodAmount = expenses
             .Where(x => x.Category == ExpenseCategory.Food)
@@ -87,7 +89,7 @@ public sealed class GetMonthlyExpenseReportHandler
                 largestExpense.Amount,
                 largestExpense.Description,
                 largestExpense.ExpenseDate,
-                largestExpense.Category.ToString()),
+                (int)largestExpense.Category),
             grouped);
     }
 }

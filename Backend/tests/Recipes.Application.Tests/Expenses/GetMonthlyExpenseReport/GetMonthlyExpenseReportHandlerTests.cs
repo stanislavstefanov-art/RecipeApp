@@ -26,8 +26,8 @@ public sealed class GetMonthlyExpenseReportHandlerTests
 
         result.IsError.Should().BeFalse();
         result.Value.TotalAmount.Should().Be(60m);
-        result.Value.TopCategory.Should().Be("Food");
-        result.Value.Categories.Should().HaveCount(2);
+        result.Value.TopCategory.Should().Be((int)ExpenseCategory.Food);
+        result.Value.ByCategory.Should().HaveCount(2);
         result.Value.ExpenseCount.Should().Be(3);
         result.Value.AverageExpenseAmount.Should().Be(20m);
         result.Value.FoodPercentage.Should().Be(83.33m);
