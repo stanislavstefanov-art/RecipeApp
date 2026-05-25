@@ -9,6 +9,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ToastService } from '../../core/toast.service';
 import { ExpensesClient } from '../../api/expenses.client';
+import { HouseholdsClient } from '../../api/households.client';
 import { getErrorMessage } from '../../shared/get-error-message';
 
 type SubmitState =
@@ -36,12 +37,17 @@ type DeleteState =
 })
 export class ExpensesList {
   private readonly client = inject(ExpensesClient);
+  private readonly householdsClient = inject(HouseholdsClient);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
   protected readonly expenses = rxResource({
     stream: () => this.client.list(),
+  });
+
+  protected readonly households = rxResource({
+    stream: () => this.householdsClient.list(),
   });
 
   protected readonly isEmpty = computed(
@@ -54,6 +60,10 @@ export class ExpensesList {
   });
 
   protected readonly createForm = new FormGroup({
+    householdId: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     amount: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.min(0.01)],
@@ -71,6 +81,11 @@ export class ExpensesList {
       validators: [Validators.required],
     }),
     description: new FormControl('', { nonNullable: true }),
+  });
+
+  protected readonly singleHousehold = computed(() => {
+    const list = this.households.value();
+    return list?.length === 1 ? list[0] : null;
   });
 
   protected readonly submitState = signal<SubmitState>({ kind: 'idle' });
@@ -146,12 +161,14 @@ export class ExpensesList {
 
   protected onSubmit(): void {
     if (this.createForm.invalid) return;
-    const { amount, currency, expenseDate, category, description } =
+    const { householdId, amount, currency, expenseDate, category, description } =
       this.createForm.getRawValue();
+    const singleHousehold = this.singleHousehold();
     this.submitState.set({ kind: 'submitting' });
 
     this.client
       .create({
+        householdId: singleHousehold?.id ?? householdId,
         amount: parseFloat(amount),
         currency,
         expenseDate,

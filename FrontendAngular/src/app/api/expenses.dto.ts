@@ -9,6 +9,7 @@ export interface ExpenseDto {
 }
 
 export interface CreateExpenseRequest {
+  householdId: string;
   amount: number;
   currency: string;
   expenseDate: string;

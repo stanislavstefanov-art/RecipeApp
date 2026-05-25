@@ -340,6 +340,8 @@
     "loadingReport": "Loading report…",
     "failedToLoadReport": "Failed to load report",
     "selectCategory": "Select…",
+    "household": "Household",
+    "selectHousehold": "Select household…",
     "optionalNote": "Optional note…",
     "descriptionOptional": "Description (optional)",
     "loadInsights": "Loading insights…",

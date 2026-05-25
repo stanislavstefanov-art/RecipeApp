@@ -32,6 +32,21 @@
       <p class="mb-3 text-sm text-red-700">{{ scanError() }}</p>
     }
     <form [formGroup]="createForm" (ngSubmit)="onSubmit()" class="space-y-3">
+      @if (!singleHousehold()) {
+        <div>
+          <label for="expense-household" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.household' | translate }}</label>
+          <select
+            id="expense-household"
+            [formControl]="createForm.controls.householdId"
+            class="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+          >
+            <option value="">{{ 'expenses.selectHousehold' | translate }}</option>
+            @for (h of households.value(); track h.id) {
+              <option [value]="h.id">{{ h.name }}</option>
+            }
+          </select>
+        </div>
+      }
       <div class="flex gap-3">
         <div class="flex-1">
           <label for="expense-amount" class="mb-1 block text-sm font-medium text-gray-700">{{ 'expenses.amount' | translate }}</label>

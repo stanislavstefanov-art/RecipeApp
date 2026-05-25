@@ -17,6 +17,9 @@ public sealed class AzureReceiptExtractionService : IReceiptExtractionService
         ILogger<AzureReceiptExtractionService> logger)
     {
         var opts = options.Value;
+        if (string.IsNullOrWhiteSpace(opts.Endpoint))
+            throw new InvalidOperationException(
+                "ReceiptExtraction:Endpoint is not configured. Set ReceiptExtraction__Endpoint in the app settings.");
         _client = new DocumentAnalysisClient(
             new Uri(opts.Endpoint),
             new AzureKeyCredential(opts.ApiKey));

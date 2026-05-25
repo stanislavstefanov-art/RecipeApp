@@ -340,6 +340,8 @@
     "loadingReport": "Зареждане на справка…",
     "failedToLoadReport": "Грешка при зареждане на справка",
     "selectCategory": "Избери…",
+    "household": "Домакинство",
+    "selectHousehold": "Избери домакинство…",
     "optionalNote": "Незадължителна бележка…",
     "descriptionOptional": "Описание (незадължително)",
     "loadInsights": "Зареждане на анализ…",
