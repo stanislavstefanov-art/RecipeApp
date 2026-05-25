@@ -1,3 +1,18 @@
 @import "tailwindcss";
 
-/* You can add global styles to this file, and also import other style files */
+/* Warm & Earthy theme — remap the green palette to amber so every existing
+   bg-green-* / text-green-* / border-green-* utility renders as amber
+   without touching individual component templates. */
+@theme {
+  --color-green-50:  #fffbeb;
+  --color-green-100: #fef3c7;
+  --color-green-200: #fde68a;
+  --color-green-300: #fcd34d;
+  --color-green-400: #fbbf24;
+  --color-green-500: #f59e0b;
+  --color-green-600: #d97706;
+  --color-green-700: #b45309;
+  --color-green-800: #92400e;
+  --color-green-900: #78350f;
+  --color-green-950: #451a03;
+}
