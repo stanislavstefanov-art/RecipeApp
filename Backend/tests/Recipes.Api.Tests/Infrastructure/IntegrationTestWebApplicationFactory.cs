@@ -43,6 +43,7 @@ public sealed class IntegrationTestWebApplicationFactory
         Environment.SetEnvironmentVariable("RecipeBatchAnalysis__Provider", "Stub");
         Environment.SetEnvironmentVariable("RecipeDraftReview__Provider", "Stub");
         Environment.SetEnvironmentVariable("ExpenseInsight__Provider", "Stub");
+        Environment.SetEnvironmentVariable("ReceiptExtraction__Provider", "Stub");
     }
 
     public async Task InitializeAsync()

@@ -47,6 +47,14 @@ jobs:
 
       - run: dotnet build Backend/Recipes.sln --no-restore --configuration Release
 
+      - name: Pre-pull SQL Server image
+        run: |
+          for i in 1 2 3 4 5; do
+            docker pull mcr.microsoft.com/mssql/server:2022-latest && break
+            echo "Pull attempt $i failed, retrying in $((i * 20))s..."
+            sleep $((i * 20))
+          done
+
       - run: dotnet test Backend/Recipes.sln --no-build --configuration Release --filter "Category=Docker"
 
   deploy:
