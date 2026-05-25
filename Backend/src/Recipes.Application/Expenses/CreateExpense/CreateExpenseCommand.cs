@@ -8,7 +8,7 @@ public sealed record CreateExpenseCommand(
     string Currency,
     DateOnly ExpenseDate,
     int Category,
-    string Description,
+    string? Description,
     int SourceType,
     Guid? SourceReferenceId,
     Guid HouseholdId) : IRequest<ErrorOr<CreateExpenseResponse>>;

@@ -84,7 +84,7 @@ public sealed record CreateExpenseRequest(
     string Currency,
     DateOnly ExpenseDate,
     int Category,
-    string Description,
+    string? Description,
     int SourceType,
     Guid? SourceReferenceId,
     Guid HouseholdId);

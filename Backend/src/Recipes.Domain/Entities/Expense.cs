@@ -23,7 +23,7 @@ public sealed class Expense : Entity
         string currency,
         DateOnly expenseDate,
         ExpenseCategory category,
-        string description,
+        string? description,
         ExpenseSourceType sourceType,
         Guid? sourceReferenceId = null,
         HouseholdId? householdId = null)
@@ -33,7 +33,8 @@ public sealed class Expense : Entity
         SetCurrency(currency);
         ExpenseDate = expenseDate;
         Category = category;
-        SetDescription(description);
+        if (!string.IsNullOrWhiteSpace(description))
+            SetDescription(description);
         SourceType = sourceType;
         SourceReferenceId = sourceReferenceId;
 
@@ -47,9 +48,9 @@ public sealed class Expense : Entity
             SourceReferenceId));
     }
 
-    public void UpdateDescription(string description)
+    public void UpdateDescription(string? description)
     {
-        SetDescription(description);
+        Description = string.IsNullOrWhiteSpace(description) ? string.Empty : description.Trim();
     }
 
     private void SetAmount(decimal amount)
