@@ -144,6 +144,19 @@
             </div>
           }
 
+          <div>
+            <label for="save-portions" class="block text-xs font-medium text-gray-600">{{ 'recipes.saveForPortions' | translate }}</label>
+            <p class="mb-1 text-xs text-gray-400">{{ 'recipes.saveForPortionsHint' | translate:{extracted: result()?.servings ?? 1} }}</p>
+            <input
+              id="save-portions"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="targetPortions"
+              class="w-24 rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-black focus:outline-none"
+            />
+          </div>
+
           <button
             type="submit"
             [disabled]="isSaving()"

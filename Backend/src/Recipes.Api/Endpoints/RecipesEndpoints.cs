@@ -24,6 +24,7 @@ using Recipes.Application.Recipes.RateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 using Recipes.Application.Recipes.RemoveIngredientFromRecipe;
 using Recipes.Application.Recipes.RemoveStepFromRecipe;
+using Recipes.Application.Recipes.UpdateIngredientInRecipe;
 
 namespace Recipes.Api.Endpoints;
 
@@ -96,6 +97,12 @@ public static class RecipesEndpoints
         group.MapDelete("/{id:guid}/ingredients/{ingredientId:guid}", async (Guid id, Guid ingredientId, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new RemoveIngredientFromRecipeCommand(id, ingredientId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPut("/{id:guid}/ingredients/{ingredientId:guid}", async (Guid id, Guid ingredientId, UpdateIngredientInRecipeRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new UpdateIngredientInRecipeCommand(id, ingredientId, request.Name, request.Quantity, request.Unit), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -253,5 +260,7 @@ public sealed record RecipeVariationIngredientOverrideRequest(string IngredientN
 public sealed record ScaleRecipeRequest(int FromServings, int ToServings);
 
 public sealed record BatchAnalyzeRequest(IReadOnlyList<Guid> RecipeIds);
+
+public sealed record UpdateIngredientInRecipeRequest(string Name, decimal Quantity, string Unit);
 
 public sealed record RateRecipeRequest(int Stars, string? Comment);

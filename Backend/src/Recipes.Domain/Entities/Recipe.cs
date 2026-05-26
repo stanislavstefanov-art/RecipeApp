@@ -94,6 +94,21 @@ public sealed class Recipe : Entity
         return true;
     }
 
+    public bool UpdateIngredient(RecipeIngredientId ingredientId, string name, decimal quantity, string unit)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Ingredient name cannot be empty.", nameof(name));
+
+        if (quantity <= 0)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be greater than zero.");
+
+        var ingredient = _ingredients.SingleOrDefault(i => i.Id == ingredientId);
+        if (ingredient is null) return false;
+
+        ingredient.Update(name.Trim(), quantity, unit?.Trim() ?? string.Empty);
+        return true;
+    }
+
     public bool RemoveStep(RecipeStepId stepId)
     {
         var step = _steps.SingleOrDefault(s => s.Id == stepId);

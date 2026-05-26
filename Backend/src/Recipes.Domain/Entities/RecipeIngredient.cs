@@ -19,4 +19,11 @@ public sealed class RecipeIngredient
         Quantity = quantity;
         Unit = unit;
     }
+
+    internal void Update(string name, decimal quantity, string unit)
+    {
+        Name = name;
+        Quantity = quantity;
+        Unit = unit;
+    }
 }

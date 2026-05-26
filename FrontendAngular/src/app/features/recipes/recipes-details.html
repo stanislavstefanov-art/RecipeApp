@@ -102,21 +102,73 @@
       @if (hasIngredients()) {
         <ul class="mt-4 space-y-3">
           @for (ingredient of data.ingredients; track ingredient.id) {
-            <li class="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
-              <div class="flex min-w-0 flex-1 items-center gap-3">
-                <span class="min-w-0">{{ ingredient.name }}</span>
-                <span class="shrink-0 text-sm text-gray-500">
-                  {{ ingredient.quantity }} {{ ingredient.unit | unitName }}
-                </span>
-              </div>
-              <button
-                type="button"
-                (click)="onDeleteIngredient(ingredient.id)"
-                [disabled]="deletingIngredientId() === ingredient.id"
-                class="shrink-0 text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
-              >
-                {{ deletingIngredientId() === ingredient.id ? ('recipes.deleting' | translate) : ('common.delete' | translate) }}
-              </button>
+            <li class="border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
+              @if (editingIngredientId() === ingredient.id) {
+                <form [formGroup]="editIngredientForm" (ngSubmit)="onSaveEditIngredient(ingredient.id)" class="flex flex-wrap items-start gap-2">
+                  <input
+                    formControlName="name"
+                    type="text"
+                    [placeholder]="'recipes.ingredientName' | translate"
+                    class="flex-1 min-w-32 rounded border border-gray-300 px-2 py-1 text-sm focus:border-black focus:outline-none"
+                  />
+                  <input
+                    formControlName="quantity"
+                    type="number"
+                    step="0.001"
+                    min="0.001"
+                    [placeholder]="'recipes.quantity' | translate"
+                    class="w-20 rounded border border-gray-300 px-2 py-1 text-sm focus:border-black focus:outline-none"
+                  />
+                  <input
+                    formControlName="unit"
+                    type="text"
+                    [placeholder]="'recipes.unit' | translate"
+                    class="w-20 rounded border border-gray-300 px-2 py-1 text-sm focus:border-black focus:outline-none"
+                  />
+                  <div class="flex gap-1">
+                    <button
+                      type="submit"
+                      [disabled]="savingIngredientId() === ingredient.id"
+                      class="rounded bg-black px-2 py-1 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                    >
+                      {{ savingIngredientId() === ingredient.id ? ('recipes.saving' | translate) : ('common.save' | translate) }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="onCancelEditIngredient()"
+                      class="rounded border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      {{ 'common.cancel' | translate }}
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex min-w-0 flex-1 items-center gap-3">
+                    <span class="min-w-0">{{ ingredient.name }}</span>
+                    <span class="shrink-0 text-sm text-gray-500">
+                      {{ ingredient.quantity }} {{ ingredient.unit | unitName }}
+                    </span>
+                  </div>
+                  <div class="flex shrink-0 gap-2">
+                    <button
+                      type="button"
+                      (click)="onEditIngredient(ingredient)"
+                      class="text-xs text-gray-600 hover:text-gray-800"
+                    >
+                      {{ 'common.edit' | translate }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="onDeleteIngredient(ingredient.id)"
+                      [disabled]="deletingIngredientId() === ingredient.id"
+                      class="text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+                    >
+                      {{ deletingIngredientId() === ingredient.id ? ('recipes.deleting' | translate) : ('common.delete' | translate) }}
+                    </button>
+                  </div>
+                </div>
+              }
             </li>
           }
         </ul>

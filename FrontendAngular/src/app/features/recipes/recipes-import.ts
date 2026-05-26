@@ -58,6 +58,10 @@ export class RecipesImport {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    targetPortions: new FormControl<number>(1, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(1)],
+    }),
   });
 
   protected readonly households = signal<HouseholdListItemDto[]>([]);
@@ -114,6 +118,7 @@ export class RecipesImport {
         next: (result) => {
           this.importState.set({ kind: 'success', result });
           this.saveForm.controls.name.setValue(result.title ?? '');
+          this.saveForm.controls.targetPortions.setValue(result.servings ?? 1);
         },
         error: (err: unknown) => {
           this.importState.set({ kind: 'error', message: extractApiError(err) });
@@ -127,10 +132,12 @@ export class RecipesImport {
       return;
     }
 
-    const { name, householdId } = this.saveForm.getRawValue();
+    const { name, householdId, targetPortions } = this.saveForm.getRawValue();
     this.saveState.set({ kind: 'saving' });
 
     const extracted = this.result()!;
+    const extractedServings = extracted.servings ?? 1;
+    const scaleFactor = extractedServings > 0 ? targetPortions / extractedServings : 1;
 
     this.client
       .create({ name, householdId, recipeType: 1, isImported: true })
@@ -138,13 +145,14 @@ export class RecipesImport {
         takeUntilDestroyed(this.destroyRef),
         switchMap((response) => {
           const id = response.id;
-          const ingredientCalls = extracted.ingredients.map((ing) =>
-            this.client.addIngredient(id, {
+          const ingredientCalls = extracted.ingredients.map((ing) => {
+            const rawQty = parseFloat(ing.quantity ?? '1') || 1;
+            return this.client.addIngredient(id, {
               name: ing.name,
-              quantity: parseFloat(ing.quantity ?? '1') || 1,
+              quantity: Math.round(rawQty * scaleFactor * 1000) / 1000,
               unit: ing.unit ?? '',
-            }),
-          );
+            });
+          });
           const stepCalls = extracted.steps.map((step) =>
             this.client.addStep(id, { instruction: step }),
           );

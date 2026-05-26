@@ -127,7 +127,9 @@
     "deleteImage": "Изтрий снимката",
     "confirmDeleteImage": "Изтриване на снимката към рецептата?",
     "imageUploading": "Качване…",
-    "selectUnit": "Изберете мерна единица…"
+    "selectUnit": "Изберете мерна единица…",
+    "saveForPortions": "Запази за порции",
+    "saveForPortionsHint": "Рецептата е извлечена за {{extracted}} порция(и). Въведете за колко порции да запазите:"
   },
   "households": {
     "title": "Домакинства",

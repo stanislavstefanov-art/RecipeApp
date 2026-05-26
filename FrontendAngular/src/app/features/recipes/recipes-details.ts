@@ -8,7 +8,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { LogCookingValue } from './log-cooking-form';
 import { Router, RouterLink } from '@angular/router';
@@ -42,7 +42,7 @@ type ImageState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, FormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, UnitNamePipe],
+  imports: [RouterLink, FormsModule, ReactiveFormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, UnitNamePipe],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,6 +86,48 @@ export class RecipesDetails {
 
   protected readonly deletingIngredientId = signal<string | null>(null);
   protected readonly deletingStepId = signal<string | null>(null);
+  protected readonly editingIngredientId = signal<string | null>(null);
+  protected readonly savingIngredientId = signal<string | null>(null);
+
+  protected readonly editIngredientForm = new FormGroup({
+    name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
+    quantity: new FormControl<number>(0, { nonNullable: true, validators: [Validators.required, Validators.min(0.001)] }),
+    unit: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(50)] }),
+  });
+
+  protected onEditIngredient(ingredient: { id: string; name: string; quantity: number; unit: string }): void {
+    this.editingIngredientId.set(ingredient.id);
+    this.editIngredientForm.setValue({
+      name: ingredient.name,
+      quantity: ingredient.quantity,
+      unit: ingredient.unit,
+    });
+  }
+
+  protected onCancelEditIngredient(): void {
+    this.editingIngredientId.set(null);
+  }
+
+  protected onSaveEditIngredient(ingredientId: string): void {
+    if (this.editIngredientForm.invalid) {
+      this.editIngredientForm.markAllAsTouched();
+      return;
+    }
+
+    const { name, quantity, unit } = this.editIngredientForm.getRawValue();
+    this.savingIngredientId.set(ingredientId);
+    this.client
+      .updateIngredient(this.id(), ingredientId, { name, quantity, unit })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.savingIngredientId.set(null);
+          this.editingIngredientId.set(null);
+          this.recipe.reload();
+        },
+        error: () => this.savingIngredientId.set(null),
+      });
+  }
 
   protected onDeleteIngredient(ingredientId: string): void {
     if (!window.confirm(this.translate.instant('recipes.confirmDeleteIngredient'))) return;

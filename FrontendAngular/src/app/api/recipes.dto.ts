@@ -39,6 +39,12 @@ export interface AddIngredientRequest {
   readonly unit: string;
 }
 
+export interface UpdateIngredientRequest {
+  readonly name: string;
+  readonly quantity: number;
+  readonly unit: string;
+}
+
 export interface AddStepRequest {
   readonly instruction: string;
 }

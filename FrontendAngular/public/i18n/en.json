@@ -127,7 +127,9 @@
     "deleteImage": "Delete image",
     "confirmDeleteImage": "Delete the recipe image?",
     "imageUploading": "Uploading…",
-    "selectUnit": "Select unit…"
+    "selectUnit": "Select unit…",
+    "saveForPortions": "Save for portions",
+    "saveForPortionsHint": "Recipe extracted for {{extracted}} portion(s). Enter how many portions to save for:"
   },
   "households": {
     "title": "Households",

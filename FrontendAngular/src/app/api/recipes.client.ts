@@ -17,6 +17,7 @@ import {
   RecipeListItemDto,
   RecipeRatingDto,
   SuggestSubstitutionsRequest,
+  UpdateIngredientRequest,
   UpdateRecipeRequest,
 } from './recipes.dto';
 
@@ -54,6 +55,13 @@ export class RecipesClient {
   addStep(recipeId: string, payload: AddStepRequest): Observable<void> {
     return this.http.post<void>(
       `${API_BASE_URL}/api/recipes/${recipeId}/steps`,
+      payload,
+    );
+  }
+
+  updateIngredient(recipeId: string, ingredientId: string, payload: UpdateIngredientRequest): Observable<void> {
+    return this.http.put<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/ingredients/${ingredientId}`,
       payload,
     );
   }
