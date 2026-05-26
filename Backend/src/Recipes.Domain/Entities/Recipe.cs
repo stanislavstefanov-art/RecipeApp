@@ -62,12 +62,7 @@ public sealed class Recipe : Entity
             throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be greater than zero.");
         }
 
-        if (string.IsNullOrWhiteSpace(unit))
-        {
-            throw new ArgumentException("Unit cannot be empty.", nameof(unit));
-        }
-
-        var ingredient = new RecipeIngredient(Id, name.Trim(), quantity, unit.Trim());
+        var ingredient = new RecipeIngredient(Id, name.Trim(), quantity, unit?.Trim() ?? string.Empty);
         _ingredients.Add(ingredient);
 
         RaiseDomainEvent(new RecipeIngredientAdded(

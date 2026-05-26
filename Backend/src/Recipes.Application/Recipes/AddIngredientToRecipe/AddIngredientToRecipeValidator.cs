@@ -14,7 +14,6 @@ public sealed class AddIngredientToRecipeValidator : AbstractValidator<AddIngred
             .MaximumLength(200);
 
         RuleFor(x => x.Unit)
-            .NotEmpty()
             .MaximumLength(50);
 
         RuleFor(x => x.Quantity)
