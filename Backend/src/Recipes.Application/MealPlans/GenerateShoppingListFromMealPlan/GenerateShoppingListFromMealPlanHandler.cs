@@ -145,7 +145,9 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         ingredient.Unit,
                         notes,
                         ShoppingListItemSourceType.MealPlan,
-                        mealPlan.Id.Value);
+                        mealPlan.Id.Value,
+                        recipe.Id,
+                        recipe.Name.Value);
                 }
             }
         }

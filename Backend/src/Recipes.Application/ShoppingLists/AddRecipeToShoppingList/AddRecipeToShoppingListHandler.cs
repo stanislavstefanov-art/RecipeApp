@@ -71,7 +71,12 @@ public sealed class AddRecipeToShoppingListHandler
                 await _productRepository.AddAsync(product, cancellationToken);
             }
 
-            shoppingList.AddItem(product, ingredient.Quantity, ingredient.Unit);
+            shoppingList.AddItem(
+                product,
+                ingredient.Quantity,
+                ingredient.Unit,
+                recipeId: recipe.Id,
+                recipeName: recipe.Name.Value);
         }
 
         await _shoppingListRepository.SaveChangesAsync(cancellationToken);

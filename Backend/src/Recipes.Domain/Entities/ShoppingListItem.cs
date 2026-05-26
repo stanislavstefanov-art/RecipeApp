@@ -5,6 +5,8 @@ using Recipes.Domain.Primitives;
 
 public sealed class ShoppingListItem
 {
+    private readonly List<ShoppingListItemSource> _sources = new();
+
     public ShoppingListItemId Id { get; private set; } = ShoppingListItemId.New();
     public ShoppingListId ShoppingListId { get; private set; }
     public ProductId ProductId { get; private set; }
@@ -15,6 +17,7 @@ public sealed class ShoppingListItem
     public string? Notes { get; private set; }
     public ShoppingListItemSourceType SourceType { get; private set; }
     public Guid? SourceReferenceId { get; private set; }
+    public IReadOnlyCollection<ShoppingListItemSource> RecipeSources => _sources.AsReadOnly();
 
     private ShoppingListItem() { }
 
@@ -85,6 +88,12 @@ public sealed class ShoppingListItem
 
     internal bool MatchesSource(ShoppingListItemSourceType sourceType, Guid? sourceReferenceId)
         => SourceType == sourceType && SourceReferenceId == sourceReferenceId;
+
+    internal void AddRecipeSource(RecipeId recipeId, string recipeName)
+    {
+        if (!_sources.Any(s => s.RecipeId == recipeId))
+            _sources.Add(new ShoppingListItemSource(Id, recipeId, recipeName));
+    }
 
     internal void MarkPurchased()
     {

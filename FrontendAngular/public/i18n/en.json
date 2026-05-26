@@ -310,6 +310,7 @@
     "selectMealPlanPlaceholder": "Select a meal plan…",
     "selectHouseholdPlaceholder": "Select a household…",
     "noItemsYet": "No items yet.",
+    "usedInRecipes": "Used in {{count}} recipe(s)",
     "addItem": "Add item manually",
     "productNamePlaceholder": "Product name",
     "quantityPlaceholder": "Qty",

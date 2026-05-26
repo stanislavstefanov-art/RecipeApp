@@ -134,6 +134,23 @@
                     <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ item.notes }}</span>
                   }
                 </div>
+                @if (item.recipeSources.length > 0) {
+                  <button
+                    type="button"
+                    (click)="toggleRecipes(item.id)"
+                    class="mt-1.5 flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800"
+                  >
+                    <span>{{ 'shoppingLists.usedInRecipes' | translate:{count: item.recipeSources.length} }}</span>
+                    <span>{{ expandedItemId() === item.id ? '▲' : '▼' }}</span>
+                  </button>
+                  @if (expandedItemId() === item.id) {
+                    <ul class="mt-2 space-y-0.5 pl-1">
+                      @for (source of item.recipeSources; track source.recipeId) {
+                        <li class="text-xs text-gray-600">· {{ source.recipeName }}</li>
+                      }
+                    </ul>
+                  }
+                }
                 @if (markPendingState().kind === 'error' && $any(markPendingState()).itemId === item.id) {
                   <p class="mt-1 text-sm text-red-700">{{ $any(markPendingState()).message }}</p>
                 }

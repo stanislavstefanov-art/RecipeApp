@@ -109,6 +109,12 @@ export class ShoppingListsDetails {
   protected readonly generateState = signal<GenerateState>({ kind: 'idle' });
   protected readonly regenerateState = signal<GenerateState>({ kind: 'idle' });
 
+  protected readonly expandedItemId = signal<string | null>(null);
+
+  protected toggleRecipes(itemId: string): void {
+    this.expandedItemId.update((current) => (current === itemId ? null : itemId));
+  }
+
   protected readonly purchasingItem = signal<ShoppingListDetailsItemDto | null>(null);
 
   protected readonly purchaseForm = new FormGroup({

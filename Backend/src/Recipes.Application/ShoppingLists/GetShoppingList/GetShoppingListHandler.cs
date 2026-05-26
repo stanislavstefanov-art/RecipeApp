@@ -55,6 +55,7 @@ public sealed class GetShoppingListHandler
                 i.IsPurchased,
                 i.Notes,
                 (int)i.SourceType,
-                i.SourceReferenceId)).ToList());
+                i.SourceReferenceId,
+                i.RecipeSources.Select(s => new ShoppingListItemRecipeSourceDto(s.RecipeId.Value, s.RecipeName)).ToList())).ToList());
     }
 }

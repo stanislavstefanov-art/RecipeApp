@@ -14,4 +14,7 @@ public sealed record ShoppingListDetailsItemDto(
     bool IsPurchased,
     string? Notes,
     int SourceType,
-    Guid? SourceReferenceId);
+    Guid? SourceReferenceId,
+    IReadOnlyList<ShoppingListItemRecipeSourceDto> RecipeSources);
+
+public sealed record ShoppingListItemRecipeSourceDto(Guid RecipeId, string RecipeName);

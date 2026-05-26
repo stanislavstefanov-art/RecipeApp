@@ -18,6 +18,7 @@ public sealed class ShoppingListRepository : IShoppingListRepository
     {
         return await _dbContext.ShoppingLists
             .Include(x => x.Items)
+                .ThenInclude(x => x.RecipeSources)
             .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

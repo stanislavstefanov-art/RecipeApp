@@ -32,6 +32,11 @@ export interface ShoppingListDetailsDto {
   items: ShoppingListDetailsItemDto[];
 }
 
+export interface ShoppingListItemRecipeSourceDto {
+  recipeId: string;
+  recipeName: string;
+}
+
 export interface ShoppingListDetailsItemDto {
   id: string;
   productId: string;
@@ -42,6 +47,7 @@ export interface ShoppingListDetailsItemDto {
   notes: string | null;
   sourceType: number;
   sourceReferenceId: string | null;
+  recipeSources: ShoppingListItemRecipeSourceDto[];
 }
 
 export interface AddManualItemRequest {

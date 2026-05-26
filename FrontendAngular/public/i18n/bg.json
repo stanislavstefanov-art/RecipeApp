@@ -310,6 +310,7 @@
     "selectMealPlanPlaceholder": "Избери план за хранене…",
     "selectHouseholdPlaceholder": "Избери домакинство…",
     "noItemsYet": "Все още няма артикули.",
+    "usedInRecipes": "Използвано в {{count}} рецепта(и)",
     "addItem": "Добави артикул ръчно",
     "productNamePlaceholder": "Наименование на продукт",
     "quantityPlaceholder": "Количество",

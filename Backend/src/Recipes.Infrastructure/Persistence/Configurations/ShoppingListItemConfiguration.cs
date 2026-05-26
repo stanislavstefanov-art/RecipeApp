@@ -55,5 +55,10 @@ public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<Sho
         builder.Property(x => x.SourceReferenceId);
 
         builder.HasIndex(x => new { x.SourceType, x.SourceReferenceId });
+
+        builder.HasMany(x => x.RecipeSources)
+            .WithOne()
+            .HasForeignKey(x => x.ShoppingListItemId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

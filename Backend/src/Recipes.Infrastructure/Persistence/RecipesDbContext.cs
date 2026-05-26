@@ -23,6 +23,7 @@ public sealed class RecipesDbContext : DbContext, IRecipesDbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ShoppingList> ShoppingLists => Set<ShoppingList>();
     public DbSet<ShoppingListItem> ShoppingListItems => Set<ShoppingListItem>();
+    public DbSet<ShoppingListItemSource> ShoppingListItemSources => Set<ShoppingListItemSource>();
     public DbSet<MealPlan> MealPlans => Set<MealPlan>();
     public DbSet<MealPlanEntry> MealPlanEntries => Set<MealPlanEntry>();
     public DbSet<Expense> Expenses => Set<Expense>();
