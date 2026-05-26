@@ -119,6 +119,19 @@
       }
     </fieldset>
 
+    <div>
+      <label for="recipeSource" class="block text-sm font-medium">{{ 'mealPlans.recipeSourceLabel' | translate }}</label>
+      <select
+        id="recipeSource"
+        formControlName="recipeSource"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      >
+        <option value="all">{{ 'mealPlans.recipeSourceAll' | translate }}</option>
+        <option value="manual">{{ 'mealPlans.recipeSourceManual' | translate }}</option>
+        <option value="imported">{{ 'mealPlans.recipeSourceImported' | translate }}</option>
+      </select>
+    </div>
+
     <button
       type="submit"
       [disabled]="isSuggesting()"

@@ -47,6 +47,7 @@ export interface SuggestMealPlanRequest {
   readonly startDate: string;
   readonly numberOfDays: number;
   readonly mealTypes: readonly number[];
+  readonly recipeSource: 'all' | 'manual' | 'imported';
 }
 
 export interface AcceptMealPlanSuggestionAssignmentRequest {

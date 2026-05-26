@@ -8,4 +8,5 @@ public sealed record SuggestMealPlanCommand(
     Guid HouseholdId,
     DateOnly StartDate,
     int NumberOfDays,
-    IReadOnlyList<int> MealTypes) : IRequest<ErrorOr<MealPlanSuggestionDto>>;
+    IReadOnlyList<int> MealTypes,
+    string RecipeSource = "all") : IRequest<ErrorOr<MealPlanSuggestionDto>>;

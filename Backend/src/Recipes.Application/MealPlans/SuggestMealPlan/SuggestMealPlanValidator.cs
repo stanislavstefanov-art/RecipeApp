@@ -23,5 +23,9 @@ public sealed class SuggestMealPlanValidator : AbstractValidator<SuggestMealPlan
 
         RuleForEach(x => x.MealTypes)
             .Must(x => Enum.IsDefined(typeof(MealType), x));
+
+        RuleFor(x => x.RecipeSource)
+            .Must(x => x is "all" or "manual" or "imported")
+            .WithMessage("RecipeSource must be 'all', 'manual', or 'imported'.");
     }
 }

@@ -50,7 +50,13 @@ public sealed class SuggestMealPlanHandler
 
         var persons = await _personRepository.GetByIdsAsync(memberIds, cancellationToken);
 
-        var recipes = await _recipeRepository.GetAllAsync(cancellationToken);
+        var allRecipes = await _recipeRepository.GetAllAsync(cancellationToken);
+        var recipes = request.RecipeSource switch
+        {
+            "manual" => allRecipes.Where(r => !r.IsImported).ToList(),
+            "imported" => allRecipes.Where(r => r.IsImported).ToList(),
+            _ => allRecipes,
+        };
         if (recipes.Count == 0)
         {
             return Error.Validation(
