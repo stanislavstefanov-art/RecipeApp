@@ -482,14 +482,9 @@
   },
   "ratings": {
     "title": "Ratings",
-    "yourRating": "Your rating",
-    "commentPlaceholder": "Optional comment…",
-    "saveRating": "Save rating",
-    "saving": "Saving…",
-    "deleteRating": "Delete rating",
-    "deleting": "Deleting…",
-    "confirmDeleteRating": "Delete your rating?",
-    "noRatings": "No ratings yet."
+    "average": "Rating",
+    "favorite": "Favorite",
+    "saving": "Saving…"
   },
   "auth": {
     "signIn": "Sign in",

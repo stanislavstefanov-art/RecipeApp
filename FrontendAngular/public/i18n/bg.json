@@ -404,14 +404,9 @@
   },
   "ratings": {
     "title": "Оценки",
-    "yourRating": "Вашата оценка",
-    "commentPlaceholder": "Незадължителен коментар…",
-    "saveRating": "Запази оценката",
-    "saving": "Запазване…",
-    "deleteRating": "Изтрий оценката",
-    "deleting": "Изтриване…",
-    "confirmDeleteRating": "Изтрий вашата оценка?",
-    "noRatings": "Няма оценки все още."
+    "average": "Оценка",
+    "favorite": "Любима",
+    "saving": "Запазване…"
   },
   "auth": {
     "signIn": "Вход",
