@@ -33,6 +33,8 @@ public sealed class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, E
 
         var recipe = new Recipe(request.Name, householdId);
         recipe.SetRecipeType((RecipeType)request.RecipeType);
+        if (request.DifficultyLevel.HasValue)
+            recipe.SetDifficulty((DifficultyLevel)request.DifficultyLevel.Value);
         if (request.IsImported) recipe.MarkAsImported();
 
         _repository.Add(recipe);

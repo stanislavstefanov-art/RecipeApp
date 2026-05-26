@@ -23,6 +23,11 @@ export interface CreateRecipeRequest {
   readonly householdId: string;
   readonly recipeType: number;
   readonly isImported?: boolean;
+  readonly difficultyLevel?: number | null;
+}
+
+export interface SetDifficultyRequest {
+  readonly difficultyLevel: number | null;
 }
 
 export interface CreateRecipeResponse {
@@ -78,6 +83,7 @@ export interface RecipeDto {
   readonly ratings: readonly RecipeRatingDto[];
   readonly myRating: RecipeRatingDto | null;
   readonly imageUrl?: string | null;
+  readonly difficultyLevel?: number | null;
 }
 
 export interface CookingLogEntryDto {

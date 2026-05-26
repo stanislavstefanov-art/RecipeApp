@@ -129,7 +129,10 @@
     "imageUploading": "Uploading…",
     "selectUnit": "Select unit…",
     "saveForPortions": "Save for portions",
-    "saveForPortionsHint": "Recipe extracted for {{extracted}} portion(s). Enter how many portions to save for:"
+    "saveForPortionsHint": "Recipe extracted for {{extracted}} portion(s). Enter how many portions to save for:",
+    "difficulty": "Difficulty",
+    "difficultyLabel": "Preparation difficulty",
+    "difficultyNotSet": "Not set"
   },
   "households": {
     "title": "Households",
@@ -450,6 +453,11 @@
     "recipeType": {
       "1": "Main dish",
       "2": "Salad"
+    },
+    "difficultyLevel": {
+      "1": "Easy",
+      "2": "Medium",
+      "3": "Hard"
     },
     "expenseSourceType": {
       "1": "Manual",

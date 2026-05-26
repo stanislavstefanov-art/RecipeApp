@@ -88,6 +88,7 @@ export class RecipesDetails {
   protected readonly deletingStepId = signal<string | null>(null);
   protected readonly editingIngredientId = signal<string | null>(null);
   protected readonly savingIngredientId = signal<string | null>(null);
+  protected readonly savingDifficulty = signal(false);
 
   protected readonly editIngredientForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -106,6 +107,21 @@ export class RecipesDetails {
 
   protected onCancelEditIngredient(): void {
     this.editingIngredientId.set(null);
+  }
+
+  protected onDifficultyChange(value: string): void {
+    const level = value ? parseInt(value, 10) : null;
+    this.savingDifficulty.set(true);
+    this.client
+      .setDifficulty(this.id(), { difficultyLevel: level })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.savingDifficulty.set(false);
+          this.recipe.reload();
+        },
+        error: () => this.savingDifficulty.set(false),
+      });
   }
 
   protected onSaveEditIngredient(ingredientId: string): void {

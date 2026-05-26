@@ -47,6 +47,20 @@
       </select>
     </div>
 
+    <div>
+      <label for="difficultyLevel" class="block text-sm font-medium">{{ 'recipes.difficulty' | translate }}</label>
+      <select
+        id="difficultyLevel"
+        formControlName="difficultyLevel"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+      >
+        <option value="">{{ 'recipes.difficultyNotSet' | translate }}</option>
+        <option value="1">{{ 'enums.difficultyLevel.1' | translate }}</option>
+        <option value="2">{{ 'enums.difficultyLevel.2' | translate }}</option>
+        <option value="3">{{ 'enums.difficultyLevel.3' | translate }}</option>
+      </select>
+    </div>
+
     @if (householdsLoading()) {
       <p class="text-sm text-gray-500">{{ 'households.loading' | translate }}</p>
     } @else if (householdsError()) {

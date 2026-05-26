@@ -40,7 +40,8 @@ public sealed class CritiqueRecipeHandler : IRequestHandler<CritiqueRecipeComman
             recipe.Name.Value,
             recipe.Ingredients.Select(i => new IngredientDto(i.Id.Value, i.Name, i.Quantity, i.Unit)).ToList(),
             recipe.Steps.Select(s => new RecipeStepDto(s.Id.Value, s.Order, s.Instruction)).ToList(),
-            null, 0, [], null, null);
+            null, 0, [], null, null,
+            recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null);
 
         try
         {

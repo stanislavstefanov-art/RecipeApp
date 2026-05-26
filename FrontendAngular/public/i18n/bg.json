@@ -129,7 +129,10 @@
     "imageUploading": "Качване…",
     "selectUnit": "Изберете мерна единица…",
     "saveForPortions": "Запази за порции",
-    "saveForPortionsHint": "Рецептата е извлечена за {{extracted}} порция(и). Въведете за колко порции да запазите:"
+    "saveForPortionsHint": "Рецептата е извлечена за {{extracted}} порция(и). Въведете за колко порции да запазите:",
+    "difficulty": "Трудност",
+    "difficultyLabel": "Трудност на приготвяне",
+    "difficultyNotSet": "Не е зададена"
   },
   "households": {
     "title": "Домакинства",
@@ -488,6 +491,11 @@
     "recipeType": {
       "1": "Основно ястие",
       "2": "Салата"
+    },
+    "difficultyLevel": {
+      "1": "Лесно",
+      "2": "Средно",
+      "3": "Трудно"
     },
     "expenseSourceType": {
       "1": "Ръчно въведено",
