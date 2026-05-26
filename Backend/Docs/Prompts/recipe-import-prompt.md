@@ -5,6 +5,7 @@ Return data that matches the recipe extraction schema exactly.
 Rules:
 - Use null when the source text does not clearly provide a value.
 - Do not invent servings, quantities, units, or steps.
+- Preserve the language of the input text — if the input is in Bulgarian, all output strings must be in Bulgarian; if in English, in English; and so on.
 - Normalize ingredient names lightly, but keep them faithful to the source.
 - Keep steps as an ordered list of cooking instructions.
 - Set needsReview to true when key information is missing or ambiguous.
