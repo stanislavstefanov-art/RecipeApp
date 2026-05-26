@@ -17,6 +17,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RecipesClient } from '../../api/recipes.client';
 import { ToastService } from '../../core/toast.service';
 import { getErrorMessage } from '../../shared/get-error-message';
+import { DifficultyRatingComponent } from '../../shared/ui/difficulty-rating/difficulty-rating';
 import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 import { UnitNamePipe } from '../../shared/unit-name.pipe';
 import { AddIngredientForm } from './add-ingredient-form';
@@ -42,7 +43,7 @@ type ImageState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, FormsModule, ReactiveFormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, UnitNamePipe],
+  imports: [RouterLink, FormsModule, ReactiveFormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, DifficultyRatingComponent, UnitNamePipe],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -124,8 +125,7 @@ export class RecipesDetails {
       });
   }
 
-  protected onDifficultyChange(value: string): void {
-    const level = value ? parseInt(value, 10) : null;
+  protected onDifficultyChange(level: number | null): void {
     this.savingDifficulty.set(true);
     this.client
       .setDifficulty(this.id(), { difficultyLevel: level })

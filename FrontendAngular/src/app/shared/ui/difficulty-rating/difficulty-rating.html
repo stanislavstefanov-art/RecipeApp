@@ -1,0 +1,17 @@
+<span
+  [class]="size() === 'sm' ? 'inline-flex gap-0.5 text-sm' : 'inline-flex gap-0.5 text-xl'"
+  [attr.aria-label]="value() !== null ? 'Difficulty ' + value() + ' out of 3' : 'Difficulty not set'"
+>
+  @for (n of levels; track n) {
+    @if (readonly()) {
+      <span [class]="isFilled(n) ? 'text-blue-500' : 'text-slate-300'">★</span>
+    } @else {
+      <button
+        type="button"
+        [attr.aria-label]="'Set difficulty ' + n + ' of 3'"
+        (click)="onSelect(n)"
+        [class]="isFilled(n) ? 'text-blue-500 leading-none' : 'text-slate-300 hover:text-blue-300 leading-none transition-colors'"
+      >★</button>
+    }
+  }
+</span>
