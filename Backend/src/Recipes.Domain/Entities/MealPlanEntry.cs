@@ -10,6 +10,7 @@ public sealed class MealPlanEntry
     public MealPlanEntryId Id { get; private set; } = MealPlanEntryId.New();
     public MealPlanId MealPlanId { get; private set; }
     public RecipeId BaseRecipeId { get; private set; }
+    public RecipeId? SaladRecipeId { get; private set; }
     public DateOnly PlannedDate { get; private set; }
     public MealType MealType { get; private set; }
     public MealScope Scope { get; private set; }
@@ -30,6 +31,8 @@ public sealed class MealPlanEntry
         MealType = mealType;
         Scope = scope;
     }
+
+    internal void SetSaladRecipe(RecipeId? saladRecipeId) => SaladRecipeId = saladRecipeId;
 
     internal void AssignPerson(
         PersonId personId,

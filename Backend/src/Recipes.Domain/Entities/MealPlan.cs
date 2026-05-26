@@ -37,7 +37,8 @@ public sealed class MealPlan : Entity
         DateOnly plannedDate,
         MealType mealType,
         MealScope scope,
-        IReadOnlyList<(PersonId PersonId, RecipeId AssignedRecipeId, RecipeVariationId? RecipeVariationId, decimal PortionMultiplier, string? Notes)> assignments)
+        IReadOnlyList<(PersonId PersonId, RecipeId AssignedRecipeId, RecipeVariationId? RecipeVariationId, decimal PortionMultiplier, string? Notes)> assignments,
+        RecipeId? saladRecipeId = null)
     {
         ArgumentNullException.ThrowIfNull(baseRecipe);
 
@@ -58,6 +59,7 @@ public sealed class MealPlan : Entity
         }
 
         var entry = new MealPlanEntry(Id, baseRecipe.Id, plannedDate, mealType, scope);
+        entry.SetSaladRecipe(saladRecipeId);
 
         foreach (var assignment in assignments)
         {

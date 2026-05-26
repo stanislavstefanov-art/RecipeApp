@@ -108,8 +108,21 @@
     "recipeContext": "Recipe context",
     "dietaryGoal": "Dietary goal",
     "householdId": "Household",
+    "recipeType": "Recipe type",
     "selectHouseholdPlaceholder": "Select a household…",
     "noHouseholdsForCreate": "You need a household to create recipes.",
+    "filterType": "Type",
+    "filterSource": "Source",
+    "filterMinStars": "Min stars",
+    "filterIngredient": "Ingredient",
+    "filterIngredientPlaceholder": "e.g. chicken…",
+    "filterAll": "All",
+    "filterManual": "Manual",
+    "filterImported": "Imported",
+    "clearFilters": "Clear filters",
+    "noFilterResults": "No recipes match your filters.",
+    "noFilterResultsDesc": "Try adjusting or clearing the filters.",
+    "saveImportedRecipe": "Save as recipe",
     "uploadImage": "Upload image",
     "deleteImage": "Delete image",
     "confirmDeleteImage": "Delete the recipe image?",
@@ -426,6 +439,10 @@
       "1": "Shared",
       "2": "Shared with variations",
       "3": "Individual"
+    },
+    "recipeType": {
+      "1": "Main dish",
+      "2": "Salad"
     },
     "expenseSourceType": {
       "1": "Manual",

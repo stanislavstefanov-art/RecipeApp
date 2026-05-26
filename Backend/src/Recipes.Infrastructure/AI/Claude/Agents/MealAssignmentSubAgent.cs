@@ -214,7 +214,7 @@ public sealed class MealAssignmentSubAgent
             .ToList();
 
         state.Entries.Add(new MealPlanSuggestionEntryDto(
-            recipeGuid, date, input.MealType, 1, assignments));
+            recipeGuid, null, date, input.MealType, 1, assignments));
 
         return OkResult(toolUseId, JsonSerializer.Serialize(new { assigned = $"{date:yyyy-MM-dd} mealType={input.MealType}" }, JsonOptions));
     }

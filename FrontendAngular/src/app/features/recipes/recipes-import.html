@@ -101,6 +101,58 @@
       @if (data.notes) {
         <p class="mt-4 text-sm text-gray-500">{{ data.notes }}</p>
       }
+
+      <div class="mt-6 border-t border-gray-100 pt-5">
+        <h3 class="mb-3 text-sm font-semibold">{{ 'recipes.saveImportedRecipe' | translate }}</h3>
+
+        <form [formGroup]="saveForm" (ngSubmit)="onSave()" class="space-y-3" novalidate>
+          @if (saveError(); as error) {
+            <div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900" role="alert">
+              {{ error }}
+            </div>
+          }
+
+          <div>
+            <label for="save-name" class="block text-xs font-medium text-gray-600">{{ 'recipes.name' | translate }}</label>
+            <input
+              id="save-name"
+              type="text"
+              formControlName="name"
+              class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-black focus:outline-none"
+            />
+            @if (saveForm.controls.name.touched && saveForm.controls.name.hasError('required')) {
+              <p class="mt-1 text-xs text-red-600">{{ 'validation.required' | translate }}</p>
+            }
+          </div>
+
+          @if (showHouseholdSelect()) {
+            <div>
+              <label for="save-household" class="block text-xs font-medium text-gray-600">{{ 'recipes.householdId' | translate }}</label>
+              <select
+                id="save-household"
+                formControlName="householdId"
+                class="mt-1 w-full rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-black focus:outline-none"
+              >
+                <option value="" disabled>{{ 'recipes.selectHouseholdPlaceholder' | translate }}</option>
+                @for (h of households(); track h.id) {
+                  <option [value]="h.id">{{ h.name }}</option>
+                }
+              </select>
+              @if (saveForm.controls.householdId.touched && saveForm.controls.householdId.hasError('required')) {
+                <p class="mt-1 text-xs text-red-600">{{ 'validation.required' | translate }}</p>
+              }
+            </div>
+          }
+
+          <button
+            type="submit"
+            [disabled]="isSaving()"
+            class="rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+          >
+            {{ isSaving() ? ('recipes.creating' | translate) : ('recipes.saveImportedRecipe' | translate) }}
+          </button>
+        </form>
+      </div>
     </div>
   }
 </section>

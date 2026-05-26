@@ -31,6 +31,12 @@ public sealed class MealPlanEntryConfiguration : IEntityTypeConfiguration<MealPl
                 value => RecipeId.From(value))
             .IsRequired();
 
+        builder.Property(x => x.SaladRecipeId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? RecipeId.From(value.Value) : null)
+            .IsRequired(false);
+
         builder.Property(x => x.PlannedDate)
             .IsRequired();
 
@@ -47,7 +53,15 @@ public sealed class MealPlanEntryConfiguration : IEntityTypeConfiguration<MealPl
             .HasForeignKey(x => x.MealPlanEntryId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne<Recipe>()
+            .WithMany()
+            .HasForeignKey(x => x.SaladRecipeId)
+            .OnDelete(DeleteBehavior.SetNull)
+            .IsRequired(false);
+
         builder.HasIndex(x => x.MealPlanId);
         builder.HasIndex(x => x.BaseRecipeId);
+        builder.HasIndex(x => x.SaladRecipeId)
+            .HasFilter("[SaladRecipeId] IS NOT NULL");
     }
 }

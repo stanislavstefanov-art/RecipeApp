@@ -157,6 +157,7 @@ export class MealPlansSuggest {
         householdId: v.householdId,
         entries: result.entries.map((e) => ({
           baseRecipeId: e.baseRecipeId,
+          saladRecipeId: e.saladRecipeId,
           plannedDate: e.plannedDate,
           mealType: e.mealType,
           scope: e.scope,

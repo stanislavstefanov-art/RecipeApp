@@ -48,6 +48,10 @@ export class RecipesCreate {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    recipeType: new FormControl('1', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
   private readonly householdsState = signal<HouseholdsState>({ kind: 'loading' });
@@ -99,10 +103,10 @@ export class RecipesCreate {
     }
 
     this.submitState.set({ kind: 'submitting' });
-    const { name, householdId } = this.form.getRawValue();
+    const { name, householdId, recipeType } = this.form.getRawValue();
 
     this.recipesClient
-      .create({ name, householdId })
+      .create({ name, householdId, recipeType: parseInt(recipeType, 10) })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {

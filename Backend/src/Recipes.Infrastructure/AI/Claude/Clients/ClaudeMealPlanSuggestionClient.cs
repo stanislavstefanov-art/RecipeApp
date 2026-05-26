@@ -145,9 +145,12 @@ The JSON must match this schema exactly:
                         recipe.Variations.Select(v =>
                             $"    - VariationId: {v.RecipeVariationId}, Name: {v.Name}, Notes: {v.Notes ?? "N/A"}, IngredientAdjustmentNotes: {v.IngredientAdjustmentNotes ?? "N/A"}"));
 
+                var recipeTypeName = recipe.RecipeType == (int)Domain.Enums.RecipeType.Salad ? "Salad" : "MainDish";
+
                 return $"""
         - RecipeId: {recipe.RecipeId}
         Name: {recipe.Name}
+        RecipeType: {recipeTypeName}
         Variations:
         {variations}
         """;

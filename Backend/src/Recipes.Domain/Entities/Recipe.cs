@@ -1,5 +1,6 @@
 namespace Recipes.Domain.Entities;
 
+using Recipes.Domain.Enums;
 using Recipes.Domain.Events;
 using Recipes.Domain.Primitives;
 
@@ -13,6 +14,8 @@ public sealed class Recipe : Entity
     public RecipeId Id { get; private set; } = RecipeId.New();
     public RecipeName Name { get; private set; }
     public HouseholdId? HouseholdId { get; private set; }
+    public RecipeType RecipeType { get; private set; } = RecipeType.MainDish;
+    public bool IsImported { get; private set; }
 
     public string? ImageUrl { get; private set; }
 
@@ -154,4 +157,8 @@ public sealed class Recipe : Entity
     }
 
     public void SetImageUrl(string? url) => ImageUrl = url;
+
+    public void SetRecipeType(RecipeType type) => RecipeType = type;
+
+    public void MarkAsImported() => IsImported = true;
 }

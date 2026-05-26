@@ -26,6 +26,7 @@ export interface MealPlanSuggestionAssignmentDto {
 
 export interface MealPlanSuggestionEntryDto {
   readonly baseRecipeId: string;
+  readonly saladRecipeId: string | null;
   readonly plannedDate: string;
   readonly mealType: number;
   readonly scope: number;
@@ -58,6 +59,7 @@ export interface AcceptMealPlanSuggestionAssignmentRequest {
 
 export interface AcceptMealPlanSuggestionEntryRequest {
   readonly baseRecipeId: string;
+  readonly saladRecipeId: string | null;
   readonly plannedDate: string;
   readonly mealType: number;
   readonly scope: number;
@@ -90,6 +92,8 @@ export interface MealPlanEntryDto {
   readonly id: string;
   readonly baseRecipeId: string;
   readonly baseRecipeName: string;
+  readonly saladRecipeId: string | null;
+  readonly saladRecipeName: string | null;
   readonly plannedDate: string;
   readonly mealType: number;
   readonly scope: number;

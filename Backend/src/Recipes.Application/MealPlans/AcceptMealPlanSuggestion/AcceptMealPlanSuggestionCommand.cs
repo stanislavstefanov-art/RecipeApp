@@ -10,6 +10,7 @@ public sealed record AcceptMealPlanSuggestionCommand(
 
 public sealed record AcceptMealPlanSuggestionEntryDto(
     Guid BaseRecipeId,
+    Guid? SaladRecipeId,
     DateOnly PlannedDate,
     int MealType,
     int Scope,

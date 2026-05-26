@@ -11,6 +11,7 @@ public sealed record MealPlanSuggestionRequestDto(
 public sealed record AvailableRecipeDto(
     Guid RecipeId,
     string Name,
+    int RecipeType,
     IReadOnlyList<AvailableRecipeVariationDto> Variations);
 
 public sealed record AvailableRecipeVariationDto(

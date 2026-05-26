@@ -38,6 +38,7 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
                 [
                     new AcceptMealPlanSuggestionEntryDto(
                         recipes[0].Id.Value,
+                        null,
                         new DateOnly(2026, 4, 21),
                         (int)MealType.Dinner,
                         (int)MealScope.Shared,
@@ -51,6 +52,7 @@ public sealed class AcceptMealPlanSuggestionHandlerTests
                         ]),
                     new AcceptMealPlanSuggestionEntryDto(
                         recipes[1].Id.Value,
+                        null,
                         new DateOnly(2026, 4, 22),
                         (int)MealType.Dinner,
                         (int)MealScope.Shared,

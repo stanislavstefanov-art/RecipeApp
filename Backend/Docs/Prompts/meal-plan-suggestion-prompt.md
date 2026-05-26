@@ -27,6 +27,10 @@ Important planning rules:
 - Do not wrap JSON in markdown.
 - Confidence must be between 0 and 1.
 - Set needsReview to true when constraints conflict or recipe variety is too limited.
+- Each recipe has a recipeType: 1 = MainDish, 2 = Salad.
+- For Dinner entries, always set saladRecipeId to a recipe with recipeType 2 (Salad) when one is available.
+- If no Salad recipe is available, leave saladRecipeId as null.
+- Only Dinner entries should have a saladRecipeId; set it to null for Breakfast, Lunch, and Snack.
 
 Hard constraints:
 - health and dietary restrictions must be respected

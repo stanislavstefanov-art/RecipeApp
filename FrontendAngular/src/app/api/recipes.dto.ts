@@ -13,11 +13,16 @@ export interface RecipeListItemDto {
   readonly averageStars: number | null;
   readonly ratingCount: number;
   readonly imageUrl?: string | null;
+  readonly recipeType: number;
+  readonly isImported: boolean;
+  readonly ingredientNames: readonly string[];
 }
 
 export interface CreateRecipeRequest {
   readonly name: string;
   readonly householdId: string;
+  readonly recipeType: number;
+  readonly isImported?: boolean;
 }
 
 export interface CreateRecipeResponse {

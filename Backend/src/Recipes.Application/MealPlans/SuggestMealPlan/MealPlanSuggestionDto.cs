@@ -9,6 +9,7 @@ public sealed record MealPlanSuggestionDto(
 
 public sealed record MealPlanSuggestionEntryDto(
     Guid BaseRecipeId,
+    Guid? SaladRecipeId,
     DateOnly PlannedDate,
     int MealType,
     int Scope,

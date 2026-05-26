@@ -2,6 +2,7 @@ using ErrorOr;
 using MediatR;
 using Recipes.Application.Common;
 using Recipes.Domain.Entities;
+using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -31,6 +32,8 @@ public sealed class CreateRecipeHandler : IRequestHandler<CreateRecipeCommand, E
         }
 
         var recipe = new Recipe(request.Name, householdId);
+        recipe.SetRecipeType((RecipeType)request.RecipeType);
+        if (request.IsImported) recipe.MarkAsImported();
 
         _repository.Add(recipe);
         await _repository.SaveChangesAsync(cancellationToken);

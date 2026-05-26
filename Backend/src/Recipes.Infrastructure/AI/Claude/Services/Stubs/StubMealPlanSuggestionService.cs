@@ -53,6 +53,7 @@ public sealed class StubMealPlanSuggestionService : IMealPlanSuggestionService
 
                 entries.Add(new MealPlanSuggestionEntryDto(
                     baseRecipe.RecipeId,
+                    null,
                     date,
                     mealType,
                     (int)scope,

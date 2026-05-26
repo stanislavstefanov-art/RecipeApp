@@ -11,9 +11,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["baseRecipeId", "plannedDate", "mealType", "scope", "assignments"],
+        "required": ["baseRecipeId", "saladRecipeId", "plannedDate", "mealType", "scope", "assignments"],
         "properties": {
           "baseRecipeId": { "type": "string", "format": "uuid" },
+          "saladRecipeId": { "type": ["string", "null"], "format": "uuid" },
           "plannedDate": { "type": "string", "format": "date" },
           "mealType": { "type": "integer" },
           "scope": { "type": "integer" },

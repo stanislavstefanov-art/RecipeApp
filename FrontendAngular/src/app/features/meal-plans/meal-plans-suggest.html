@@ -154,6 +154,9 @@
               </span>
               <span class="flex-1 text-sm">
                 {{ recipeMap().get(entry.baseRecipeId) ?? entry.baseRecipeId }}
+                @if (entry.saladRecipeId) {
+                  <span class="ml-1 text-gray-500">+ {{ recipeMap().get(entry.saladRecipeId) ?? entry.saladRecipeId }}</span>
+                }
               </span>
               <span class="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
                 {{ 'enums.mealScope.' + entry.scope | translate }}

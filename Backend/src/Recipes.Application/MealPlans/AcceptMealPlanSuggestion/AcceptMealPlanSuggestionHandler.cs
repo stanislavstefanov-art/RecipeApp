@@ -101,6 +101,23 @@ public sealed class AcceptMealPlanSuggestionHandler
                 }
             }
 
+            RecipeId? saladRecipeId = null;
+            if (entry.SaladRecipeId.HasValue)
+            {
+                var saladRecipe = await _recipeRepository.GetByIdAsync(
+                    RecipeId.From(entry.SaladRecipeId.Value),
+                    cancellationToken);
+
+                if (saladRecipe is null)
+                {
+                    return Error.NotFound(
+                        "Recipe.NotFound",
+                        $"Salad recipe '{entry.SaladRecipeId.Value}' was not found.");
+                }
+
+                saladRecipeId = saladRecipe.Id;
+            }
+
             try
             {
                 mealPlan.AddRecipe(
@@ -117,7 +134,8 @@ public sealed class AcceptMealPlanSuggestionHandler
                             : null,
                         PortionMultiplier: x.PortionMultiplier,
                         Notes: x.Notes))
-                    .ToList());
+                    .ToList(),
+                    saladRecipeId);
             }
             catch (InvalidOperationException ex)
             {

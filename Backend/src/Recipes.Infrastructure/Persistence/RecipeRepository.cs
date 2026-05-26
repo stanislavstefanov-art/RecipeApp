@@ -37,6 +37,7 @@ public sealed class RecipeRepository : IRecipeRepository
         var ids = householdIds.Select(h => h.Value).ToHashSet();
         var all = await _db.Recipes
             .AsNoTracking()
+            .Include(r => r.Ingredients)
             .Include(r => r.Ratings)
             .ToListAsync(cancellationToken);
         return all

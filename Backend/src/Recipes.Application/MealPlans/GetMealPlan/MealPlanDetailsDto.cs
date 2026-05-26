@@ -11,6 +11,8 @@ public sealed record MealPlanEntryDto(
     Guid Id,
     Guid BaseRecipeId,
     string BaseRecipeName,
+    Guid? SaladRecipeId,
+    string? SaladRecipeName,
     DateOnly PlannedDate,
     int MealType,
     int Scope,

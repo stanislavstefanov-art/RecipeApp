@@ -80,10 +80,17 @@ public sealed class GetMealPlanHandler
                     .OrderBy(x => x.PersonName)
                     .ToList();
 
+                recipeById.TryGetValue(entry.SaladRecipeId ?? entry.BaseRecipeId, out var saladRecipe);
+                var saladRecipeName = entry.SaladRecipeId.HasValue
+                    ? saladRecipe?.Name.Value ?? entry.SaladRecipeId.Value.Value.ToString()
+                    : null;
+
                 return new MealPlanEntryDto(
                     entry.Id.Value,
                     entry.BaseRecipeId.Value,
                     baseRecipe?.Name.Value ?? entry.BaseRecipeId.Value.ToString(),
+                    entry.SaladRecipeId?.Value,
+                    saladRecipeName,
                     entry.PlannedDate,
                     (int)entry.MealType,
                     (int)entry.Scope,

@@ -35,6 +35,18 @@
       }
     </div>
 
+    <div>
+      <label for="recipeType" class="block text-sm font-medium">{{ 'recipes.recipeType' | translate }}</label>
+      <select
+        id="recipeType"
+        formControlName="recipeType"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+      >
+        <option value="1">{{ 'enums.recipeType.1' | translate }}</option>
+        <option value="2">{{ 'enums.recipeType.2' | translate }}</option>
+      </select>
+    </div>
+
     @if (householdsLoading()) {
       <p class="text-sm text-gray-500">{{ 'households.loading' | translate }}</p>
     } @else if (householdsError()) {

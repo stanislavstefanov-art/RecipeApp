@@ -75,6 +75,7 @@ public sealed class SuggestMealPlanHandler
             recipes.Select(x => new AvailableRecipeDto(
                 x.Id.Value,
                 x.Name.Value,
+                (int)x.RecipeType,
                 x.Variations.Select(v => new AvailableRecipeVariationDto(
                     v.Id.Value,
                     v.Name,

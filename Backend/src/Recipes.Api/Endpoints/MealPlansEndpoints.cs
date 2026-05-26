@@ -136,6 +136,7 @@ public static class MealPlansEndpoints
                     request.HouseholdId,
                     request.Entries.Select(x => new AcceptMealPlanSuggestionEntryDto(
                         x.BaseRecipeId,
+                        x.SaladRecipeId,
                         x.PlannedDate,
                         x.MealType,
                         x.Scope,
@@ -205,7 +206,7 @@ public sealed record AddMealPlanEntryRequest(Guid RecipeId, DateOnly PlannedDate
 public sealed record AddMealPlanEntryAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record SuggestMealPlanRequest(string Name, Guid HouseholdId, DateOnly StartDate, int NumberOfDays, IReadOnlyList<int> MealTypes);
 public sealed record AcceptMealPlanSuggestionRequest(string Name, Guid HouseholdId, IReadOnlyList<AcceptMealPlanSuggestionEntryRequest> Entries);
-public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AcceptMealPlanSuggestionAssignmentRequest> Assignments);
+public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, Guid? SaladRecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AcceptMealPlanSuggestionAssignmentRequest> Assignments);
 public sealed record AcceptMealPlanSuggestionAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record UpdateMealPlanPersonAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record ApproveWorkflowRequest(

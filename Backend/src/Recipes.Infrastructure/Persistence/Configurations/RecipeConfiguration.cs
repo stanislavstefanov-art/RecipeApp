@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Recipes.Domain.Entities;
+using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 
 namespace Recipes.Infrastructure.Persistence.Configurations;
@@ -31,6 +32,15 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
                 id => id.HasValue ? id.Value.Value : (Guid?)null,
                 value => value.HasValue ? HouseholdId.From(value.Value) : null)
             .IsRequired(false);
+
+        builder.Property(r => r.RecipeType)
+            .HasConversion<int>()
+            .IsRequired()
+            .HasDefaultValue(RecipeType.MainDish);
+
+        builder.Property(r => r.IsImported)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder.Property(r => r.ImageUrl)
             .IsRequired(false)
