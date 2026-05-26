@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { forkJoin, map, of, switchMap } from 'rxjs';
+import { concatMap, forkJoin, from, map, of, switchMap, toArray } from 'rxjs';
 
 import { HouseholdsClient } from '../../api/households.client';
 import { HouseholdListItemDto } from '../../api/households.dto';
@@ -148,9 +148,11 @@ export class RecipesImport {
           const stepCalls = extracted.steps.map((step) =>
             this.client.addStep(id, { instruction: step }),
           );
-          const all = [...ingredientCalls, ...stepCalls];
-          if (all.length === 0) return of(id);
-          return forkJoin(all).pipe(map(() => id));
+          const ingredients$ = ingredientCalls.length > 0 ? forkJoin(ingredientCalls) : of(null);
+          const steps$ = stepCalls.length > 0
+            ? from(stepCalls).pipe(concatMap((call) => call), toArray())
+            : of(null);
+          return forkJoin([ingredients$, steps$]).pipe(map(() => id));
         }),
       )
       .subscribe({
