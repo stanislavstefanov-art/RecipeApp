@@ -22,6 +22,7 @@ function makeItem(overrides: Record<string, unknown> = {}) {
     isPurchased: false,
     notes: null,
     sourceReferenceId: null,
+    recipeSources: [],
     ...overrides,
   };
 }
