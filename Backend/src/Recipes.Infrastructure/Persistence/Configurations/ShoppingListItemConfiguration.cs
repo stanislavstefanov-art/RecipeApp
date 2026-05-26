@@ -60,5 +60,7 @@ public sealed class ShoppingListItemConfiguration : IEntityTypeConfiguration<Sho
             .WithOne()
             .HasForeignKey(x => x.ShoppingListItemId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(x => x.RecipeSources).HasField("_sources");
     }
 }
