@@ -17,6 +17,7 @@ import {
   RecipeListItemDto,
   RecipeRatingDto,
   SetDifficultyRequest,
+  SetRecipeTypeRequest,
   SuggestSubstitutionsRequest,
   UpdateIngredientRequest,
   UpdateRecipeRequest,
@@ -62,6 +63,10 @@ export class RecipesClient {
 
   setDifficulty(recipeId: string, payload: SetDifficultyRequest): Observable<void> {
     return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/difficulty`, payload);
+  }
+
+  setRecipeType(recipeId: string, payload: SetRecipeTypeRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/type`, payload);
   }
 
   updateIngredient(recipeId: string, ingredientId: string, payload: UpdateIngredientRequest): Observable<void> {

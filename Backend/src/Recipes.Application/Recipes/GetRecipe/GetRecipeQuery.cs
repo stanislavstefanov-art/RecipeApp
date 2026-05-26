@@ -15,7 +15,8 @@ public sealed record RecipeDto(
     IReadOnlyList<RecipeRatingDto> Ratings,
     RecipeRatingDto? MyRating,
     string? ImageUrl,
-    int? DifficultyLevel);
+    int? DifficultyLevel,
+    int RecipeType);
 
 public sealed record IngredientDto(Guid Id, string Name, decimal Quantity, string Unit);
 

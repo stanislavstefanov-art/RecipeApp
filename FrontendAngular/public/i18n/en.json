@@ -452,7 +452,8 @@
     },
     "recipeType": {
       "1": "Main dish",
-      "2": "Salad"
+      "2": "Salad",
+      "3": "Appetizer"
     },
     "difficultyLevel": {
       "1": "Easy",

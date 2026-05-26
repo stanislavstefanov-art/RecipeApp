@@ -84,6 +84,11 @@ export interface RecipeDto {
   readonly myRating: RecipeRatingDto | null;
   readonly imageUrl?: string | null;
   readonly difficultyLevel?: number | null;
+  readonly recipeType: number;
+}
+
+export interface SetRecipeTypeRequest {
+  readonly recipeType: number;
 }
 
 export interface CookingLogEntryDto {
