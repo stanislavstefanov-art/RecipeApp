@@ -34,8 +34,9 @@
       <div class="flex flex-wrap items-end gap-4">
 
         <div class="min-w-36">
-          <label class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterType' | translate }}</label>
+          <label for="filter-type" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterType' | translate }}</label>
           <select
+            id="filter-type"
             [ngModel]="filterType()"
             (ngModelChange)="filterType.set($event === '' ? null : +$event)"
             class="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none"
@@ -47,8 +48,9 @@
         </div>
 
         <div class="min-w-36">
-          <label class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterSource' | translate }}</label>
+          <label for="filter-source" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterSource' | translate }}</label>
           <select
+            id="filter-source"
             [ngModel]="filterSource()"
             (ngModelChange)="filterSource.set($event)"
             class="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none"
@@ -60,8 +62,9 @@
         </div>
 
         <div class="min-w-36">
-          <label class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterMinStars' | translate }}</label>
+          <label for="filter-stars" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterMinStars' | translate }}</label>
           <select
+            id="filter-stars"
             [ngModel]="filterMinStars()"
             (ngModelChange)="filterMinStars.set($event === '' ? null : +$event)"
             class="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none"
@@ -76,8 +79,9 @@
         </div>
 
         <div class="flex-1 min-w-48 relative">
-          <label class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterIngredient' | translate }}</label>
+          <label for="filter-ingredient" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterIngredient' | translate }}</label>
           <input
+            id="filter-ingredient"
             type="text"
             [ngModel]="filterIngredient()"
             (ngModelChange)="filterIngredient.set($event)"
