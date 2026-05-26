@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { forkJoin, map, of, switchMap } from 'rxjs';
 
 import { HouseholdsClient } from '../../api/households.client';
 import { HouseholdListItemDto } from '../../api/households.dto';
@@ -129,12 +130,32 @@ export class RecipesImport {
     const { name, householdId } = this.saveForm.getRawValue();
     this.saveState.set({ kind: 'saving' });
 
+    const extracted = this.result()!;
+
     this.client
       .create({ name, householdId, recipeType: 1, isImported: true })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((response) => {
+          const id = response.id;
+          const ingredientCalls = extracted.ingredients.map((ing) =>
+            this.client.addIngredient(id, {
+              name: ing.name,
+              quantity: parseFloat(ing.quantity ?? '1') || 1,
+              unit: ing.unit ?? '',
+            }),
+          );
+          const stepCalls = extracted.steps.map((step) =>
+            this.client.addStep(id, { instruction: step }),
+          );
+          const all = [...ingredientCalls, ...stepCalls];
+          if (all.length === 0) return of(id);
+          return forkJoin(all).pipe(map(() => id));
+        }),
+      )
       .subscribe({
-        next: (response) => {
-          void this.router.navigate(['/recipes', response.id]);
+        next: (id) => {
+          void this.router.navigate(['/recipes', id]);
         },
         error: (err: unknown) => {
           this.saveState.set({ kind: 'error', message: extractApiError(err) });
