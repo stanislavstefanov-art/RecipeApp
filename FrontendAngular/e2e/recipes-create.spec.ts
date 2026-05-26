@@ -77,7 +77,7 @@ test.describe('recipes create', () => {
   test('navigates to /recipes/{id} on 201', async ({ page }) => {
     await page.route(API, async (route, request) => {
       expect(request.method()).toBe('POST');
-      expect(request.postDataJSON()).toEqual({ name: 'Pancakes', householdId: HOUSEHOLD_ID, recipeType: 1 });
+      expect(request.postDataJSON()).toEqual({ name: 'Pancakes', householdId: HOUSEHOLD_ID, recipeType: 1, difficultyLevel: null });
       await route.fulfill({
         status: 201,
         contentType: 'application/json',
