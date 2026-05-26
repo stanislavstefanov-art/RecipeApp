@@ -1,35 +1,32 @@
 <div class="min-h-screen bg-shell">
   <header class="sticky top-0 z-50 bg-header">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-      <div>
+    <div class="mx-auto flex max-w-6xl items-center px-4 py-4 sm:px-6">
+      <div class="flex-1">
         <a routerLink="/" class="text-lg font-semibold text-white sm:text-xl">RecipeApp</a>
         <p class="text-xs text-shell-tagline sm:text-sm">{{ 'nav.tagline' | translate }}</p>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="hidden md:flex md:items-center md:gap-3">
-          <app-user-menu />
-        </div>
-
-        <button
-          type="button"
-          (click)="toggleNav()"
-          class="rounded-lg border border-shell px-3 py-2 text-sm text-nav md:hidden"
-        >
-          {{ isNavOpen() ? ('common.close' | translate) : ('common.menu' | translate) }}
-        </button>
+      <div class="hidden md:flex md:items-center md:gap-6">
+        <app-user-menu />
+        <nav class="flex gap-5 text-sm">
+          <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.households' | translate }}</a>
+          <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.persons' | translate }}</a>
+          <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.recipes' | translate }}</a>
+          <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
+          <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
+          <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white">{{ 'nav.expenses' | translate }}</a>
+          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.reports' | translate }}</a>
+          <a routerLink="/settings" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.settings' | translate }}</a>
+        </nav>
       </div>
 
-      <nav class="hidden gap-5 text-sm md:flex">
-        <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.households' | translate }}</a>
-        <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.persons' | translate }}</a>
-        <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.recipes' | translate }}</a>
-        <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
-        <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
-        <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white">{{ 'nav.expenses' | translate }}</a>
-        <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.reports' | translate }}</a>
-        <a routerLink="/settings" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.settings' | translate }}</a>
-      </nav>
+      <button
+        type="button"
+        (click)="toggleNav()"
+        class="rounded-lg border border-shell px-3 py-2 text-sm text-nav md:hidden"
+      >
+        {{ isNavOpen() ? ('common.close' | translate) : ('common.menu' | translate) }}
+      </button>
     </div>
 
     @if (isNavOpen()) {
