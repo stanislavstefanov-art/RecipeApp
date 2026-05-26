@@ -268,9 +268,6 @@
           } @else {
             <span class="text-xs text-gray-400 italic">{{ 'recipes.difficultyNotSet' | translate }}</span>
           }
-          @if (savingDifficulty()) {
-            <span class="text-xs text-gray-400">{{ 'recipes.saving' | translate }}</span>
-          }
         </div>
       </div>
 
@@ -278,35 +275,12 @@
         <p class="mb-2 text-sm font-medium text-gray-700">{{ 'ratings.yourRating' | translate }}</p>
         <app-star-rating
           [value]="selectedStars()"
+          [readonly]="isSavingRating()"
           (rated)="onStarsSelected($event)"
         />
-        <textarea
-          class="mt-3 w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
-          rows="2"
-          [placeholder]="'ratings.commentPlaceholder' | translate"
-          [value]="ratingComment()"
-          (input)="ratingComment.set($any($event.target).value)"
-        ></textarea>
-        <div class="mt-2 flex gap-2">
-          <button
-            type="button"
-            (click)="onSaveRating()"
-            [disabled]="!selectedStars() || isSavingRating()"
-            class="rounded bg-green-700 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {{ isSavingRating() ? ('ratings.saving' | translate) : ('ratings.saveRating' | translate) }}
-          </button>
-          @if (data.myRating) {
-            <button
-              type="button"
-              (click)="onDeleteRating()"
-              [disabled]="isDeletingRating()"
-              class="rounded border border-red-300 bg-white px-4 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {{ isDeletingRating() ? ('ratings.deleting' | translate) : ('ratings.deleteRating' | translate) }}
-            </button>
-          }
-        </div>
+        @if (isSavingRating()) {
+          <p class="mt-1 text-xs text-gray-400">{{ 'ratings.saving' | translate }}</p>
+        }
       </div>
 
       @if (data.ratings.length > 0) {

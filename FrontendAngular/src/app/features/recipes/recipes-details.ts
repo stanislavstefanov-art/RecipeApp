@@ -246,7 +246,6 @@ export class RecipesDetails {
   protected readonly isDeletingRating = computed(() => this.ratingState().kind === 'deleting');
 
   protected selectedStars = signal<number | null>(null);
-  protected ratingComment = signal('');
 
   constructor() {
     effect(() => {
@@ -255,44 +254,19 @@ export class RecipesDetails {
       const myRating = this.recipe.value()?.myRating;
       if (myRating && this.selectedStars() === null) {
         this.selectedStars.set(myRating.stars);
-        this.ratingComment.set(myRating.comment ?? '');
       }
     });
   }
 
   protected onStarsSelected(stars: number): void {
     this.selectedStars.set(stars);
-  }
-
-  protected onSaveRating(): void {
-    const stars = this.selectedStars();
-    if (!stars) return;
-
     this.ratingState.set({ kind: 'saving' });
     this.client
-      .rate(this.id(), { stars, comment: this.ratingComment().trim() || null })
+      .rate(this.id(), { stars, comment: null })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.ratingState.set({ kind: 'idle' });
-          this.recipe.reload();
-        },
-        error: () => this.ratingState.set({ kind: 'idle' }),
-      });
-  }
-
-  protected onDeleteRating(): void {
-    if (!window.confirm(this.translate.instant('ratings.confirmDeleteRating'))) return;
-
-    this.ratingState.set({ kind: 'deleting' });
-    this.client
-      .deleteRating(this.id())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.ratingState.set({ kind: 'idle' });
-          this.selectedStars.set(null);
-          this.ratingComment.set('');
           this.recipe.reload();
         },
         error: () => this.ratingState.set({ kind: 'idle' }),
