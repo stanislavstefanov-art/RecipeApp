@@ -120,29 +120,26 @@
       }
     </fieldset>
 
-    @if (members().length > 0) {
-      @let mealTypeMap = { 1: form.controls.breakfast.value, 2: form.controls.lunch.value, 3: form.controls.dinner.value, 4: form.controls.snack.value };
-      @for (mt of [1, 2, 3, 4]; track mt) {
-        @if (mealTypeMap[mt]) {
-          <div class="rounded-lg border border-gray-100 bg-gray-50 p-3">
-            <p class="mb-2 text-xs font-medium text-gray-600">
-              {{ 'mealPlans.personsForMealType' | translate }} {{ 'enums.mealType.' + mt | translate }}
-            </p>
-            <div class="flex flex-wrap gap-3">
-              @for (member of members(); track member.personId) {
-                <label class="flex items-center gap-1.5 text-sm">
-                  <input
-                    type="checkbox"
-                    [checked]="!isPersonExcluded(mt, member.personId)"
-                    (change)="togglePersonExclusion(mt, member.personId)"
-                    class="rounded"
-                  />
-                  {{ member.personName }}
-                </label>
-              }
-            </div>
+    @if (members().length > 0 && activeMealTypes().length > 0) {
+      @for (mt of activeMealTypes(); track mt) {
+        <div class="rounded-lg border border-gray-100 bg-gray-50 p-3">
+          <p class="mb-2 text-xs font-medium text-gray-600">
+            {{ 'mealPlans.personsForMealType' | translate }} {{ 'enums.mealType.' + mt | translate }}
+          </p>
+          <div class="flex flex-wrap gap-3">
+            @for (member of members(); track member.personId) {
+              <label class="flex items-center gap-1.5 text-sm">
+                <input
+                  type="checkbox"
+                  [checked]="!isPersonExcluded(mt, member.personId)"
+                  (change)="togglePersonExclusion(mt, member.personId)"
+                  class="rounded"
+                />
+                {{ member.personName }}
+              </label>
+            }
           </div>
-        }
+        </div>
       }
     }
 

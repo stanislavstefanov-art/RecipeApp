@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
@@ -94,6 +94,18 @@ export class MealPlansSuggest {
   });
 
   protected readonly noMealTypeError = signal(false);
+
+  private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
+
+  protected readonly activeMealTypes = computed(() => {
+    const v = this.formValue();
+    const active: number[] = [];
+    if (v.breakfast) active.push(1);
+    if (v.lunch) active.push(2);
+    if (v.dinner) active.push(3);
+    if (v.snack) active.push(4);
+    return active;
+  });
 
   private readonly suggestState = signal<SuggestState>({ kind: 'idle' });
   private readonly acceptState = signal<AcceptState>({ kind: 'idle' });
