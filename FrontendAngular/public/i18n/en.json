@@ -283,6 +283,7 @@
     "itemCountLabel": "Items: {{count}}",
     "purchased": "Purchased",
     "pending": "Pending",
+    "portions": "port.",
     "markPurchased": "Mark as purchased",
     "markPending": "Mark as pending",
     "purchaseWithExpense": "Purchase with expense",

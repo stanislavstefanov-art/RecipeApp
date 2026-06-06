@@ -91,7 +91,10 @@ public sealed class ShoppingListItem
 
     internal void AddRecipeSource(RecipeId recipeId, string recipeName, decimal portions = 1m)
     {
-        if (!_sources.Any(s => s.RecipeId == recipeId))
+        var existing = _sources.FirstOrDefault(s => s.RecipeId == recipeId);
+        if (existing is not null)
+            existing.AddPortions(portions);
+        else
             _sources.Add(new ShoppingListItemSource(Id, recipeId, recipeName, portions));
     }
 

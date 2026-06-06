@@ -19,4 +19,6 @@ public sealed class ShoppingListItemSource
         RecipeName = recipeName;
         Portions = portions;
     }
+
+    internal void AddPortions(decimal portions) => Portions += portions;
 }

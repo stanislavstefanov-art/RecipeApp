@@ -283,6 +283,7 @@
     "itemCountLabel": "Артикули: {{count}}",
     "purchased": "Купено",
     "pending": "Чакащо",
+    "portions": "порц.",
     "markPurchased": "Маркирай като купено",
     "markPending": "Маркирай като чакащо",
     "purchaseWithExpense": "Купи и добави разход",
