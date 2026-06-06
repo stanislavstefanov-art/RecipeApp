@@ -88,4 +88,8 @@ export class MealPlansClient {
   removeEntry(mealPlanId: string, entryId: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/meal-plans/${mealPlanId}/entries/${entryId}`);
   }
+
+  swapEntries(mealPlanId: string, entryAId: string, entryBId: string): Observable<void> {
+    return this.http.post<void>(`${API_BASE_URL}/api/meal-plans/${mealPlanId}/entries/swap`, { entryAId, entryBId });
+  }
 }

@@ -190,14 +190,34 @@
                             }
                           }
                         </div>
-                        <button
-                          type="button"
-                          (click)="onRemoveEntry(entry.id)"
-                          [disabled]="removingEntryId() === entry.id"
-                          class="shrink-0 rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
-                        >
-                          {{ 'common.delete' | translate }}
-                        </button>
+                        <div class="flex shrink-0 items-center gap-1">
+                          @if (prevEntry(entry.id); as prev) {
+                            <button
+                              type="button"
+                              (click)="onSwap(entry.id, prev)"
+                              [disabled]="swappingEntryId() === entry.id"
+                              class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                              title="Swap with previous"
+                            >←</button>
+                          }
+                          @if (nextEntry(entry.id); as next) {
+                            <button
+                              type="button"
+                              (click)="onSwap(entry.id, next)"
+                              [disabled]="swappingEntryId() === entry.id"
+                              class="rounded border border-gray-200 px-2 py-1 text-xs text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                              title="Swap with next"
+                            >→</button>
+                          }
+                          <button
+                            type="button"
+                            (click)="onRemoveEntry(entry.id)"
+                            [disabled]="removingEntryId() === entry.id"
+                            class="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+                          >
+                            {{ 'common.delete' | translate }}
+                          </button>
+                        </div>
                       </div>
                     }
                   </div>

@@ -81,6 +81,18 @@ public sealed class MealPlan : Entity
             entry.MealType));
     }
 
+    public void SwapEntries(MealPlanEntryId entryAId, MealPlanEntryId entryBId)
+    {
+        var a = _entries.SingleOrDefault(x => x.Id == entryAId)
+                ?? throw new InvalidOperationException($"Meal plan entry '{entryAId}' was not found.");
+        var b = _entries.SingleOrDefault(x => x.Id == entryBId)
+                ?? throw new InvalidOperationException($"Meal plan entry '{entryBId}' was not found.");
+
+        var (dateA, typeA) = (a.PlannedDate, a.MealType);
+        a.SetSlot(b.PlannedDate, b.MealType);
+        b.SetSlot(dateA, typeA);
+    }
+
     public void RemoveEntry(MealPlanEntryId entryId)
     {
         var entry = _entries.SingleOrDefault(x => x.Id == entryId)

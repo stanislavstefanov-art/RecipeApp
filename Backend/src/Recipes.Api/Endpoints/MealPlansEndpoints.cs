@@ -12,6 +12,7 @@ using Recipes.Application.MealPlans.PlanningWorkflow;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.MealPlans.DeleteMealPlan;
 using Recipes.Application.MealPlans.RemoveMealPlanEntry;
+using Recipes.Application.MealPlans.SwapMealPlanEntries;
 using Recipes.Application.MealPlans.UpdateMealPlanPersonAssignment;
 
 namespace Recipes.Api.Endpoints;
@@ -39,6 +40,12 @@ public static class MealPlansEndpoints
         group.MapDelete("/{mealPlanId:guid}/entries/{entryId:guid}", async (Guid mealPlanId, Guid entryId, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new RemoveMealPlanEntryCommand(mealPlanId, entryId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{mealPlanId:guid}/entries/swap", async (Guid mealPlanId, SwapMealPlanEntriesRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new SwapMealPlanEntriesCommand(mealPlanId, request.EntryAId, request.EntryBId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -215,6 +222,7 @@ public sealed record CreateMealPlanRequest(string Name, Guid HouseholdId);
 public sealed record AddMealPlanEntryRequest(Guid RecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AddMealPlanEntryAssignmentRequest> Assignments);
 public sealed record AddMealPlanEntryAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
 public sealed record SuggestMealPlanRequest(string Name, Guid HouseholdId, DateOnly StartDate, int NumberOfDays, IReadOnlyList<int> MealTypes, string RecipeSource = "all", string RecipeOrigin = "all", IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null);
+public sealed record SwapMealPlanEntriesRequest(Guid EntryAId, Guid EntryBId);
 public sealed record AcceptMealPlanSuggestionRequest(string Name, Guid HouseholdId, IReadOnlyList<AcceptMealPlanSuggestionEntryRequest> Entries);
 public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, Guid? SaladRecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AcceptMealPlanSuggestionAssignmentRequest> Assignments);
 public sealed record AcceptMealPlanSuggestionAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);

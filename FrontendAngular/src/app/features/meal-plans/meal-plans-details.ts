@@ -77,6 +77,28 @@ export class MealPlansDetails {
   });
 
   protected readonly removingEntryId = signal<string | null>(null);
+  protected readonly swappingEntryId = signal<string | null>(null);
+
+  protected readonly flatEntries = computed(() => {
+    const entries = this.mealPlan.value()?.entries ?? [];
+    return [...entries].sort((a, b) =>
+      a.plannedDate !== b.plannedDate
+        ? a.plannedDate.localeCompare(b.plannedDate)
+        : a.mealType - b.mealType,
+    );
+  });
+
+  protected prevEntry(entryId: string): string | null {
+    const flat = this.flatEntries();
+    const i = flat.findIndex((e) => e.id === entryId);
+    return i > 0 ? flat[i - 1].id : null;
+  }
+
+  protected nextEntry(entryId: string): string | null {
+    const flat = this.flatEntries();
+    const i = flat.findIndex((e) => e.id === entryId);
+    return i >= 0 && i < flat.length - 1 ? flat[i + 1].id : null;
+  }
 
   protected readonly groupedEntries = computed(() => {
     const entries = this.mealPlan.value()?.entries ?? [];
@@ -191,6 +213,17 @@ export class MealPlansDetails {
         error: (err: unknown) => {
           this.deleteState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to delete') });
         },
+      });
+  }
+
+  protected onSwap(entryId: string, targetId: string): void {
+    this.swappingEntryId.set(entryId);
+    this.client
+      .swapEntries(this.id(), entryId, targetId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => { this.swappingEntryId.set(null); this.mealPlan.reload(); },
+        error: () => this.swappingEntryId.set(null),
       });
   }
 

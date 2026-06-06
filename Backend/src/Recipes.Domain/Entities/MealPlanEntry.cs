@@ -34,6 +34,12 @@ public sealed class MealPlanEntry
 
     internal void SetSaladRecipe(RecipeId? saladRecipeId) => SaladRecipeId = saladRecipeId;
 
+    internal void SetSlot(DateOnly plannedDate, MealType mealType)
+    {
+        PlannedDate = plannedDate;
+        MealType = mealType;
+    }
+
     internal void AssignPerson(
         PersonId personId,
         RecipeId assignedRecipeId,
