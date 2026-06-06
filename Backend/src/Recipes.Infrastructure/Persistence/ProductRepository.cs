@@ -22,6 +22,9 @@ public sealed class ProductRepository : IProductRepository
 
     public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
+        var local = _dbContext.Products.Local.FirstOrDefault(x => x.Name == name);
+        if (local is not null) return local;
+
         return await _dbContext.Products
             .SingleOrDefaultAsync(x => x.Name == name, cancellationToken);
     }
