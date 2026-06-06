@@ -159,6 +159,10 @@
                   <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
                     {{ 'enums.recipeType.' + recipe.recipeType | translate }}
                   </span>
+                  <span class="rounded-full px-2 py-0.5 text-xs"
+                    [class]="recipe.origin === 2 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'">
+                    {{ 'enums.recipeOrigin.' + recipe.origin | translate }}
+                  </span>
                   @if (recipe.isImported) {
                     <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
                       {{ 'recipes.filterImported' | translate }}
