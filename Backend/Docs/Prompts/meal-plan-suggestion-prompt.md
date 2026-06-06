@@ -15,7 +15,7 @@ Important planning rules:
 - Use only variation IDs that belong to the assigned recipe.
 - Do not invent recipes or variations.
 - Create entries only within the requested number of days starting from the given start date.
-- Use only the provided meal types.
+- Use only the provided meal types. Meal type integers: 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack. Never output a mealType integer that is not in the MealTypes list of the request.
 - Every household member must be assigned in every planned entry.
 - Prefer one base recipe for the entry.
 - For shared meals, most or all people should use the base recipe with no variation.

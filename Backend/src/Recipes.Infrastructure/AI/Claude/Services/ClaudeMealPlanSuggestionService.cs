@@ -93,8 +93,17 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
     private static MealPlanSuggestionDto FilterInvalidEntries(MealPlanSuggestionDto dto, IReadOnlyList<int> allowedMealTypes)
     {
         var allowed = new HashSet<int>(allowedMealTypes);
-        var filtered = dto.Entries.Where(e => allowed.Contains(e.MealType)).ToList();
-        return filtered.Count == dto.Entries.Count ? dto : dto with { Entries = filtered };
+        var fallback = allowedMealTypes[0];
+        var corrected = false;
+
+        var entries = dto.Entries.Select(e =>
+        {
+            if (allowed.Contains(e.MealType)) return e;
+            corrected = true;
+            return e with { MealType = fallback };
+        }).ToList();
+
+        return corrected ? dto with { Entries = entries, NeedsReview = true } : dto;
     }
 
     private static string AppendValidationNotes(string? existingNotes, IEnumerable<string> errors)
