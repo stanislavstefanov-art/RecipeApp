@@ -37,7 +37,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             request.NumberOfDays,
             request.MealTypes.Count);
 
-        var first = await _client.SuggestAsync(request, prompt, schema, cancellationToken);
+        var first = FilterInvalidEntries(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.MealTypes);
         var firstValidation = await _validator.ValidateAsync(first, cancellationToken);
 
         if (firstValidation.IsValid)
@@ -62,7 +62,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Name = $"{request.Name} (retry)"
         };
 
-        var second = await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken);
+        var second = FilterInvalidEntries(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.MealTypes);
         var secondValidation = await _validator.ValidateAsync(second, cancellationToken);
 
         if (secondValidation.IsValid)
@@ -88,6 +88,13 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Confidence = Math.Min(second.Confidence, 0.5),
             Notes = AppendValidationNotes(second.Notes, secondErrors)
         };
+    }
+
+    private static MealPlanSuggestionDto FilterInvalidEntries(MealPlanSuggestionDto dto, IReadOnlyList<int> allowedMealTypes)
+    {
+        var allowed = new HashSet<int>(allowedMealTypes);
+        var filtered = dto.Entries.Where(e => allowed.Contains(e.MealType)).ToList();
+        return filtered.Count == dto.Entries.Count ? dto : dto with { Entries = filtered };
     }
 
     private static string AppendValidationNotes(string? existingNotes, IEnumerable<string> errors)
