@@ -94,6 +94,7 @@ export class MealPlansSuggest {
   });
 
   protected readonly noMealTypeError = signal(false);
+  protected readonly showInfo = signal(false);
 
   private readonly formValue = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
 

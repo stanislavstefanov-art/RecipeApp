@@ -7,6 +7,28 @@
     <h1 class="text-2xl font-semibold">{{ 'mealPlans.suggestWithAI' | translate }}</h1>
   </header>
 
+  <div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-4">
+    <button
+      type="button"
+      (click)="showInfo.set(!showInfo())"
+      class="flex w-full items-center justify-between text-left text-sm font-medium text-blue-900"
+    >
+      <span>{{ 'mealPlans.howItWorks' | translate }}</span>
+      <span>{{ showInfo() ? '▲' : '▼' }}</span>
+    </button>
+    @if (showInfo()) {
+      <ol class="mt-3 list-decimal space-y-1.5 pl-5 text-sm text-blue-900/80">
+        <li>{{ 'mealPlans.priority.health' | translate }}</li>
+        <li>{{ 'mealPlans.priority.members' | translate }}</li>
+        <li>{{ 'mealPlans.priority.pantry' | translate }}</li>
+        <li>{{ 'mealPlans.priority.history' | translate }}</li>
+        <li>{{ 'mealPlans.priority.mealsPerCook' | translate }}</li>
+        <li>{{ 'mealPlans.priority.shared' | translate }}</li>
+        <li>{{ 'mealPlans.priority.softGoals' | translate }}</li>
+      </ol>
+    }
+  </div>
+
   <form
     [formGroup]="form"
     (ngSubmit)="onSuggest()"

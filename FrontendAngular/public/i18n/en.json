@@ -257,6 +257,16 @@
     "failedToLoadSingle": "Failed to load meal plan",
     "creating": "Creating…",
     "suggestWithAI": "Suggest with AI",
+    "howItWorks": "How is the plan generated?",
+    "priority": {
+      "health": "Health and dietary restrictions — always respected for each member.",
+      "members": "Member-specific preferences — vegetarian alternatives, portion sizes for protein goals, etc.",
+      "pantry": "Available products — recipes using ingredients you already have are prioritized.",
+      "history": "Cooking history — recipes cooked in the last ~2 weeks are avoided for variety.",
+      "mealsPerCook": "Cooking effort — a recipe marked for \"2 meals\" may cover lunch and dinner on the same day.",
+      "shared": "Shared meals — shared meals are preferred to simplify cooking.",
+      "softGoals": "Soft goals — extra preferences like higher protein are considered where possible."
+    },
     "loadingHouseholds": "Loading households…",
     "selectHouseholdPlaceholder": "Select a household…",
     "suggesting": "Suggesting…",
