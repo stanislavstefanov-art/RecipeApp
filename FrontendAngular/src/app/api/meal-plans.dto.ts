@@ -50,6 +50,7 @@ export interface SuggestMealPlanRequest {
   readonly recipeSource: 'all' | 'manual' | 'imported';
   readonly recipeOrigin: 'all' | 'home' | 'borrowed';
   readonly personsPerMealType?: Record<number, string[]>;
+  readonly priorityIngredients?: string[];
 }
 
 export interface AcceptMealPlanSuggestionAssignmentRequest {

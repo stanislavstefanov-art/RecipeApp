@@ -102,11 +102,6 @@ export const routes: Routes = [
           import('./features/expenses/expenses-list').then((m) => m.ExpensesList),
       },
       {
-        path: 'pantry',
-        loadComponent: () =>
-          import('./features/pantry/pantry').then((m) => m.Pantry),
-      },
-      {
         path: 'reports',
         loadComponent: () =>
           import('./features/reports/reports').then((m) => m.Reports),

@@ -14,7 +14,6 @@ public sealed class SuggestMealPlanHandler
     private readonly IHouseholdRepository _householdRepository;
     private readonly IPersonRepository _personRepository;
     private readonly ICookingLogRepository _cookingLogRepository;
-    private readonly IPantryRepository _pantryRepository;
     private readonly IMealPlanSuggestionService _mealPlanSuggestionService;
     private readonly ICurrentUser _currentUser;
     private readonly TimeProvider _time;
@@ -24,7 +23,6 @@ public sealed class SuggestMealPlanHandler
         IHouseholdRepository householdRepository,
         IPersonRepository personRepository,
         ICookingLogRepository cookingLogRepository,
-        IPantryRepository pantryRepository,
         IMealPlanSuggestionService mealPlanSuggestionService,
         ICurrentUser currentUser,
         TimeProvider time)
@@ -33,7 +31,6 @@ public sealed class SuggestMealPlanHandler
         _householdRepository = householdRepository;
         _personRepository = personRepository;
         _cookingLogRepository = cookingLogRepository;
-        _pantryRepository = pantryRepository;
         _mealPlanSuggestionService = mealPlanSuggestionService;
         _currentUser = currentUser;
         _time = time;
@@ -99,9 +96,8 @@ public sealed class SuggestMealPlanHandler
             .OrderBy(x => x.DaysAgo)
             .ToList();
 
-        var pantryItems = await _pantryRepository.GetByUserAsync(_currentUser.UserId, cancellationToken);
-        var availableIngredients = pantryItems.Count > 0
-            ? pantryItems.Select(p => p.IngredientName).ToList()
+        var availableIngredients = request.PriorityIngredients is { Count: > 0 }
+            ? request.PriorityIngredients
             : null;
 
         var suggestionRequest = new MealPlanSuggestionRequestDto(

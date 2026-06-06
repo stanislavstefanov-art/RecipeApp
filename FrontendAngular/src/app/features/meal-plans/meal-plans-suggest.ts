@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 
@@ -32,7 +32,7 @@ type AcceptState =
 
 @Component({
   selector: 'app-meal-plans-suggest',
-  imports: [ReactiveFormsModule, RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule, FormsModule, RouterLink, TranslateModule],
   templateUrl: './meal-plans-suggest.html',
   styleUrl: './meal-plans-suggest.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,6 +67,39 @@ export class MealPlansSuggest {
   protected readonly recipeMap = computed(
     () => new Map((this.recipes.value() ?? []).map((r) => [r.id, r.name])),
   );
+
+  protected readonly priorityIngredients = signal<string[]>([]);
+  protected readonly ingredientQuery = signal('');
+
+  private readonly allIngredients = computed(() => {
+    const set = new Set<string>();
+    for (const r of this.recipes.value() ?? []) {
+      for (const name of r.ingredientNames) set.add(name);
+    }
+    return [...set].sort((a, b) => a.localeCompare(b));
+  });
+
+  protected readonly ingredientSuggestions = computed(() => {
+    const q = this.ingredientQuery().trim().toLowerCase();
+    if (q.length < 2) return [];
+    const selected = new Set(this.priorityIngredients().map((i) => i.toLowerCase()));
+    return this.allIngredients()
+      .filter((n) => n.toLowerCase().includes(q) && !selected.has(n.toLowerCase()))
+      .slice(0, 8);
+  });
+
+  protected addIngredient(name: string): void {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (!this.priorityIngredients().some((i) => i.toLowerCase() === trimmed.toLowerCase())) {
+      this.priorityIngredients.update((list) => [...list, trimmed]);
+    }
+    this.ingredientQuery.set('');
+  }
+
+  protected removeIngredient(name: string): void {
+    this.priorityIngredients.update((list) => list.filter((i) => i !== name));
+  }
 
   protected readonly form = new FormGroup({
     name: new FormControl('', {
@@ -191,6 +224,7 @@ export class MealPlansSuggest {
         recipeSource: v.recipeSource,
         recipeOrigin: v.recipeOrigin,
         personsPerMealType: Object.keys(personsPerMealType).length > 0 ? personsPerMealType : undefined,
+        priorityIngredients: this.priorityIngredients().length > 0 ? this.priorityIngredients() : undefined,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

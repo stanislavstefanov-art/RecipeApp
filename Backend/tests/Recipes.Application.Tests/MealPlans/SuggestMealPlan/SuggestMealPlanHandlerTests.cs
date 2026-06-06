@@ -27,7 +27,6 @@ public sealed class SuggestMealPlanHandlerTests
         var householdRepository = new FakeHouseholdRepository([household]);
         var personRepository = new FakePersonRepository([person]);
         var cookingLogRepository = new FakeCookingLogRepository();
-        var pantryRepository = new FakePantryRepository();
         var suggestionService = new StubMealPlanSuggestionService();
         var currentUser = new FakeCurrentUser();
 
@@ -36,7 +35,6 @@ public sealed class SuggestMealPlanHandlerTests
             householdRepository,
             personRepository,
             cookingLogRepository,
-            pantryRepository,
             suggestionService,
             currentUser,
             TimeProvider.System);
@@ -120,15 +118,6 @@ public sealed class SuggestMealPlanHandlerTests
         public Task<CookingLogEntry?> GetByIdAsync(CookingLogEntryId id, CancellationToken cancellationToken = default) => Task.FromResult<CookingLogEntry?>(null);
         public Task<IReadOnlyList<CookingLogEntry>> GetByRecipeAndUserAsync(RecipeId recipeId, UserId userId, int limit, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<CookingLogEntry>>([]);
         public Task<IReadOnlyList<CookingLogEntry>> GetAllByUserAsync(UserId userId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<CookingLogEntry>>([]);
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
-    }
-
-    private sealed class FakePantryRepository : IPantryRepository
-    {
-        public Task AddAsync(PantryItem item, CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public void Remove(PantryItem item) { }
-        public Task<PantryItem?> GetByIdAsync(PantryItemId id, CancellationToken cancellationToken = default) => Task.FromResult<PantryItem?>(null);
-        public Task<IReadOnlyList<PantryItem>> GetByUserAsync(UserId userId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<PantryItem>>([]);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 

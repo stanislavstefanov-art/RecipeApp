@@ -6,7 +6,6 @@
     "households": "Households",
     "mealPlans": "Meal plans",
     "shoppingLists": "Shopping lists",
-    "pantry": "Pantry",
     "expenses": "Expenses",
     "reports": "Reports",
     "cookingStats": "Cooking stats",
@@ -244,6 +243,9 @@
     "recipeOriginLabel": "Recipe kind",
     "recipeOriginAll": "All",
     "personsForMealType": "Persons for",
+    "priorityIngredientsLabel": "Priority ingredients",
+    "priorityIngredientsHint": "Ingredients you have at home and want to use — recipes using them will be prioritized.",
+    "priorityIngredientsPlaceholder": "e.g. eggs, spinach…",
     "selectHousehold": "Select household",
     "failedAccept": "Failed to accept suggestion.",
     "generatingPlan": "Generating…",
@@ -261,7 +263,7 @@
     "priority": {
       "health": "Health and dietary restrictions — always respected for each member.",
       "members": "Member-specific preferences — vegetarian alternatives, portion sizes for protein goals, etc.",
-      "pantry": "Available products — recipes using ingredients you already have are prioritized.",
+      "pantry": "Priority ingredients — recipes using the ingredients you specify are prioritized.",
       "history": "Cooking history — recipes cooked in the last ~2 weeks are avoided for variety.",
       "mealsPerCook": "Cooking effort — a recipe marked for \"2 meals\" may cover lunch and dinner on the same day.",
       "shared": "Shared meals — shared meals are preferred to simplify cooking.",
@@ -548,14 +550,6 @@
       "empty": "No units configured yet.",
       "failedToLoad": "Failed to load units."
     }
-  },
-  "pantry": {
-    "title": "Pantry",
-    "description": "Ingredients you have at home and want to use up. Meal plan suggestions will prioritize recipes using these.",
-    "addItem": "Add item",
-    "ingredientPlaceholder": "e.g. eggs, spinach…",
-    "notesPlaceholder": "note (optional)",
-    "empty": "No pantry items yet."
   },
   "cookingStats": {
     "title": "Cooking stats",

@@ -113,7 +113,6 @@ public static class DependencyInjection
         services.AddScoped<IRecipesDbContext>(sp => sp.GetRequiredService<RecipesDbContext>());
         services.AddScoped<IRecipeRepository, RecipeRepository>();
         services.AddScoped<ICookingLogRepository, CookingLogRepository>();
-        services.AddScoped<IPantryRepository, PantryRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
         services.AddScoped<IMealPlanRepository, MealPlanRepository>();

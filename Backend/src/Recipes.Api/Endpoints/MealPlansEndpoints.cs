@@ -93,7 +93,8 @@ public static class MealPlansEndpoints
                     request.MealTypes,
                     request.RecipeSource,
                     request.RecipeOrigin,
-                    request.PersonsPerMealType),
+                    request.PersonsPerMealType,
+                    request.PriorityIngredients),
                 ct);
 
             return result.ToHttpResult(response => Results.Ok(response));
@@ -221,7 +222,7 @@ public static class MealPlansEndpoints
 public sealed record CreateMealPlanRequest(string Name, Guid HouseholdId);
 public sealed record AddMealPlanEntryRequest(Guid RecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AddMealPlanEntryAssignmentRequest> Assignments);
 public sealed record AddMealPlanEntryAssignmentRequest(Guid PersonId, Guid AssignedRecipeId, Guid? RecipeVariationId, decimal PortionMultiplier, string? Notes);
-public sealed record SuggestMealPlanRequest(string Name, Guid HouseholdId, DateOnly StartDate, int NumberOfDays, IReadOnlyList<int> MealTypes, string RecipeSource = "all", string RecipeOrigin = "all", IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null);
+public sealed record SuggestMealPlanRequest(string Name, Guid HouseholdId, DateOnly StartDate, int NumberOfDays, IReadOnlyList<int> MealTypes, string RecipeSource = "all", string RecipeOrigin = "all", IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null, IReadOnlyList<string>? PriorityIngredients = null);
 public sealed record SwapMealPlanEntriesRequest(Guid EntryAId, Guid EntryBId);
 public sealed record AcceptMealPlanSuggestionRequest(string Name, Guid HouseholdId, IReadOnlyList<AcceptMealPlanSuggestionEntryRequest> Entries);
 public sealed record AcceptMealPlanSuggestionEntryRequest(Guid BaseRecipeId, Guid? SaladRecipeId, DateOnly PlannedDate, int MealType, int Scope, IReadOnlyList<AcceptMealPlanSuggestionAssignmentRequest> Assignments);
