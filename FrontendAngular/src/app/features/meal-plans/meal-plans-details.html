@@ -142,15 +142,20 @@
                         <div class="min-w-0 flex-1">
                           <p class="font-medium">
                             {{ entry.baseRecipeName }}
-                            <span class="ml-1 text-sm font-normal text-gray-400">
-                              ({{ entry.assignments.map(a => a.portionMultiplier).join(' + ') }})
-                            </span>
+                            @if (allSameRecipe) {
+                              <span class="ml-1 text-sm font-normal text-gray-400">
+                                ({{ entry.assignments.map(a => a.portionMultiplier).join(' + ') }})
+                              </span>
+                            }
                           </p>
                           @if (!allSameRecipe) {
                             <ul class="mt-0.5 space-y-0.5">
                               @for (a of entry.assignments; track a.personId) {
                                 <li class="text-xs text-gray-500">
                                   {{ a.personName }} — {{ a.assignedRecipeName }}
+                                  @if (a.portionMultiplier !== 1) {
+                                    <span class="text-gray-400">(&times;{{ a.portionMultiplier }})</span>
+                                  }
                                 </li>
                               }
                             </ul>
