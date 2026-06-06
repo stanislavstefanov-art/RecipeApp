@@ -240,6 +240,7 @@
     "recipeSourceImported": "Imported only",
     "recipeOriginLabel": "Recipe kind",
     "recipeOriginAll": "All",
+    "personsForMealType": "Persons for",
     "selectHousehold": "Select household",
     "failedAccept": "Failed to accept suggestion.",
     "generatingPlan": "Generating…",

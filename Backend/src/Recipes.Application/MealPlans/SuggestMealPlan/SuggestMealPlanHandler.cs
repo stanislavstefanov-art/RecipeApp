@@ -95,7 +95,8 @@ public sealed class SuggestMealPlanHandler
                     v.Name,
                     v.Notes,
                     v.IngredientAdjustmentNotes)).ToList()))
-            .ToList());
+            .ToList(),
+            request.PersonsPerMealType);
 
         var suggestion = await _mealPlanSuggestionService.SuggestAsync(
             suggestionRequest,

@@ -49,6 +49,7 @@ export interface SuggestMealPlanRequest {
   readonly mealTypes: readonly number[];
   readonly recipeSource: 'all' | 'manual' | 'imported';
   readonly recipeOrigin: 'all' | 'home' | 'borrowed';
+  readonly personsPerMealType?: Record<number, string[]>;
 }
 
 export interface AcceptMealPlanSuggestionAssignmentRequest {

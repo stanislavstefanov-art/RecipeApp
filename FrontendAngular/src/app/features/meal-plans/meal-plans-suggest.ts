@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed, rxResource } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { of } from 'rxjs';
 
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -50,6 +51,18 @@ export class MealPlansSuggest {
   protected readonly recipes = rxResource({
     stream: () => this.recipesClient.list(),
   });
+
+  protected readonly selectedHouseholdId = signal('');
+
+  protected readonly householdMembers = rxResource({
+    params: () => this.selectedHouseholdId(),
+    stream: ({ params }) => params ? this.householdsClient.get(params) : of(null),
+  });
+
+  protected readonly members = computed(() => this.householdMembers.value()?.members ?? []);
+
+  // mealType → Set of excluded personIds
+  protected readonly excludedPersons = signal<Record<number, Set<string>>>({});
 
   protected readonly recipeMap = computed(
     () => new Map((this.recipes.value() ?? []).map((r) => [r.id, r.name])),
@@ -101,6 +114,27 @@ export class MealPlansSuggest {
     return s.kind === 'error' ? s.message : '';
   });
 
+  protected isPersonExcluded(mealType: number, personId: string): boolean {
+    return this.excludedPersons()[mealType]?.has(personId) ?? false;
+  }
+
+  protected togglePersonExclusion(mealType: number, personId: string): void {
+    this.excludedPersons.update((current) => {
+      const updated = { ...current };
+      const set = new Set(updated[mealType] ?? []);
+      if (set.has(personId)) set.delete(personId);
+      else set.add(personId);
+      updated[mealType] = set;
+      return updated;
+    });
+  }
+
+  protected onHouseholdChange(id: string): void {
+    this.selectedHouseholdId.set(id);
+    this.excludedPersons.set({});
+    this.form.controls.householdId.setValue(id);
+  }
+
   protected onSuggest(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -120,6 +154,18 @@ export class MealPlansSuggest {
     }
     this.noMealTypeError.set(false);
 
+    const allMembers = this.members();
+    const excluded = this.excludedPersons();
+    const personsPerMealType: Record<number, string[]> = {};
+    for (const mt of mealTypes) {
+      const excludedSet = excluded[mt];
+      if (excludedSet && excludedSet.size > 0) {
+        personsPerMealType[mt] = allMembers
+          .filter((m) => !excludedSet.has(m.personId))
+          .map((m) => m.personId);
+      }
+    }
+
     this.suggestState.set({ kind: 'loading' });
 
     this.client
@@ -131,6 +177,7 @@ export class MealPlansSuggest {
         mealTypes,
         recipeSource: v.recipeSource,
         recipeOrigin: v.recipeOrigin,
+        personsPerMealType: Object.keys(personsPerMealType).length > 0 ? personsPerMealType : undefined,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

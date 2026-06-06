@@ -41,8 +41,9 @@
       <label for="household" class="block text-sm font-medium">{{ 'mealPlans.householdId' | translate }}</label>
       <select
         id="household"
-        formControlName="householdId"
+        [value]="form.controls.householdId.value"
         [disabled]="households.isLoading()"
+        (change)="onHouseholdChange($any($event.target).value)"
         class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:bg-gray-100"
       >
         <option value="">
@@ -118,6 +119,32 @@
         <p class="mt-1 text-sm text-red-600">{{ 'mealPlans.noMealTypeError' | translate }}</p>
       }
     </fieldset>
+
+    @if (members().length > 0) {
+      @let mealTypeMap = { 1: form.controls.breakfast.value, 2: form.controls.lunch.value, 3: form.controls.dinner.value, 4: form.controls.snack.value };
+      @for (mt of [1, 2, 3, 4]; track mt) {
+        @if (mealTypeMap[mt]) {
+          <div class="rounded-lg border border-gray-100 bg-gray-50 p-3">
+            <p class="mb-2 text-xs font-medium text-gray-600">
+              {{ 'mealPlans.personsForMealType' | translate }} {{ 'enums.mealType.' + mt | translate }}
+            </p>
+            <div class="flex flex-wrap gap-3">
+              @for (member of members(); track member.personId) {
+                <label class="flex items-center gap-1.5 text-sm">
+                  <input
+                    type="checkbox"
+                    [checked]="!isPersonExcluded(mt, member.personId)"
+                    (change)="togglePersonExclusion(mt, member.personId)"
+                    class="rounded"
+                  />
+                  {{ member.personName }}
+                </label>
+              }
+            </div>
+          </div>
+        }
+      }
+    }
 
     <div>
       <label for="recipeSource" class="block text-sm font-medium">{{ 'mealPlans.recipeSourceLabel' | translate }}</label>
