@@ -45,15 +45,19 @@ public sealed class AcceptMealPlanSuggestionHandler
 
         foreach (var entry in request.Entries)
         {
-            var assignedPersonIds = entry.Assignments
-                .Select(x => PersonId.From(x.PersonId))
-                .ToHashSet();
-
-            if (!householdPersonIds.SetEquals(assignedPersonIds))
+            if (entry.Assignments.Count == 0)
             {
                 return Error.Validation(
                     "MealPlan.InvalidAssignments",
-                    "Each meal plan entry must assign every household member exactly once.");
+                    "Each meal plan entry must have at least one assignment.");
+            }
+
+            var assignedPersonIds = entry.Assignments.Select(x => x.PersonId).ToList();
+            if (assignedPersonIds.Count != assignedPersonIds.Distinct().Count())
+            {
+                return Error.Validation(
+                    "MealPlan.InvalidAssignments",
+                    "Each person may appear at most once per meal plan entry.");
             }
 
             var baseRecipe = await _recipeRepository.GetByIdAsync(
