@@ -99,7 +99,7 @@
 
             @if ((household.value()?.members?.length ?? 0) > 0) {
               <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'mealPlans.portionMultiplier' | translate }}</label>
+                <p class="text-xs font-medium text-gray-600 mb-1">{{ 'mealPlans.portionMultiplier' | translate }}</p>
                 <div class="space-y-1">
                   @for (member of household.value()!.members; track member.personId) {
                     <div class="flex items-center gap-2">
