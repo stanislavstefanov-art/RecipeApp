@@ -14,12 +14,11 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { ToastService } from '../../core/toast.service';
 import { HouseholdsClient } from '../../api/households.client';
 import { MealPlansClient } from '../../api/meal-plans.client';
-import { MealPlanEntryAssignmentDto } from '../../api/meal-plans.dto';
 import { RecipesClient } from '../../api/recipes.client';
 import { getErrorMessage } from '../../shared/get-error-message';
 
@@ -27,8 +26,6 @@ type FormState =
   | { readonly kind: 'idle' }
   | { readonly kind: 'busy' }
   | { readonly kind: 'error'; readonly message: string };
-
-type EditSubmitState = FormState;
 
 type DeleteState =
   | { readonly kind: 'idle' }
@@ -47,7 +44,6 @@ export class MealPlansDetails {
   private readonly recipesClient = inject(RecipesClient);
   private readonly householdsClient = inject(HouseholdsClient);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
 
@@ -67,13 +63,6 @@ export class MealPlansDetails {
     stream: ({ params }) => (params ? this.householdsClient.get(params) : of(null)),
   });
 
-  protected readonly editRecipeId = signal('');
-
-  protected readonly recipeForEdit = rxResource({
-    params: () => this.editRecipeId(),
-    stream: ({ params }) => (params ? this.recipesClient.get(params) : of(null)),
-  });
-
   protected readonly is404 = computed(() => {
     const err = this.mealPlan.error();
     return err instanceof HttpErrorResponse && err.status === 404;
@@ -87,23 +76,7 @@ export class MealPlansDetails {
     return getErrorMessage(err, this.translate);
   });
 
-  protected readonly editingAssignment = signal<{
-    readonly mealPlanEntryId: string;
-    readonly assignment: MealPlanEntryAssignmentDto;
-  } | null>(null);
-
-  protected readonly editForm = new FormGroup({
-    assignedRecipeId: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    recipeVariationId: new FormControl('', { nonNullable: true }),
-    portionMultiplier: new FormControl('1', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0.01)],
-    }),
-    notes: new FormControl('', { nonNullable: true }),
-  });
+  protected readonly removingEntryId = signal<string | null>(null);
 
   protected readonly showAddForm = signal(false);
   protected readonly addEntryState = signal<FormState>({ kind: 'idle' });
@@ -190,61 +163,17 @@ export class MealPlansDetails {
       });
   }
 
-  protected readonly editSubmitState = signal<EditSubmitState>({ kind: 'idle' });
-
-  protected isEditing(entryId: string, personId: string): boolean {
-    const ea = this.editingAssignment();
-    return ea !== null && ea.mealPlanEntryId === entryId && ea.assignment.personId === personId;
-  }
-
-  protected onOpenEdit(entryId: string, assignment: MealPlanEntryAssignmentDto): void {
-    this.editingAssignment.set({ mealPlanEntryId: entryId, assignment });
-    this.editRecipeId.set(assignment.assignedRecipeId);
-    this.editForm.setValue({
-      assignedRecipeId: assignment.assignedRecipeId,
-      recipeVariationId: assignment.recipeVariationId ?? '',
-      portionMultiplier: String(assignment.portionMultiplier),
-      notes: assignment.notes ?? '',
-    });
-    this.editSubmitState.set({ kind: 'idle' });
-  }
-
-  protected onCancelEdit(): void {
-    this.editingAssignment.set(null);
-  }
-
-  protected onEditRecipeChange(recipeId: string): void {
-    this.editRecipeId.set(recipeId);
-    this.editForm.controls.recipeVariationId.setValue('');
-  }
-
-  protected onSubmitEdit(): void {
-    const ea = this.editingAssignment();
-    if (!ea || this.editForm.invalid) return;
-
-    const { assignedRecipeId, recipeVariationId, portionMultiplier, notes } =
-      this.editForm.getRawValue();
-    this.editSubmitState.set({ kind: 'busy' });
-
+  protected onRemoveEntry(entryId: string): void {
+    this.removingEntryId.set(entryId);
     this.client
-      .updateAssignment(this.id(), ea.mealPlanEntryId, {
-        personId: ea.assignment.personId,
-        assignedRecipeId,
-        recipeVariationId: recipeVariationId || null,
-        portionMultiplier: parseFloat(portionMultiplier),
-        notes: notes || null,
-      })
+      .removeEntry(this.id(), entryId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.editingAssignment.set(null);
-          this.editSubmitState.set({ kind: 'idle' });
+          this.removingEntryId.set(null);
           this.mealPlan.reload();
-          this.toast.show('success', this.translate.instant('mealPlans.assignmentUpdated', { name: ea.assignment.personName }));
         },
-        error: (err: unknown) => {
-          this.editSubmitState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed to update') });
-        },
+        error: () => this.removingEntryId.set(null),
       });
   }
 }

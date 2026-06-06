@@ -11,6 +11,7 @@ using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Application.MealPlans.PlanningWorkflow;
 using Recipes.Application.MealPlans.SuggestMealPlanMultiAgent;
 using Recipes.Application.MealPlans.DeleteMealPlan;
+using Recipes.Application.MealPlans.RemoveMealPlanEntry;
 using Recipes.Application.MealPlans.UpdateMealPlanPersonAssignment;
 
 namespace Recipes.Api.Endpoints;
@@ -33,6 +34,12 @@ public static class MealPlansEndpoints
         {
             var result = await sender.Send(new GetMealPlanQuery(mealPlanId), ct);
             return result.ToHttpResult(response => Results.Ok(response));
+        });
+
+        group.MapDelete("/{mealPlanId:guid}/entries/{entryId:guid}", async (Guid mealPlanId, Guid entryId, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new RemoveMealPlanEntryCommand(mealPlanId, entryId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
         });
 
         group.MapPost("/{mealPlanId:guid}/entries", async (Guid mealPlanId, AddMealPlanEntryRequest request, ISender sender, CancellationToken ct) =>

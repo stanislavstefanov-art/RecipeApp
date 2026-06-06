@@ -84,4 +84,8 @@ export class MealPlansClient {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/meal-plans/${id}`);
   }
+
+  removeEntry(mealPlanId: string, entryId: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/api/meal-plans/${mealPlanId}/entries/${entryId}`);
+  }
 }
