@@ -115,6 +115,7 @@
     "filterSource": "Source",
     "filterOrigin": "Home / Borrowed",
     "origin": "Recipe type",
+    "recipeOriginLabel": "Origin",
     "filterMinStars": "Min stars",
     "filterIngredient": "Ingredient",
     "filterIngredientPlaceholder": "e.g. chicken…",

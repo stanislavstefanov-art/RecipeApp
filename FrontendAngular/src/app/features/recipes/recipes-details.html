@@ -88,62 +88,63 @@
     </section>
 
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
-      <h2 class="text-lg font-medium">{{ 'recipes.recipeType' | translate }}</h2>
-      <div class="mt-4">
-        <div class="flex items-center gap-3">
-          <select
-            [value]="data.recipeType"
-            [disabled]="savingRecipeType()"
-            (change)="onRecipeTypeChange($any($event.target).value)"
-            class="w-48 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
-          >
-            <option value="1">{{ 'enums.recipeType.1' | translate }}</option>
-            <option value="2">{{ 'enums.recipeType.2' | translate }}</option>
-            <option value="3">{{ 'enums.recipeType.3' | translate }}</option>
-          </select>
-          @if (savingRecipeType()) {
-            <span class="text-sm text-gray-500">{{ 'recipes.saving' | translate }}</span>
-          }
+      <div class="flex flex-wrap gap-6">
+        <div>
+          <label for="recipe-type" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.recipeType' | translate }}</label>
+          <div class="flex items-center gap-2">
+            <select
+              id="recipe-type"
+              [value]="data.recipeType"
+              [disabled]="savingRecipeType()"
+              (change)="onRecipeTypeChange($any($event.target).value)"
+              class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
+            >
+              <option value="1">{{ 'enums.recipeType.1' | translate }}</option>
+              <option value="2">{{ 'enums.recipeType.2' | translate }}</option>
+              <option value="3">{{ 'enums.recipeType.3' | translate }}</option>
+            </select>
+            @if (savingRecipeType()) {
+              <span class="text-xs text-gray-400">{{ 'recipes.saving' | translate }}</span>
+            }
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
-      <h2 class="text-lg font-medium">{{ 'recipes.origin' | translate }}</h2>
-      <div class="mt-4">
-        <div class="flex items-center gap-3">
-          <select
-            [value]="data.origin"
-            [disabled]="savingOrigin()"
-            (change)="onOriginChange($any($event.target).value)"
-            class="w-48 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
-          >
-            <option value="1">{{ 'enums.recipeOrigin.1' | translate }}</option>
-            <option value="2">{{ 'enums.recipeOrigin.2' | translate }}</option>
-          </select>
-          @if (savingOrigin()) {
-            <span class="text-sm text-gray-500">{{ 'recipes.saving' | translate }}</span>
-          }
+        <div>
+          <label for="recipe-origin" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.recipeOriginLabel' | translate }}</label>
+          <div class="flex items-center gap-2">
+            <select
+              id="recipe-origin"
+              [value]="data.origin"
+              [disabled]="savingOrigin()"
+              (change)="onOriginChange($any($event.target).value)"
+              class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
+            >
+              <option value="1">{{ 'enums.recipeOrigin.1' | translate }}</option>
+              <option value="2">{{ 'enums.recipeOrigin.2' | translate }}</option>
+            </select>
+            @if (savingOrigin()) {
+              <span class="text-xs text-gray-400">{{ 'recipes.saving' | translate }}</span>
+            }
+          </div>
         </div>
-      </div>
-    </section>
 
-    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
-      <h2 class="text-lg font-medium">{{ 'recipes.mealsPerCook' | translate }}</h2>
-      <div class="mt-4">
-        <div class="flex items-center gap-3">
-          <select
-            [value]="data.mealsPerCook"
-            [disabled]="savingMealsPerCook()"
-            (change)="onMealsPerCookChange($any($event.target).value)"
-            class="w-56 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
-          >
-            <option value="1">{{ 'recipes.mealsPerCook1' | translate }}</option>
-            <option value="2">{{ 'recipes.mealsPerCook2' | translate }}</option>
-          </select>
-          @if (savingMealsPerCook()) {
-            <span class="text-sm text-gray-500">{{ 'recipes.saving' | translate }}</span>
-          }
+        <div>
+          <label for="meals-per-cook" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.mealsPerCook' | translate }}</label>
+          <div class="flex items-center gap-2">
+            <select
+              id="meals-per-cook"
+              [value]="data.mealsPerCook"
+              [disabled]="savingMealsPerCook()"
+              (change)="onMealsPerCookChange($any($event.target).value)"
+              class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
+            >
+              <option value="1">{{ 'recipes.mealsPerCook1' | translate }}</option>
+              <option value="2">{{ 'recipes.mealsPerCook2' | translate }}</option>
+            </select>
+            @if (savingMealsPerCook()) {
+              <span class="text-xs text-gray-400">{{ 'recipes.saving' | translate }}</span>
+            }
+          </div>
         </div>
       </div>
     </section>

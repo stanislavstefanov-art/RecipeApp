@@ -115,6 +115,7 @@
     "filterSource": "Произход",
     "filterOrigin": "Домашна / Заимствана",
     "origin": "Вид рецепта",
+    "recipeOriginLabel": "Произход",
     "filterMinStars": "Мин. оценка",
     "filterIngredient": "Съставка",
     "filterIngredientPlaceholder": "напр. пилешко…",
