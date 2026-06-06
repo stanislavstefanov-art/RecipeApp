@@ -78,6 +78,25 @@ export class MealPlansDetails {
 
   protected readonly removingEntryId = signal<string | null>(null);
 
+  protected readonly groupedEntries = computed(() => {
+    const entries = this.mealPlan.value()?.entries ?? [];
+    const byDate = new Map<string, Map<number, typeof entries>>();
+    for (const entry of entries) {
+      if (!byDate.has(entry.plannedDate)) byDate.set(entry.plannedDate, new Map());
+      const byMeal = byDate.get(entry.plannedDate)!;
+      if (!byMeal.has(entry.mealType)) byMeal.set(entry.mealType, []);
+      byMeal.get(entry.mealType)!.push(entry);
+    }
+    return [...byDate.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, byMeal]) => ({
+        date,
+        meals: [...byMeal.entries()]
+          .sort(([a], [b]) => a - b)
+          .map(([mealType, entries]) => ({ mealType, entries })),
+      }));
+  });
+
   protected readonly showAddForm = signal(false);
   protected readonly addEntryState = signal<FormState>({ kind: 'idle' });
   protected readonly addForm = new FormGroup({

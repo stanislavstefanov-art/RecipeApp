@@ -125,39 +125,49 @@
     @if (data.entries.length === 0) {
       <p class="mt-6 text-sm text-gray-500">{{ 'mealPlans.noEntries' | translate }}</p>
     } @else {
-      <div class="mt-6 space-y-3">
-        @for (entry of data.entries; track entry.id) {
-          @let allSameRecipe = entry.assignments.length > 0 && entry.assignments.every(a => a.assignedRecipeId === entry.assignments[0].assignedRecipeId);
-          <div class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="text-sm font-semibold text-gray-700">{{ entry.plannedDate }}</span>
-                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
-                  {{ 'enums.mealType.' + entry.mealType | translate }}
-                </span>
-              </div>
-              <p class="mt-1 font-medium">{{ entry.baseRecipeName }}</p>
-              @if (!allSameRecipe) {
-                <ul class="mt-1 space-y-0.5">
-                  @for (a of entry.assignments; track a.personId) {
-                    <li class="text-xs text-gray-500">
-                      {{ a.personName }} — {{ a.assignedRecipeName }}
-                      @if (a.portionMultiplier !== 1) {
-                        <span class="text-gray-400">(&times;{{ a.portionMultiplier }})</span>
-                      }
-                    </li>
-                  }
-                </ul>
+      <div class="mt-6 space-y-6">
+        @for (group of groupedEntries(); track group.date) {
+          <div>
+            <p class="mb-2 text-sm font-semibold text-gray-500">{{ group.date }}</p>
+            <div class="space-y-1">
+              @for (meal of group.meals; track meal.mealType) {
+                <div class="rounded-lg border border-gray-200 bg-white px-4 py-3">
+                  <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                    {{ 'enums.mealType.' + meal.mealType | translate }}
+                  </span>
+                  <div class="mt-2 space-y-2">
+                    @for (entry of meal.entries; track entry.id) {
+                      @let allSameRecipe = entry.assignments.length > 0 && entry.assignments.every(a => a.assignedRecipeId === entry.assignments[0].assignedRecipeId);
+                      <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                          <p class="font-medium">{{ entry.baseRecipeName }}</p>
+                          @if (!allSameRecipe) {
+                            <ul class="mt-0.5 space-y-0.5">
+                              @for (a of entry.assignments; track a.personId) {
+                                <li class="text-xs text-gray-500">
+                                  {{ a.personName }} — {{ a.assignedRecipeName }}
+                                  @if (a.portionMultiplier !== 1) {
+                                    <span class="text-gray-400">(&times;{{ a.portionMultiplier }})</span>
+                                  }
+                                </li>
+                              }
+                            </ul>
+                          }
+                        </div>
+                        <button
+                          type="button"
+                          (click)="onRemoveEntry(entry.id)"
+                          [disabled]="removingEntryId() === entry.id"
+                          class="shrink-0 rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
+                        >
+                          {{ 'common.delete' | translate }}
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
               }
             </div>
-            <button
-              type="button"
-              (click)="onRemoveEntry(entry.id)"
-              [disabled]="removingEntryId() === entry.id"
-              class="shrink-0 rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50"
-            >
-              {{ 'common.delete' | translate }}
-            </button>
           </div>
         }
       </div>
