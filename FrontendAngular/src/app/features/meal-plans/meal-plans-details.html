@@ -137,24 +137,30 @@
                   </span>
                   <div class="mt-2 space-y-2">
                     @for (entry of meal.entries; track entry.id) {
-                      @let allSameRecipe = entry.assignments.length > 0 && entry.assignments.every(a => a.assignedRecipeId === entry.assignments[0].assignedRecipeId);
+                      @let allIdentical = entry.assignments.length > 0 && entry.assignments.every(a => a.assignedRecipeId === entry.assignments[0].assignedRecipeId && a.recipeVariationId === entry.assignments[0].recipeVariationId);
                       <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0 flex-1">
                           <p class="font-medium">
                             {{ entry.baseRecipeName }}
-                            @if (allSameRecipe) {
+                            @if (entry.saladRecipeName) {
+                              <span class="text-sm font-normal text-gray-500"> + {{ entry.saladRecipeName }}</span>
+                            }
+                            @if (allIdentical) {
                               <span class="ml-1 text-sm font-normal text-gray-400">
                                 ({{ entry.assignments.map(a => a.portionMultiplier).join(' + ') }})
                               </span>
                             }
                           </p>
-                          @if (!allSameRecipe) {
+                          @if (!allIdentical) {
                             <ul class="mt-0.5 space-y-0.5">
                               @for (a of entry.assignments; track a.personId) {
                                 <li class="text-xs text-gray-500">
                                   {{ a.personName }} — {{ a.assignedRecipeName }}
+                                  @if (a.recipeVariationName) {
+                                    <span class="text-gray-400">({{ a.recipeVariationName }})</span>
+                                  }
                                   @if (a.portionMultiplier !== 1) {
-                                    <span class="text-gray-400">(&times;{{ a.portionMultiplier }})</span>
+                                    <span class="text-gray-400"> &times;{{ a.portionMultiplier }}</span>
                                   }
                                 </li>
                               }
