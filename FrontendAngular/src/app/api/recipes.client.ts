@@ -17,6 +17,7 @@ import {
   RecipeListItemDto,
   RecipeRatingDto,
   SetDifficultyRequest,
+  SetMealsPerCookRequest,
   SetRecipeOriginRequest,
   SetRecipeTypeRequest,
   SuggestSubstitutionsRequest,
@@ -72,6 +73,10 @@ export class RecipesClient {
 
   setOrigin(recipeId: string, payload: SetRecipeOriginRequest): Observable<void> {
     return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/origin`, payload);
+  }
+
+  setMealsPerCook(recipeId: string, payload: SetMealsPerCookRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/meals-per-cook`, payload);
   }
 
   updateIngredient(recipeId: string, ingredientId: string, payload: UpdateIngredientRequest): Observable<void> {

@@ -16,6 +16,7 @@ public sealed class Recipe : Entity
     public HouseholdId? HouseholdId { get; private set; }
     public RecipeType RecipeType { get; private set; } = RecipeType.MainDish;
     public RecipeOrigin Origin { get; private set; } = RecipeOrigin.Home;
+    public int MealsPerCook { get; private set; } = 1;
     public DifficultyLevel? Difficulty { get; private set; }
     public bool IsImported { get; private set; }
 
@@ -173,6 +174,13 @@ public sealed class Recipe : Entity
     public void SetRecipeType(RecipeType type) => RecipeType = type;
 
     public void SetOrigin(RecipeOrigin origin) => Origin = origin;
+
+    public void SetMealsPerCook(int value)
+    {
+        if (value < 1 || value > 2)
+            throw new ArgumentOutOfRangeException(nameof(value), "MealsPerCook must be 1 or 2.");
+        MealsPerCook = value;
+    }
 
     public void SetDifficulty(DifficultyLevel? level) => Difficulty = level;
 

@@ -129,6 +129,26 @@
     </section>
 
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+      <h2 class="text-lg font-medium">{{ 'recipes.mealsPerCook' | translate }}</h2>
+      <div class="mt-4">
+        <div class="flex items-center gap-3">
+          <select
+            [value]="data.mealsPerCook"
+            [disabled]="savingMealsPerCook()"
+            (change)="onMealsPerCookChange($any($event.target).value)"
+            class="w-56 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none disabled:opacity-50"
+          >
+            <option value="1">{{ 'recipes.mealsPerCook1' | translate }}</option>
+            <option value="2">{{ 'recipes.mealsPerCook2' | translate }}</option>
+          </select>
+          @if (savingMealsPerCook()) {
+            <span class="text-sm text-gray-500">{{ 'recipes.saving' | translate }}</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-6 rounded-xl border border-gray-200 bg-white p-5">
       <h2 class="text-lg font-medium">{{ 'recipes.addIngredient' | translate }}</h2>
       <div class="mt-4">
         <app-add-ingredient-form

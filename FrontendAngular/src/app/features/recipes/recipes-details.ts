@@ -92,6 +92,7 @@ export class RecipesDetails {
   protected readonly savingDifficulty = signal(false);
   protected readonly savingRecipeType = signal(false);
   protected readonly savingOrigin = signal(false);
+  protected readonly savingMealsPerCook = signal(false);
 
   protected readonly editIngredientForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -123,6 +124,17 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.savingRecipeType.set(false),
+      });
+  }
+
+  protected onMealsPerCookChange(value: string): void {
+    this.savingMealsPerCook.set(true);
+    this.client
+      .setMealsPerCook(this.id(), { mealsPerCook: parseInt(value, 10) })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => { this.savingMealsPerCook.set(false); this.recipe.reload(); },
+        error: () => this.savingMealsPerCook.set(false),
       });
   }
 

@@ -89,6 +89,7 @@ public sealed class SuggestMealPlanHandler
                 x.Id.Value,
                 x.Name.Value,
                 (int)x.RecipeType,
+                x.MealsPerCook,
                 x.Variations.Select(v => new AvailableRecipeVariationDto(
                     v.Id.Value,
                     v.Name,

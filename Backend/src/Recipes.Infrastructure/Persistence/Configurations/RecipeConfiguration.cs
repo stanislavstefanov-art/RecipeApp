@@ -43,6 +43,10 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired()
             .HasDefaultValue(RecipeOrigin.Home);
 
+        builder.Property(r => r.MealsPerCook)
+            .IsRequired()
+            .HasDefaultValue(1);
+
         builder.Property(r => r.Difficulty)
             .HasConversion<int?>()
             .IsRequired(false);

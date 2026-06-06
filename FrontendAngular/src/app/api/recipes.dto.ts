@@ -17,6 +17,7 @@ export interface RecipeListItemDto {
   readonly isImported: boolean;
   readonly ingredientNames: readonly string[];
   readonly origin: number;
+  readonly mealsPerCook: number;
 }
 
 export interface CreateRecipeRequest {
@@ -87,6 +88,7 @@ export interface RecipeDto {
   readonly difficultyLevel?: number | null;
   readonly recipeType: number;
   readonly origin: number;
+  readonly mealsPerCook: number;
 }
 
 export interface SetRecipeTypeRequest {
@@ -95,6 +97,10 @@ export interface SetRecipeTypeRequest {
 
 export interface SetRecipeOriginRequest {
   readonly origin: number;
+}
+
+export interface SetMealsPerCookRequest {
+  readonly mealsPerCook: number;
 }
 
 export interface CookingLogEntryDto {

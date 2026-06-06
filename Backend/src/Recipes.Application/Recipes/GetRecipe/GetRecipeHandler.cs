@@ -56,6 +56,7 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<R
             recipe.ImageUrl,
             recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null,
             (int)recipe.RecipeType,
-            (int)recipe.Origin);
+            (int)recipe.Origin,
+            recipe.MealsPerCook);
     }
 }

@@ -46,7 +46,8 @@ public sealed class ScaleRecipeHandler : IRequestHandler<ScaleRecipeCommand, Err
             null, 0, [], null, null,
             recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null,
             (int)recipe.RecipeType,
-            (int)recipe.Origin);
+            (int)recipe.Origin,
+            recipe.MealsPerCook);
 
         try
         {

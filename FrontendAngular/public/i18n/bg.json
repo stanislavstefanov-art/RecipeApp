@@ -134,7 +134,10 @@
     "saveForPortionsHint": "Рецептата е извлечена за {{extracted}} порция(и). Въведете за колко порции да запазите:",
     "difficulty": "Трудност",
     "difficultyLabel": "Трудност на приготвяне",
-    "difficultyNotSet": "Не е зададена"
+    "difficultyNotSet": "Не е зададена",
+    "mealsPerCook": "Хранения при едно готвене",
+    "mealsPerCook1": "1 хранене (обяд или вечеря)",
+    "mealsPerCook2": "2 хранения (обяд и вечеря)"
   },
   "households": {
     "title": "Домакинства",
