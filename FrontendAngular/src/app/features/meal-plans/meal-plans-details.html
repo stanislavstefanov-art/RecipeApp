@@ -97,6 +97,27 @@
               </select>
             </div>
 
+            @if ((household.value()?.members?.length ?? 0) > 0) {
+              <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">{{ 'mealPlans.portionMultiplier' | translate }}</label>
+                <div class="space-y-1">
+                  @for (member of household.value()!.members; track member.personId) {
+                    <div class="flex items-center gap-2">
+                      <span class="w-24 text-xs text-gray-700">{{ member.personName }}</span>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        [value]="getPortionMultiplier(member.personId)"
+                        (change)="setPortionMultiplier(member.personId, $any($event.target).value)"
+                        class="w-20 rounded border border-gray-300 px-2 py-1 text-sm focus:border-black focus:outline-none"
+                      />
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
             @if (addEntryState().kind === 'error') {
               <p class="text-xs text-red-600" role="alert">{{ $any(addEntryState()).message }}</p>
             }

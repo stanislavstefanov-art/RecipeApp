@@ -100,6 +100,7 @@ export class MealPlansDetails {
 
   protected readonly showAddForm = signal(false);
   protected readonly addEntryState = signal<FormState>({ kind: 'idle' });
+  protected readonly portionMultipliers = signal<Record<string, number>>({});
   protected readonly addForm = new FormGroup({
     recipeId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     plannedDate: new FormControl(new Date().toISOString().slice(0, 10), {
@@ -109,9 +110,19 @@ export class MealPlansDetails {
     mealType: new FormControl('3', { nonNullable: true, validators: [Validators.required] }),
   });
 
+  protected setPortionMultiplier(personId: string, value: string): void {
+    const n = parseFloat(value);
+    this.portionMultipliers.update((m) => ({ ...m, [personId]: isNaN(n) || n <= 0 ? 1 : n }));
+  }
+
+  protected getPortionMultiplier(personId: string): number {
+    return this.portionMultipliers()[personId] ?? 1;
+  }
+
   protected onToggleAddForm(): void {
     this.showAddForm.update((v) => !v);
     this.addEntryState.set({ kind: 'idle' });
+    this.portionMultipliers.set({});
     this.addForm.reset({
       recipeId: '',
       plannedDate: new Date().toISOString().slice(0, 10),
@@ -139,7 +150,7 @@ export class MealPlansDetails {
           personId: m.personId,
           assignedRecipeId: recipeId,
           recipeVariationId: null,
-          portionMultiplier: 1,
+          portionMultiplier: this.getPortionMultiplier(m.personId),
           notes: null,
         })),
       })
