@@ -17,6 +17,7 @@ import {
   RecipeListItemDto,
   RecipeRatingDto,
   SetDifficultyRequest,
+  SetRecipeOriginRequest,
   SetRecipeTypeRequest,
   SuggestSubstitutionsRequest,
   UpdateIngredientRequest,
