@@ -139,10 +139,12 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         variation?.IngredientAdjustmentNotes,
                         assignment.Notes);
 
+                    var unit = string.IsNullOrWhiteSpace(ingredient.Unit) ? "бр." : ingredient.Unit;
+
                     shoppingList.AddItem(
                         product,
                         scaledQuantity,
-                        ingredient.Unit,
+                        unit,
                         notes,
                         ShoppingListItemSourceType.MealPlan,
                         mealPlan.Id.Value,
