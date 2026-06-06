@@ -32,7 +32,8 @@ public sealed class ListRecipesHandler : IRequestHandler<ListRecipesQuery, Error
                 r.ImageUrl,
                 (int)r.RecipeType,
                 r.IsImported,
-                r.Ingredients.Select(i => i.Name).ToList()))
+                r.Ingredients.Select(i => i.Name).ToList(),
+                (int)r.Origin))
             .ToList();
 
         return result.ToErrorOr();

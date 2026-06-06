@@ -15,6 +15,7 @@ public sealed class Recipe : Entity
     public RecipeName Name { get; private set; }
     public HouseholdId? HouseholdId { get; private set; }
     public RecipeType RecipeType { get; private set; } = RecipeType.MainDish;
+    public RecipeOrigin Origin { get; private set; } = RecipeOrigin.Home;
     public DifficultyLevel? Difficulty { get; private set; }
     public bool IsImported { get; private set; }
 
@@ -170,6 +171,8 @@ public sealed class Recipe : Entity
     public void SetImageUrl(string? url) => ImageUrl = url;
 
     public void SetRecipeType(RecipeType type) => RecipeType = type;
+
+    public void SetOrigin(RecipeOrigin origin) => Origin = origin;
 
     public void SetDifficulty(DifficultyLevel? level) => Difficulty = level;
 

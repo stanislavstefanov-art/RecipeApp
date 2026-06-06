@@ -25,6 +25,7 @@ export class RecipesList {
 
   protected readonly filterType = signal<number | null>(null);
   protected readonly filterSource = signal<'all' | 'manual' | 'imported'>('all');
+  protected readonly filterOrigin = signal<'all' | 'home' | 'borrowed'>('all');
   protected readonly filterMinStars = signal<number | null>(null);
   protected readonly filterIngredient = signal('');
 
@@ -49,6 +50,7 @@ export class RecipesList {
     const list = this.recipes.value() ?? [];
     const type = this.filterType();
     const source = this.filterSource();
+    const origin = this.filterOrigin();
     const minStars = this.filterMinStars();
     const ingredient = this.filterIngredient().trim().toLowerCase();
 
@@ -56,6 +58,8 @@ export class RecipesList {
       if (type !== null && r.recipeType !== type) return false;
       if (source === 'manual' && r.isImported) return false;
       if (source === 'imported' && !r.isImported) return false;
+      if (origin === 'home' && r.origin !== 1) return false;
+      if (origin === 'borrowed' && r.origin !== 2) return false;
       if (minStars !== null) {
         if (r.averageStars === null || r.averageStars < minStars) return false;
       }
@@ -71,6 +75,7 @@ export class RecipesList {
     () =>
       this.filterType() !== null ||
       this.filterSource() !== 'all' ||
+      this.filterOrigin() !== 'all' ||
       this.filterMinStars() !== null ||
       this.filterIngredient().trim().length > 0,
   );
@@ -96,6 +101,7 @@ export class RecipesList {
   protected clearFilters(): void {
     this.filterType.set(null);
     this.filterSource.set('all');
+    this.filterOrigin.set('all');
     this.filterMinStars.set(null);
     this.filterIngredient.set('');
   }

@@ -132,6 +132,19 @@
       </select>
     </div>
 
+    <div>
+      <label for="recipeOrigin" class="block text-sm font-medium">{{ 'mealPlans.recipeOriginLabel' | translate }}</label>
+      <select
+        id="recipeOrigin"
+        formControlName="recipeOrigin"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+      >
+        <option value="all">{{ 'mealPlans.recipeOriginAll' | translate }}</option>
+        <option value="home">{{ 'enums.recipeOrigin.1' | translate }}</option>
+        <option value="borrowed">{{ 'enums.recipeOrigin.2' | translate }}</option>
+      </select>
+    </div>
+
     <button
       type="submit"
       [disabled]="isSuggesting()"

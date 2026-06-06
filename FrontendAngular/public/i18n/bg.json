@@ -113,6 +113,8 @@
     "noHouseholdsForCreate": "Необходимо е домакинство, за да създадете рецепта.",
     "filterType": "Вид",
     "filterSource": "Произход",
+    "filterOrigin": "Домашна / Заимствана",
+    "origin": "Вид рецепта",
     "filterMinStars": "Мин. оценка",
     "filterIngredient": "Съставка",
     "filterIngredientPlaceholder": "напр. пилешко…",
@@ -233,6 +235,8 @@
     "recipeSourceAll": "Всички рецепти",
     "recipeSourceManual": "Само ръчно създадени",
     "recipeSourceImported": "Само импортирани",
+    "recipeOriginLabel": "Вид рецепта",
+    "recipeOriginAll": "Всички",
     "selectHousehold": "Избери домакинство",
     "failedAccept": "Неуспешно приемане на предложение.",
     "generatingPlan": "Генериране…",
@@ -487,6 +491,10 @@
       "1": "Основно ястие",
       "2": "Салата",
       "3": "Предястие"
+    },
+    "recipeOrigin": {
+      "1": "Домашна",
+      "2": "Заимствана"
     },
     "difficultyLevel": {
       "1": "Лесно",

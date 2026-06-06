@@ -63,6 +63,20 @@
         </div>
 
         <div class="min-w-36">
+          <label for="filter-origin" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterOrigin' | translate }}</label>
+          <select
+            id="filter-origin"
+            [ngModel]="filterOrigin()"
+            (ngModelChange)="filterOrigin.set($event)"
+            class="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none"
+          >
+            <option value="all">{{ 'recipes.filterAll' | translate }}</option>
+            <option value="home">{{ 'enums.recipeOrigin.1' | translate }}</option>
+            <option value="borrowed">{{ 'enums.recipeOrigin.2' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="min-w-36">
           <label for="filter-stars" class="block text-xs font-medium text-gray-500 mb-1">{{ 'recipes.filterMinStars' | translate }}</label>
           <select
             id="filter-stars"

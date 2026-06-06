@@ -77,6 +77,7 @@ export class MealPlansSuggest {
     dinner: new FormControl(false, { nonNullable: true }),
     snack: new FormControl(false, { nonNullable: true }),
     recipeSource: new FormControl<'all' | 'manual' | 'imported'>('all', { nonNullable: true }),
+    recipeOrigin: new FormControl<'all' | 'home' | 'borrowed'>('all', { nonNullable: true }),
   });
 
   protected readonly noMealTypeError = signal(false);
@@ -129,6 +130,7 @@ export class MealPlansSuggest {
         numberOfDays: parseInt(v.numberOfDays, 10),
         mealTypes,
         recipeSource: v.recipeSource,
+        recipeOrigin: v.recipeOrigin,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

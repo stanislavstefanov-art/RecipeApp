@@ -25,6 +25,7 @@ using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 using Recipes.Application.Recipes.RemoveIngredientFromRecipe;
 using Recipes.Application.Recipes.RemoveStepFromRecipe;
 using Recipes.Application.Recipes.SetRecipeDifficulty;
+using Recipes.Application.Recipes.SetRecipeOrigin;
 using Recipes.Application.Recipes.SetRecipeType;
 using Recipes.Application.Recipes.UpdateIngredientInRecipe;
 
@@ -40,7 +41,7 @@ public static class RecipesEndpoints
 
         group.MapPost("/", async (CreateRecipeRequest request, ISender sender, CancellationToken ct) =>
         {
-            var result = await sender.Send(new CreateRecipeCommand(request.Name, request.HouseholdId, request.RecipeType, request.IsImported, request.DifficultyLevel), ct);
+            var result = await sender.Send(new CreateRecipeCommand(request.Name, request.HouseholdId, request.RecipeType, request.IsImported, request.DifficultyLevel, request.Origin), ct);
             return result.ToHttpResult(response => Results.Created($"/api/recipes/{response.Id}", response));
         });
 
@@ -117,6 +118,12 @@ public static class RecipesEndpoints
         group.MapPut("/{id:guid}/type", async (Guid id, SetRecipeTypeRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new SetRecipeTypeCommand(id, request.RecipeType), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPut("/{id:guid}/origin", async (Guid id, SetRecipeOriginRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new SetRecipeOriginCommand(id, request.Origin), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -256,11 +263,13 @@ public static class RecipesEndpoints
     }
 }
 
-public sealed record CreateRecipeRequest(string Name, Guid HouseholdId, int RecipeType = 1, bool IsImported = false, int? DifficultyLevel = null);
+public sealed record CreateRecipeRequest(string Name, Guid HouseholdId, int RecipeType = 1, bool IsImported = false, int? DifficultyLevel = null, int Origin = 1);
 
 public sealed record SetRecipeDifficultyRequest(int? DifficultyLevel);
 
 public sealed record SetRecipeTypeRequest(int RecipeType);
+
+public sealed record SetRecipeOriginRequest(int Origin);
 
 public sealed record ImportRecipeRequest(string Text);
 public sealed record ImportRecipeFromUrlRequest(string SourceUrl);

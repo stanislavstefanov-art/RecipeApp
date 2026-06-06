@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
 
@@ -56,6 +57,12 @@ public sealed class SuggestMealPlanHandler
             "manual" => allRecipes.Where(r => !r.IsImported).ToList(),
             "imported" => allRecipes.Where(r => r.IsImported).ToList(),
             _ => allRecipes,
+        };
+        recipes = request.RecipeOrigin switch
+        {
+            "home" => recipes.Where(r => r.Origin == RecipeOrigin.Home).ToList(),
+            "borrowed" => recipes.Where(r => r.Origin == RecipeOrigin.Borrowed).ToList(),
+            _ => recipes,
         };
         if (recipes.Count == 0)
         {

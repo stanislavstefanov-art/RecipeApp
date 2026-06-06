@@ -69,6 +69,10 @@ export class RecipesClient {
     return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/type`, payload);
   }
 
+  setOrigin(recipeId: string, payload: SetRecipeOriginRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/origin`, payload);
+  }
+
   updateIngredient(recipeId: string, ingredientId: string, payload: UpdateIngredientRequest): Observable<void> {
     return this.http.put<void>(
       `${API_BASE_URL}/api/recipes/${recipeId}/ingredients/${ingredientId}`,

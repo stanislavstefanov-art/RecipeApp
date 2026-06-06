@@ -91,6 +91,7 @@ export class RecipesDetails {
   protected readonly savingIngredientId = signal<string | null>(null);
   protected readonly savingDifficulty = signal(false);
   protected readonly savingRecipeType = signal(false);
+  protected readonly savingOrigin = signal(false);
 
   protected readonly editIngredientForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -122,6 +123,20 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.savingRecipeType.set(false),
+      });
+  }
+
+  protected onOriginChange(value: string): void {
+    this.savingOrigin.set(true);
+    this.client
+      .setOrigin(this.id(), { origin: parseInt(value, 10) })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.savingOrigin.set(false);
+          this.recipe.reload();
+        },
+        error: () => this.savingOrigin.set(false),
       });
   }
 

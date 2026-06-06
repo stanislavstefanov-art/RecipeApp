@@ -113,6 +113,8 @@
     "noHouseholdsForCreate": "You need a household to create recipes.",
     "filterType": "Type",
     "filterSource": "Source",
+    "filterOrigin": "Home / Borrowed",
+    "origin": "Recipe type",
     "filterMinStars": "Min stars",
     "filterIngredient": "Ingredient",
     "filterIngredientPlaceholder": "e.g. chicken…",
@@ -233,6 +235,8 @@
     "recipeSourceAll": "All recipes",
     "recipeSourceManual": "Manually created only",
     "recipeSourceImported": "Imported only",
+    "recipeOriginLabel": "Recipe kind",
+    "recipeOriginAll": "All",
     "selectHousehold": "Select household",
     "failedAccept": "Failed to accept suggestion.",
     "generatingPlan": "Generating…",
@@ -454,6 +458,10 @@
       "1": "Main dish",
       "2": "Salad",
       "3": "Appetizer"
+    },
+    "recipeOrigin": {
+      "1": "Home",
+      "2": "Borrowed"
     },
     "difficultyLevel": {
       "1": "Easy",

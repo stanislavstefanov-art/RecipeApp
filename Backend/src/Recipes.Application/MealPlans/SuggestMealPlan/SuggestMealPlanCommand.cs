@@ -9,4 +9,5 @@ public sealed record SuggestMealPlanCommand(
     DateOnly StartDate,
     int NumberOfDays,
     IReadOnlyList<int> MealTypes,
-    string RecipeSource = "all") : IRequest<ErrorOr<MealPlanSuggestionDto>>;
+    string RecipeSource = "all",
+    string RecipeOrigin = "all") : IRequest<ErrorOr<MealPlanSuggestionDto>>;

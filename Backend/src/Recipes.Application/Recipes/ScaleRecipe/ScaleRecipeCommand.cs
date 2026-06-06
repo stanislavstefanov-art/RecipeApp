@@ -45,7 +45,8 @@ public sealed class ScaleRecipeHandler : IRequestHandler<ScaleRecipeCommand, Err
             recipe.Steps.Select(s => new RecipeStepDto(s.Id.Value, s.Order, s.Instruction)).ToList(),
             null, 0, [], null, null,
             recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null,
-            (int)recipe.RecipeType);
+            (int)recipe.RecipeType,
+            (int)recipe.Origin);
 
         try
         {
