@@ -47,7 +47,7 @@ public sealed class ClaudeMealPlanSuggestionClient : IClaudeMealPlanSuggestionCl
 
         var payload = new ClaudeMessagesRequest(
             Model: _options.Model,
-            MaxTokens: Math.Max(_options.MaxTokens, 4096),
+            MaxTokens: 8000,
             System: systemPrompt,
             Messages:
             [
