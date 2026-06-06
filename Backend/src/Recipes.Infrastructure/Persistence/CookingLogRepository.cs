@@ -32,6 +32,12 @@ public sealed class CookingLogRepository : ICookingLogRepository
             .Take(limit)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<CookingLogEntry>> GetAllByUserAsync(UserId userId, CancellationToken cancellationToken = default)
+        => await _db.CookingLogEntries
+            .Where(e => e.UserId == userId)
+            .OrderByDescending(e => e.CookedOn)
+            .ToListAsync(cancellationToken);
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         => await _db.SaveChangesAsync(cancellationToken);
 }

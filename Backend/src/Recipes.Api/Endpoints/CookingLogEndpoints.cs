@@ -2,6 +2,7 @@ using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.CookingLog.DeleteCookingEntry;
 using Recipes.Application.CookingLog.GetRecipeCookingHistory;
+using Recipes.Application.CookingLog.GetRecipeCookingStats;
 using Recipes.Application.CookingLog.LogCookingEntry;
 
 namespace Recipes.Api.Endpoints;
@@ -31,6 +32,12 @@ public static class CookingLogEndpoints
         {
             var result = await sender.Send(new GetRecipeCookingHistoryQuery(recipeId), ct);
             return result.ToHttpResult(list => Results.Ok(list));
+        });
+
+        group.MapGet("/stats", async (ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new GetRecipeCookingStatsQuery(), ct);
+            return result.ToHttpResult(stats => Results.Ok(stats));
         });
 
         return app;

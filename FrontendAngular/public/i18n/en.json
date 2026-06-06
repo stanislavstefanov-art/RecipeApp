@@ -6,8 +6,10 @@
     "households": "Households",
     "mealPlans": "Meal plans",
     "shoppingLists": "Shopping lists",
+    "pantry": "Pantry",
     "expenses": "Expenses",
     "reports": "Reports",
+    "cookingStats": "Cooking stats",
     "settings": "Settings",
     "tagline": "Recipes, meal plans, shopping, expenses"
   },
@@ -536,6 +538,21 @@
       "empty": "No units configured yet.",
       "failedToLoad": "Failed to load units."
     }
+  },
+  "pantry": {
+    "title": "Pantry",
+    "description": "Ingredients you have at home and want to use up. Meal plan suggestions will prioritize recipes using these.",
+    "addItem": "Add item",
+    "ingredientPlaceholder": "e.g. eggs, spinach…",
+    "notesPlaceholder": "note (optional)",
+    "empty": "No pantry items yet."
+  },
+  "cookingStats": {
+    "title": "Cooking stats",
+    "description": "How many times each recipe has been cooked.",
+    "empty": "No cooking entries yet.",
+    "timesCooked": "{{count}} times",
+    "lastCooked": "Last"
   },
   "errors": {
     "AI.timeout": "The AI service did not respond in time.",

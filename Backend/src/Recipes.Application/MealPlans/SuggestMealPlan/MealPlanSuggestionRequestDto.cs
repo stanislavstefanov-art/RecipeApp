@@ -7,7 +7,11 @@ public sealed record MealPlanSuggestionRequestDto(
     IReadOnlyList<int> MealTypes,
     HouseholdPlanningProfileDto Household,
     IReadOnlyList<AvailableRecipeDto> AvailableRecipes,
-    IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null);
+    IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null,
+    IReadOnlyList<string>? AvailableIngredients = null,
+    IReadOnlyList<RecentlyCookedDto>? RecentlyCookedRecipes = null);
+
+public sealed record RecentlyCookedDto(Guid RecipeId, string RecipeName, int DaysAgo);
 
 public sealed record AvailableRecipeDto(
     Guid RecipeId,

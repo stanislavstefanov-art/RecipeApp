@@ -1,0 +1,32 @@
+<section class="mx-auto max-w-2xl p-6">
+  <header class="mb-6">
+    <h1 class="text-2xl font-semibold">{{ 'cookingStats.title' | translate }}</h1>
+    <p class="mt-1 text-sm text-gray-500">{{ 'cookingStats.description' | translate }}</p>
+  </header>
+
+  @if (stats.isLoading()) {
+    <p class="text-gray-500">{{ 'common.loading' | translate }}</p>
+  } @else if (stats.error()) {
+    <div class="rounded border border-red-300 bg-red-50 p-4 text-red-900">
+      <p class="text-sm">{{ errorMessage() }}</p>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="rounded border border-gray-200 bg-white p-6 text-center">
+      <p class="text-sm text-gray-500">{{ 'cookingStats.empty' | translate }}</p>
+    </div>
+  } @else {
+    <ul class="space-y-2">
+      @for (stat of stats.value() ?? []; track stat.recipeId) {
+        <li class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3">
+          <a [routerLink]="['/recipes', stat.recipeId]" class="min-w-0 font-medium hover:underline">
+            {{ stat.recipeName }}
+          </a>
+          <div class="flex shrink-0 items-center gap-4 text-sm text-gray-500">
+            <span class="font-semibold text-gray-700">{{ 'cookingStats.timesCooked' | translate:{ count: stat.timesCooked } }}</span>
+            <span class="text-xs">{{ 'cookingStats.lastCooked' | translate }}: {{ stat.lastCookedOn }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

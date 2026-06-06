@@ -1,5 +1,6 @@
 using ErrorOr;
 using MediatR;
+using Recipes.Application.Common;
 using Recipes.Domain.Enums;
 using Recipes.Domain.Primitives;
 using Recipes.Domain.Repositories;
@@ -12,18 +13,30 @@ public sealed class SuggestMealPlanHandler
     private readonly IRecipeRepository _recipeRepository;
     private readonly IHouseholdRepository _householdRepository;
     private readonly IPersonRepository _personRepository;
+    private readonly ICookingLogRepository _cookingLogRepository;
+    private readonly IPantryRepository _pantryRepository;
     private readonly IMealPlanSuggestionService _mealPlanSuggestionService;
+    private readonly ICurrentUser _currentUser;
+    private readonly TimeProvider _time;
 
     public SuggestMealPlanHandler(
         IRecipeRepository recipeRepository,
         IHouseholdRepository householdRepository,
         IPersonRepository personRepository,
-        IMealPlanSuggestionService mealPlanSuggestionService)
+        ICookingLogRepository cookingLogRepository,
+        IPantryRepository pantryRepository,
+        IMealPlanSuggestionService mealPlanSuggestionService,
+        ICurrentUser currentUser,
+        TimeProvider time)
     {
         _recipeRepository = recipeRepository;
         _householdRepository = householdRepository;
         _personRepository = personRepository;
+        _cookingLogRepository = cookingLogRepository;
+        _pantryRepository = pantryRepository;
         _mealPlanSuggestionService = mealPlanSuggestionService;
+        _currentUser = currentUser;
+        _time = time;
     }
 
     public async Task<ErrorOr<MealPlanSuggestionDto>> Handle(
@@ -71,6 +84,26 @@ public sealed class SuggestMealPlanHandler
                 "At least one recipe is required to suggest a meal plan.");
         }
 
+        var recipeNameMap = recipes.ToDictionary(r => r.Id, r => r.Name.Value);
+        var today = DateOnly.FromDateTime(_time.GetUtcNow().UtcDateTime);
+
+        var cookingLog = await _cookingLogRepository.GetAllByUserAsync(_currentUser.UserId, cancellationToken);
+        var recentlyCookedRecipes = cookingLog
+            .GroupBy(e => e.RecipeId)
+            .Select(g => new { RecipeId = g.Key, LastCookedOn = g.Max(e => e.CookedOn) })
+            .Where(x => recipeNameMap.ContainsKey(x.RecipeId))
+            .Select(x => new RecentlyCookedDto(
+                x.RecipeId.Value,
+                recipeNameMap[x.RecipeId],
+                today.DayNumber - x.LastCookedOn.DayNumber))
+            .OrderBy(x => x.DaysAgo)
+            .ToList();
+
+        var pantryItems = await _pantryRepository.GetByUserAsync(_currentUser.UserId, cancellationToken);
+        var availableIngredients = pantryItems.Count > 0
+            ? pantryItems.Select(p => p.IngredientName).ToList()
+            : null;
+
         var suggestionRequest = new MealPlanSuggestionRequestDto(
             request.Name,
             request.StartDate,
@@ -96,7 +129,9 @@ public sealed class SuggestMealPlanHandler
                     v.Notes,
                     v.IngredientAdjustmentNotes)).ToList()))
             .ToList(),
-            request.PersonsPerMealType);
+            request.PersonsPerMealType,
+            availableIngredients,
+            recentlyCookedRecipes.Count > 0 ? recentlyCookedRecipes : null);
 
         var suggestion = await _mealPlanSuggestionService.SuggestAsync(
             suggestionRequest,

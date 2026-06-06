@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Recipes.Application.Common;
 using Recipes.Application.MealPlans.SuggestMealPlan;
 using Recipes.Domain.Entities;
 using Recipes.Domain.Primitives;
@@ -25,13 +26,20 @@ public sealed class SuggestMealPlanHandlerTests
         var recipeRepository = new FakeRecipeRepository(recipes);
         var householdRepository = new FakeHouseholdRepository([household]);
         var personRepository = new FakePersonRepository([person]);
+        var cookingLogRepository = new FakeCookingLogRepository();
+        var pantryRepository = new FakePantryRepository();
         var suggestionService = new StubMealPlanSuggestionService();
+        var currentUser = new FakeCurrentUser();
 
         var handler = new SuggestMealPlanHandler(
             recipeRepository,
             householdRepository,
             personRepository,
-            suggestionService);
+            cookingLogRepository,
+            pantryRepository,
+            suggestionService,
+            currentUser,
+            TimeProvider.System);
 
         var result = await handler.Handle(
             new SuggestMealPlanCommand(
@@ -103,5 +111,31 @@ public sealed class SuggestMealPlanHandlerTests
         public void Remove(Person person) => _persons.Remove(person);
         public void RemoveRange(IEnumerable<Person> persons) => _persons.RemoveAll(persons.Contains);
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
+    private sealed class FakeCookingLogRepository : ICookingLogRepository
+    {
+        public void Add(CookingLogEntry entry) { }
+        public void Remove(CookingLogEntry entry) { }
+        public Task<CookingLogEntry?> GetByIdAsync(CookingLogEntryId id, CancellationToken cancellationToken = default) => Task.FromResult<CookingLogEntry?>(null);
+        public Task<IReadOnlyList<CookingLogEntry>> GetByRecipeAndUserAsync(RecipeId recipeId, UserId userId, int limit, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<CookingLogEntry>>([]);
+        public Task<IReadOnlyList<CookingLogEntry>> GetAllByUserAsync(UserId userId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<CookingLogEntry>>([]);
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
+    private sealed class FakePantryRepository : IPantryRepository
+    {
+        public Task AddAsync(PantryItem item, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public void Remove(PantryItem item) { }
+        public Task<PantryItem?> GetByIdAsync(PantryItemId id, CancellationToken cancellationToken = default) => Task.FromResult<PantryItem?>(null);
+        public Task<IReadOnlyList<PantryItem>> GetByUserAsync(UserId userId, CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<PantryItem>>([]);
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    }
+
+    private sealed class FakeCurrentUser : ICurrentUser
+    {
+        public UserId UserId { get; } = UserId.New();
+        public Task<IReadOnlyList<HouseholdId>> GetHouseholdIdsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<HouseholdId>>([]);
+        public void InvalidateHouseholdCache() { }
     }
 }

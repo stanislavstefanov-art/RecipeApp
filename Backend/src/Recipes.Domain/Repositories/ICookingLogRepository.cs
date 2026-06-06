@@ -10,5 +10,6 @@ public interface ICookingLogRepository
     Task<CookingLogEntry?> GetByIdAsync(CookingLogEntryId id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<CookingLogEntry>> GetByRecipeAndUserAsync(
         RecipeId recipeId, UserId userId, int limit, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<CookingLogEntry>> GetAllByUserAsync(UserId userId, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

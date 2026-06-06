@@ -44,3 +44,7 @@ Soft constraints:
 - weekly balance across people
 
 The plan should balance the whole week, not try to satisfy every soft preference in every single meal.
+
+Pantry and cooking history guidance:
+- When availableIngredients is provided, strongly prefer recipes that use any of those ingredients. These ingredients are available and should ideally be consumed soon.
+- When recentlyCookedRecipes is provided, de-prioritize recipes cooked recently (low daysAgo). Prefer recipes not cooked in the last 14 days. Recipes cooked 7 or fewer days ago should be avoided unless no alternatives exist.
