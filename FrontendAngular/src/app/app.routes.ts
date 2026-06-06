@@ -102,19 +102,27 @@ export const routes: Routes = [
           import('./features/expenses/expenses-list').then((m) => m.ExpensesList),
       },
       {
-        path: 'expenses/report',
-        loadComponent: () =>
-          import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
-      },
-      {
         path: 'pantry',
         loadComponent: () =>
           import('./features/pantry/pantry').then((m) => m.Pantry),
       },
       {
-        path: 'cooking-stats',
+        path: 'reports',
         loadComponent: () =>
-          import('./features/cooking-stats/cooking-stats').then((m) => m.CookingStats),
+          import('./features/reports/reports').then((m) => m.Reports),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'expenses' },
+          {
+            path: 'expenses',
+            loadComponent: () =>
+              import('./features/expenses/expenses-report').then((m) => m.ExpensesReport),
+          },
+          {
+            path: 'cooking',
+            loadComponent: () =>
+              import('./features/cooking-stats/cooking-stats').then((m) => m.CookingStats),
+          },
+        ],
       },
       {
         path: 'settings',

@@ -2,7 +2,6 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { firstValueFrom, map } from 'rxjs';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -13,7 +12,7 @@ import { ExpensesClient } from '../../api/expenses.client';
   selector: 'app-expenses-report',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ReactiveFormsModule, DecimalPipe, TranslateModule],
+  imports: [ReactiveFormsModule, DecimalPipe, TranslateModule],
   templateUrl: './expenses-report.html',
   styleUrl: './expenses-report.css',
 })

@@ -1,8 +1,5 @@
-<section class="mx-auto max-w-2xl p-6">
-  <header class="mb-6">
-    <h1 class="text-2xl font-semibold">{{ 'cookingStats.title' | translate }}</h1>
-    <p class="mt-1 text-sm text-gray-500">{{ 'cookingStats.description' | translate }}</p>
-  </header>
+<div>
+  <p class="mb-4 text-sm text-gray-500">{{ 'cookingStats.description' | translate }}</p>
 
   @if (stats.isLoading()) {
     <p class="text-gray-500">{{ 'common.loading' | translate }}</p>
@@ -29,4 +26,4 @@
       }
     </ul>
   }
-</section>
+</div>

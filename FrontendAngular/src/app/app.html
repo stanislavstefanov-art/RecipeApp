@@ -12,12 +12,11 @@
           <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.households' | translate }}</a>
           <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.persons' | translate }}</a>
           <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.recipes' | translate }}</a>
+          <a routerLink="/pantry" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.pantry' | translate }}</a>
           <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.mealPlans' | translate }}</a>
           <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.shoppingLists' | translate }}</a>
-          <a routerLink="/pantry" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.pantry' | translate }}</a>
           <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white">{{ 'nav.expenses' | translate }}</a>
-          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.reports' | translate }}</a>
-          <a routerLink="/cooking-stats" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.cookingStats' | translate }}</a>
+          <a routerLink="/reports" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.reports' | translate }}</a>
           <a routerLink="/settings" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white">{{ 'nav.settings' | translate }}</a>
         </nav>
       </div>
@@ -37,12 +36,11 @@
           <a routerLink="/households" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.households' | translate }}</a>
           <a routerLink="/persons" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.persons' | translate }}</a>
           <a routerLink="/recipes" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.recipes' | translate }}</a>
+          <a routerLink="/pantry" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.pantry' | translate }}</a>
           <a routerLink="/meal-plans" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.mealPlans' | translate }}</a>
           <a routerLink="/shopping-lists" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.shoppingLists' | translate }}</a>
-          <a routerLink="/pantry" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.pantry' | translate }}</a>
           <a routerLink="/expenses" routerLinkActive="font-semibold !text-nav-active" [routerLinkActiveOptions]="{ exact: true }" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.expenses' | translate }}</a>
-          <a routerLink="/expenses/report" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
-          <a routerLink="/cooking-stats" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.cookingStats' | translate }}</a>
+          <a routerLink="/reports" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.reports' | translate }}</a>
           <a routerLink="/settings" routerLinkActive="font-semibold !text-nav-active" class="text-nav hover:text-white" (click)="closeNav()">{{ 'nav.settings' | translate }}</a>
           <div class="mt-1 flex items-center justify-end border-t border-shell-mob pt-3">
             <app-user-menu />
