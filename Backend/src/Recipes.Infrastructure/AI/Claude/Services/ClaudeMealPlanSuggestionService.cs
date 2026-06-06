@@ -37,7 +37,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             request.NumberOfDays,
             request.MealTypes.Count);
 
-        var first = FilterInvalidEntries(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.MealTypes);
+        var first = FilterPersons(FilterInvalidEntries(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.MealTypes), request.PersonsPerMealType);
         var firstValidation = await _validator.ValidateAsync(first, cancellationToken);
 
         if (firstValidation.IsValid)
@@ -62,7 +62,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Name = $"{request.Name} (retry)"
         };
 
-        var second = FilterInvalidEntries(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.MealTypes);
+        var second = FilterPersons(FilterInvalidEntries(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.MealTypes), request.PersonsPerMealType);
         var secondValidation = await _validator.ValidateAsync(second, cancellationToken);
 
         if (secondValidation.IsValid)
@@ -88,6 +88,26 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Confidence = Math.Min(second.Confidence, 0.5),
             Notes = AppendValidationNotes(second.Notes, secondErrors)
         };
+    }
+
+    private static MealPlanSuggestionDto FilterPersons(
+        MealPlanSuggestionDto dto,
+        IReadOnlyDictionary<int, IReadOnlyList<Guid>>? personsPerMealType)
+    {
+        if (personsPerMealType is null || personsPerMealType.Count == 0) return dto;
+
+        var corrected = false;
+        var entries = dto.Entries.Select(entry =>
+        {
+            if (!personsPerMealType.TryGetValue(entry.MealType, out var allowed)) return entry;
+            var allowedSet = new HashSet<Guid>(allowed);
+            var filtered = entry.Assignments.Where(a => allowedSet.Contains(a.PersonId)).ToList();
+            if (filtered.Count == entry.Assignments.Count) return entry;
+            corrected = true;
+            return entry with { Assignments = filtered };
+        }).ToList();
+
+        return corrected ? dto with { Entries = entries, NeedsReview = true } : dto;
     }
 
     private static MealPlanSuggestionDto FilterInvalidEntries(MealPlanSuggestionDto dto, IReadOnlyList<int> allowedMealTypes)
