@@ -80,7 +80,8 @@ export class MealPlansDetails {
 
   protected readonly groupedEntries = computed(() => {
     const entries = this.mealPlan.value()?.entries ?? [];
-    const byDate = new Map<string, Map<number, typeof entries>>();
+    type Entry = (typeof entries)[number];
+    const byDate = new Map<string, Map<number, Entry[]>>();
     for (const entry of entries) {
       if (!byDate.has(entry.plannedDate)) byDate.set(entry.plannedDate, new Map());
       const byMeal = byDate.get(entry.plannedDate)!;
