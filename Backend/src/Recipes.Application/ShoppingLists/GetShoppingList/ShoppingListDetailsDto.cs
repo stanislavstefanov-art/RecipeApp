@@ -17,4 +17,4 @@ public sealed record ShoppingListDetailsItemDto(
     Guid? SourceReferenceId,
     IReadOnlyList<ShoppingListItemRecipeSourceDto> RecipeSources);
 
-public sealed record ShoppingListItemRecipeSourceDto(Guid RecipeId, string RecipeName);
+public sealed record ShoppingListItemRecipeSourceDto(Guid RecipeId, string RecipeName, decimal Portions);

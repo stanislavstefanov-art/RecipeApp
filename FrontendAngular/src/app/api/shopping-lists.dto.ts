@@ -35,6 +35,7 @@ export interface ShoppingListDetailsDto {
 export interface ShoppingListItemRecipeSourceDto {
   recipeId: string;
   recipeName: string;
+  portions: number;
 }
 
 export interface ShoppingListDetailsItemDto {

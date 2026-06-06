@@ -89,10 +89,10 @@ public sealed class ShoppingListItem
     internal bool MatchesSource(ShoppingListItemSourceType sourceType, Guid? sourceReferenceId)
         => SourceType == sourceType && SourceReferenceId == sourceReferenceId;
 
-    internal void AddRecipeSource(RecipeId recipeId, string recipeName)
+    internal void AddRecipeSource(RecipeId recipeId, string recipeName, decimal portions = 1m)
     {
         if (!_sources.Any(s => s.RecipeId == recipeId))
-            _sources.Add(new ShoppingListItemSource(Id, recipeId, recipeName));
+            _sources.Add(new ShoppingListItemSource(Id, recipeId, recipeName, portions));
     }
 
     internal void MarkPurchased()

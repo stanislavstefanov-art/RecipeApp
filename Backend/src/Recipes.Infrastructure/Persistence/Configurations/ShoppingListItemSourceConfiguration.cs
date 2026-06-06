@@ -26,5 +26,9 @@ public sealed class ShoppingListItemSourceConfiguration : IEntityTypeConfigurati
         builder.Property(x => x.RecipeName)
             .IsRequired()
             .HasMaxLength(200);
+
+        builder.Property(x => x.Portions)
+            .HasColumnType("decimal(18,2)")
+            .HasDefaultValue(1m);
     }
 }

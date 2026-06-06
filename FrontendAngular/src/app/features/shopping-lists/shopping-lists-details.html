@@ -123,17 +123,9 @@
                   {{ item.productName }}
                 </p>
                 <p class="text-sm text-gray-500">{{ item.quantity }} {{ item.unit }}</p>
-                <div class="mt-1 flex flex-wrap gap-1">
-                  <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                    {{ 'enums.expenseSourceType.' + item.sourceType | translate }}
-                  </span>
-                  @if (item.isPurchased) {
-                    <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">{{ 'shoppingLists.purchased' | translate }}</span>
-                  }
-                  @if (item.notes) {
-                    <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{{ item.notes }}</span>
-                  }
-                </div>
+                @if (item.isPurchased) {
+                  <span class="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">{{ 'shoppingLists.purchased' | translate }}</span>
+                }
                 @if (item.recipeSources.length > 0) {
                   <button
                     type="button"
@@ -146,7 +138,7 @@
                   @if (expandedItemId() === item.id) {
                     <ul class="mt-2 space-y-0.5 pl-1">
                       @for (source of item.recipeSources; track source.recipeId) {
-                        <li class="text-xs text-gray-600">· {{ source.recipeName }}</li>
+                        <li class="text-xs text-gray-600">· {{ source.recipeName }} ({{ source.portions }} {{ 'shoppingLists.portions' | translate }})</li>
                       }
                     </ul>
                   }

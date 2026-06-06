@@ -40,7 +40,8 @@ public sealed class ShoppingList : Entity
         ShoppingListItemSourceType sourceType = ShoppingListItemSourceType.Manual,
         Guid? sourceReferenceId = null,
         RecipeId? recipeId = null,
-        string? recipeName = null)
+        string? recipeName = null,
+        decimal portionMultiplier = 1m)
     {
         ArgumentNullException.ThrowIfNull(product);
 
@@ -54,7 +55,7 @@ public sealed class ShoppingList : Entity
             existing.IncreaseQuantity(quantity);
             existing.MergeNotes(notes);
             if (recipeId.HasValue)
-                existing.AddRecipeSource(recipeId.Value, recipeName!);
+                existing.AddRecipeSource(recipeId.Value, recipeName!, portionMultiplier);
 
             RaiseDomainEvent(new ShoppingListItemQuantityIncreased(
                 Id,
@@ -78,7 +79,7 @@ public sealed class ShoppingList : Entity
             sourceReferenceId);
 
         if (recipeId.HasValue)
-            item.AddRecipeSource(recipeId.Value, recipeName!);
+            item.AddRecipeSource(recipeId.Value, recipeName!, portionMultiplier);
 
         _items.Add(item);
 

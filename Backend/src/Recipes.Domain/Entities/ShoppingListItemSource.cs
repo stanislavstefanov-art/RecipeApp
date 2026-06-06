@@ -10,10 +10,13 @@ public sealed class ShoppingListItemSource
 
     private ShoppingListItemSource() { }
 
-    internal ShoppingListItemSource(ShoppingListItemId itemId, RecipeId recipeId, string recipeName)
+    public decimal Portions { get; private set; }
+
+    internal ShoppingListItemSource(ShoppingListItemId itemId, RecipeId recipeId, string recipeName, decimal portions = 1m)
     {
         ShoppingListItemId = itemId;
         RecipeId = recipeId;
         RecipeName = recipeName;
+        Portions = portions;
     }
 }
