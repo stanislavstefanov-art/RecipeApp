@@ -53,20 +53,9 @@
         >
           {{ generateState().kind === 'busy' ? ('shoppingLists.generating' | translate) : ('common.generate' | translate) }}
         </button>
-        <button
-          type="button"
-          (click)="onRegenerate()"
-          [disabled]="!selectedMealPlanId.value || regenerateState().kind === 'busy'"
-          class="rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
-        >
-          {{ regenerateState().kind === 'busy' ? ('shoppingLists.regenerating' | translate) : ('shoppingLists.regenerate' | translate) }}
-        </button>
       </div>
       @if (generateState().kind === 'error') {
         <p class="mt-2 text-sm text-red-700">{{ $any(generateState()).message }}</p>
-      }
-      @if (regenerateState().kind === 'error') {
-        <p class="mt-2 text-sm text-red-700">{{ $any(regenerateState()).message }}</p>
       }
     </div>
 

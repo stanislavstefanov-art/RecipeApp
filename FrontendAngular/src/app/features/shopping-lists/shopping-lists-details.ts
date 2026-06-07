@@ -107,7 +107,6 @@ export class ShoppingListsDetails {
 
   protected readonly markPendingState = signal<ItemActionState>({ kind: 'idle' });
   protected readonly generateState = signal<GenerateState>({ kind: 'idle' });
-  protected readonly regenerateState = signal<GenerateState>({ kind: 'idle' });
 
   protected readonly expandedItemId = signal<string | null>(null);
 
@@ -221,8 +220,12 @@ export class ShoppingListsDetails {
     if (!mealPlanId) return;
     this.generateState.set({ kind: 'busy' });
 
+    // Always use the idempotent regenerate path: it removes this meal plan's
+    // previously generated items first, then re-adds them fresh — safe on an
+    // empty list and safe to re-run without doubling quantities. Manual items
+    // and items from other meal plans are preserved.
     this.mealPlansClient
-      .generateFromMealPlan(mealPlanId, this.id())
+      .regenerateFromMealPlan(mealPlanId, this.id())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -232,26 +235,6 @@ export class ShoppingListsDetails {
         },
         error: (err: unknown) => {
           this.generateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
-        },
-      });
-  }
-
-  protected onRegenerate(): void {
-    const mealPlanId = this.selectedMealPlanId.value;
-    if (!mealPlanId) return;
-    this.regenerateState.set({ kind: 'busy' });
-
-    this.mealPlansClient
-      .regenerateFromMealPlan(mealPlanId, this.id())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.regenerateState.set({ kind: 'idle' });
-          this._refresh.update(n => n + 1);
-          this.toast.show('success', this.translate.instant('shoppingLists.listRegenerated'));
-        },
-        error: (err: unknown) => {
-          this.regenerateState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
         },
       });
   }
