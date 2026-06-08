@@ -72,6 +72,30 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                     ? name
                     : assignment.PersonId.Value.ToString();
 
+                // Bought recipes are added by recipe name — no ingredient expansion.
+                if (recipe.Origin == RecipeOrigin.Bought)
+                {
+                    var product = await _productRepository.GetByNameAsync(recipe.Name.Value, cancellationToken);
+                    if (product is null)
+                    {
+                        product = new Product(recipe.Name.Value);
+                        await _productRepository.AddAsync(product, cancellationToken);
+                    }
+
+                    shoppingList.AddItem(
+                        product,
+                        assignment.PortionMultiplier,
+                        "порция",
+                        null,
+                        ShoppingListItemSourceType.MealPlan,
+                        mealPlan.Id.Value,
+                        recipe.Id,
+                        recipe.Name.Value,
+                        assignment.PortionMultiplier);
+
+                    continue;
+                }
+
                 var variation = assignment.RecipeVariationId.HasValue
                     ? recipe.Variations.SingleOrDefault(x => x.Id == assignment.RecipeVariationId.Value)
                     : null;
