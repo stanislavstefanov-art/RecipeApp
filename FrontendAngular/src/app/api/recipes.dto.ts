@@ -24,6 +24,7 @@ export interface CreateRecipeRequest {
   readonly name: string;
   readonly householdId: string;
   readonly recipeType: number;
+  readonly origin?: number;
   readonly isImported?: boolean;
   readonly difficultyLevel?: number | null;
 }
