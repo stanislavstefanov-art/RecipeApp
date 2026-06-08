@@ -11,6 +11,7 @@ using Recipes.Application.ShoppingLists.DeleteShoppingList;
 using Recipes.Application.ShoppingLists.MarkShoppingListItemPurchased;
 using Recipes.Application.ShoppingLists.PurchaseShoppingListItem;
 using Recipes.Application.ShoppingLists.AddManualItemToShoppingList;
+using Recipes.Application.ShoppingLists.RemoveShoppingListItem;
 
 namespace Recipes.Api.Endpoints;
 
@@ -134,6 +135,16 @@ public static class ShoppingListsEndpoints
                     request.Description),
                 ct);
 
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapDelete("/{shoppingListId:guid}/items/{itemId:guid}", async (
+            Guid shoppingListId,
+            Guid itemId,
+            ISender sender,
+            CancellationToken ct) =>
+        {
+            var result = await sender.Send(new RemoveShoppingListItemCommand(shoppingListId, itemId), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 

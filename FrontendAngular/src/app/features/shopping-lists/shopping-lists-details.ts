@@ -119,6 +119,7 @@ export class ShoppingListsDetails {
   }
 
   protected readonly markPendingState = signal<ItemActionState>({ kind: 'idle' });
+  protected readonly deletingItemState = signal<ItemActionState>({ kind: 'idle' });
   protected readonly generateState = signal<GenerateState>({ kind: 'idle' });
 
   protected readonly expandedItemId = signal<string | null>(null);
@@ -224,6 +225,26 @@ export class ShoppingListsDetails {
         },
         error: (err: unknown) => {
           this.purchaseState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
+        },
+      });
+  }
+
+  protected onDeleteItem(item: ShoppingListDetailsItemDto): void {
+    this.deletingItemState.set({ kind: 'busy', itemId: item.id });
+    this.client
+      .deleteItem(this.id(), item.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deletingItemState.set({ kind: 'idle' });
+          this._refresh.update((n) => n + 1);
+        },
+        error: (err: unknown) => {
+          this.deletingItemState.set({
+            kind: 'error',
+            itemId: item.id,
+            message: getErrorMessage(err, this.translate, 'Failed'),
+          });
         },
       });
   }

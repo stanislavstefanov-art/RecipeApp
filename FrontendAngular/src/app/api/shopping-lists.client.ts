@@ -56,6 +56,12 @@ export class ShoppingListsClient {
     );
   }
 
+  deleteItem(shoppingListId: string, itemId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${API_BASE_URL}/api/shopping-lists/${shoppingListId}/items/${itemId}`,
+    );
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/api/shopping-lists/${id}`);
   }

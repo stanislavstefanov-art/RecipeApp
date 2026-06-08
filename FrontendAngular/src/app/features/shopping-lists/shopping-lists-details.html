@@ -168,9 +168,12 @@
                 @if (markPendingState().kind === 'error' && $any(markPendingState()).itemId === item.id) {
                   <p class="mt-1 text-sm text-red-700">{{ $any(markPendingState()).message }}</p>
                 }
+                @if (deletingItemState().kind === 'error' && $any(deletingItemState()).itemId === item.id) {
+                  <p class="mt-1 text-sm text-red-700">{{ $any(deletingItemState()).message }}</p>
+                }
               </div>
-              @if (!item.isPurchased) {
-                <div class="flex shrink-0 gap-2">
+              <div class="flex shrink-0 gap-2">
+                @if (!item.isPurchased) {
                   <button
                     type="button"
                     (click)="onMarkPending(item)"
@@ -186,8 +189,16 @@
                   >
                     {{ 'shoppingLists.purchase' | translate }}
                   </button>
-                </div>
-              }
+                }
+                <button
+                  type="button"
+                  (click)="onDeleteItem(item)"
+                  [disabled]="deletingItemState().kind === 'busy' && $any(deletingItemState()).itemId === item.id"
+                  class="rounded border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                >
+                  {{ 'common.delete' | translate }}
+                </button>
+              </div>
             </div>
           </li>
         }
