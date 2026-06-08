@@ -52,6 +52,10 @@ export class RecipesCreate {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    origin: new FormControl('1', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     difficultyLevel: new FormControl<string>('', { nonNullable: true }),
   });
 
@@ -104,11 +108,11 @@ export class RecipesCreate {
     }
 
     this.submitState.set({ kind: 'submitting' });
-    const { name, householdId, recipeType, difficultyLevel } = this.form.getRawValue();
+    const { name, householdId, recipeType, origin, difficultyLevel } = this.form.getRawValue();
     const difficulty = difficultyLevel ? parseInt(difficultyLevel, 10) : null;
 
     this.recipesClient
-      .create({ name, householdId, recipeType: parseInt(recipeType, 10), difficultyLevel: difficulty })
+      .create({ name, householdId, recipeType: parseInt(recipeType, 10), origin: parseInt(origin, 10), difficultyLevel: difficulty })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {

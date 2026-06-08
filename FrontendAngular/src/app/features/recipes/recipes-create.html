@@ -49,6 +49,19 @@
     </div>
 
     <div>
+      <label for="origin" class="block text-sm font-medium">{{ 'recipes.recipeOriginLabel' | translate }}</label>
+      <select
+        id="origin"
+        formControlName="origin"
+        class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+      >
+        <option value="1">{{ 'enums.recipeOrigin.1' | translate }}</option>
+        <option value="2">{{ 'enums.recipeOrigin.2' | translate }}</option>
+        <option value="3">{{ 'enums.recipeOrigin.3' | translate }}</option>
+      </select>
+    </div>
+
+    <div>
       <label for="difficultyLevel" class="block text-sm font-medium">{{ 'recipes.difficulty' | translate }}</label>
       <select
         id="difficultyLevel"
