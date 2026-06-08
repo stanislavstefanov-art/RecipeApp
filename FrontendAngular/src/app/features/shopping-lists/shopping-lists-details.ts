@@ -16,6 +16,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { ToastService } from '../../core/toast.service';
 import { MealPlansClient } from '../../api/meal-plans.client';
+import { RecipesClient } from '../../api/recipes.client';
 import { ShoppingListsClient } from '../../api/shopping-lists.client';
 import { UnitsClient } from '../../api/units.client';
 import { UnitNamePipe } from '../../shared/unit-name.pipe';
@@ -51,6 +52,7 @@ export class ShoppingListsDetails {
   private readonly client = inject(ShoppingListsClient);
   private readonly mealPlansClient = inject(MealPlansClient);
   private readonly unitsClient = inject(UnitsClient);
+  private readonly recipesClient = inject(RecipesClient);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -66,6 +68,17 @@ export class ShoppingListsDetails {
   protected readonly mealPlans = rxResource({
     stream: () => this.mealPlansClient.list(),
   });
+
+  protected readonly allRecipes = rxResource({
+    stream: () => this.recipesClient.list(),
+  });
+
+  protected readonly boughtRecipes = computed(() =>
+    (this.allRecipes.value() ?? []).filter((r) => r.origin === 3),
+  );
+
+  protected readonly selectedBoughtRecipeId = new FormControl('', { nonNullable: true });
+  protected readonly addBoughtState = signal<GenerateState>({ kind: 'idle' });
 
   protected readonly units = rxResource({
     stream: () => this.unitsClient.list(),
@@ -211,6 +224,29 @@ export class ShoppingListsDetails {
         },
         error: (err: unknown) => {
           this.purchaseState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
+        },
+      });
+  }
+
+  protected onAddBoughtRecipe(): void {
+    const recipeId = this.selectedBoughtRecipeId.value;
+    if (!recipeId) return;
+    const recipe = this.boughtRecipes().find((r) => r.id === recipeId);
+    if (!recipe) return;
+
+    this.addBoughtState.set({ kind: 'busy' });
+    this.client
+      .addManualItem(this.id(), { productName: recipe.name, quantity: 1, unit: 'порция' })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.selectedBoughtRecipeId.reset();
+          this.addBoughtState.set({ kind: 'idle' });
+          this._refresh.update((n) => n + 1);
+          this.toast.show('success', this.translate.instant('shoppingLists.itemAdded'));
+        },
+        error: (err: unknown) => {
+          this.addBoughtState.set({ kind: 'error', message: getErrorMessage(err, this.translate, 'Failed') });
         },
       });
   }

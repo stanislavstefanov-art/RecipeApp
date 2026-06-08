@@ -4,5 +4,6 @@ public enum ShoppingListItemSourceType
 {
     Manual = 1,
     Recipe = 2,
-    MealPlan = 3
+    MealPlan = 3,
+    BoughtMealPlan = 4,
 }

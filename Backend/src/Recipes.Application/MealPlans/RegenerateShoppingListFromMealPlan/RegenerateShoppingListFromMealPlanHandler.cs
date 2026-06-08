@@ -50,6 +50,7 @@ public sealed class RegenerateShoppingListFromMealPlanHandler
         }
 
         shoppingList.RemoveGeneratedItems(ShoppingListItemSourceType.MealPlan, mealPlan.Id.Value);
+        shoppingList.RemoveGeneratedItems(ShoppingListItemSourceType.BoughtMealPlan, mealPlan.Id.Value);
         await _shoppingListRepository.SaveChangesAsync(cancellationToken);
 
         var generateResult = await _sender.Send(

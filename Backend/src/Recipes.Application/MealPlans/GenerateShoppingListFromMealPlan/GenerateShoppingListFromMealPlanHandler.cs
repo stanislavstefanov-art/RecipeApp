@@ -87,7 +87,7 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         assignment.PortionMultiplier,
                         "порция",
                         null,
-                        ShoppingListItemSourceType.MealPlan,
+                        ShoppingListItemSourceType.BoughtMealPlan,
                         mealPlan.Id.Value,
                         recipe.Id,
                         recipe.Name.Value,
