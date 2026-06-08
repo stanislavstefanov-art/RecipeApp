@@ -481,7 +481,8 @@
     },
     "recipeOrigin": {
       "1": "Home",
-      "2": "Borrowed"
+      "2": "Borrowed",
+      "3": "Bought"
     },
     "difficultyLevel": {
       "1": "Easy",

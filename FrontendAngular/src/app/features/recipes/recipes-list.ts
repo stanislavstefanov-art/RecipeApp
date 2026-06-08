@@ -25,7 +25,7 @@ export class RecipesList {
 
   protected readonly filterType = signal<number | null>(null);
   protected readonly filterSource = signal<'all' | 'manual' | 'imported'>('all');
-  protected readonly filterOrigin = signal<'all' | 'home' | 'borrowed'>('all');
+  protected readonly filterOrigin = signal<'all' | 'home' | 'borrowed' | 'bought'>('all');
   protected readonly filterMinStars = signal<number | null>(null);
   protected readonly filterIngredient = signal('');
 
@@ -60,6 +60,7 @@ export class RecipesList {
       if (source === 'imported' && !r.isImported) return false;
       if (origin === 'home' && r.origin !== 1) return false;
       if (origin === 'borrowed' && r.origin !== 2) return false;
+      if (origin === 'bought' && r.origin !== 3) return false;
       if (minStars !== null) {
         if (r.averageStars === null || r.averageStars < minStars) return false;
       }

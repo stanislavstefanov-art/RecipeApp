@@ -73,6 +73,7 @@
             <option value="all">{{ 'recipes.filterAll' | translate }}</option>
             <option value="home">{{ 'enums.recipeOrigin.1' | translate }}</option>
             <option value="borrowed">{{ 'enums.recipeOrigin.2' | translate }}</option>
+            <option value="bought">{{ 'enums.recipeOrigin.3' | translate }}</option>
           </select>
         </div>
 
@@ -160,7 +161,7 @@
                     {{ 'enums.recipeType.' + recipe.recipeType | translate }}
                   </span>
                   <span class="rounded-full px-2 py-0.5 text-xs"
-                    [class]="recipe.origin === 2 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'">
+                    [class]="recipe.origin === 2 ? 'bg-amber-100 text-amber-700' : recipe.origin === 3 ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'">
                     {{ 'enums.recipeOrigin.' + recipe.origin | translate }}
                   </span>
                   @if (recipe.isImported) {

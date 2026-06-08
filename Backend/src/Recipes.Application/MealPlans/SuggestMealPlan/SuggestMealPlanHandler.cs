@@ -72,7 +72,7 @@ public sealed class SuggestMealPlanHandler
         {
             "home" => recipes.Where(r => r.Origin == RecipeOrigin.Home).ToList(),
             "borrowed" => recipes.Where(r => r.Origin == RecipeOrigin.Borrowed).ToList(),
-            _ => recipes,
+            _ => recipes.Where(r => r.Origin != RecipeOrigin.Bought).ToList(),
         };
         if (recipes.Count == 0)
         {
