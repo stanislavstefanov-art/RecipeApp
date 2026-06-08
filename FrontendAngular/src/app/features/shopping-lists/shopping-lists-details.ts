@@ -78,6 +78,7 @@ export class ShoppingListsDetails {
   );
 
   protected readonly selectedBoughtRecipeId = new FormControl('', { nonNullable: true });
+  protected readonly boughtRecipeQuantity = new FormControl(1, { nonNullable: true, validators: [Validators.required, Validators.min(1)] });
   protected readonly addBoughtState = signal<GenerateState>({ kind: 'idle' });
 
   protected readonly units = rxResource({
@@ -257,11 +258,12 @@ export class ShoppingListsDetails {
 
     this.addBoughtState.set({ kind: 'busy' });
     this.client
-      .addManualItem(this.id(), { productName: recipe.name, quantity: 1, unit: 'порция' })
+      .addManualItem(this.id(), { productName: recipe.name, quantity: this.boughtRecipeQuantity.value, unit: 'порция' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.selectedBoughtRecipeId.reset();
+          this.boughtRecipeQuantity.reset(1);
           this.addBoughtState.set({ kind: 'idle' });
           this._refresh.update((n) => n + 1);
           this.toast.show('success', this.translate.instant('shoppingLists.itemAdded'));

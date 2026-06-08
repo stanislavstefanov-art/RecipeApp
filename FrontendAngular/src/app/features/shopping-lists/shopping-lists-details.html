@@ -72,10 +72,17 @@
             <option [value]="r.id">{{ r.name }}</option>
           }
         </select>
+        <input
+          [formControl]="boughtRecipeQuantity"
+          type="number"
+          min="1"
+          step="1"
+          class="w-20 rounded border border-gray-300 px-3 py-2 text-sm focus:border-black focus:outline-none"
+        />
         <button
           type="button"
           (click)="onAddBoughtRecipe()"
-          [disabled]="!selectedBoughtRecipeId.value || addBoughtState().kind === 'busy'"
+          [disabled]="!selectedBoughtRecipeId.value || boughtRecipeQuantity.invalid || addBoughtState().kind === 'busy'"
           class="rounded bg-purple-700 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-800 disabled:opacity-50"
         >
           {{ addBoughtState().kind === 'busy' ? ('common.saving' | translate) : ('common.add' | translate) }}
