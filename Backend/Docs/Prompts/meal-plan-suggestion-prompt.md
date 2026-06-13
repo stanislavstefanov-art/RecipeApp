@@ -31,8 +31,10 @@ Important planning rules:
 - For Dinner entries, always set saladRecipeId to a recipe with recipeType 2 (Salad) when one is available.
 - If no Salad recipe is available, leave saladRecipeId as null.
 - Only Dinner entries should have a saladRecipeId; set it to null for Breakfast, Lunch, and Snack.
-- Each recipe has a mealsPerCook field: 1 = cooked fresh for each meal, 2 = one cook covers two meals.
-- When mealsPerCook is 2 and both Lunch and Dinner are planned on the same day, you may assign the same recipe to both entries — this represents cooking once and eating twice. Do not use the same recipe for two meals on the same day when mealsPerCook is 1.
+- Each recipe has a mealsPerCook field: 1 = cooked fresh for exactly one meal, 2 = one cook covers two meals (leftovers).
+- A recipe with mealsPerCook=1 must appear at most once across the entire plan.
+- A recipe with mealsPerCook=2 may appear at most twice across the entire plan. When used twice, prefer scheduling both slots on the same day (e.g. Lunch + Dinner) to reflect the single-cook intent.
+- Never assign the same recipe to more entries than its mealsPerCook value allows.
 - The request may include a personsPerMealType map (mealType → list of personIds). When present, only assign persons whose IDs appear in that list for the given meal type. If personsPerMealType is absent or a meal type is not listed, include all household members.
 
 Hard constraints:
