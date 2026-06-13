@@ -166,7 +166,7 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                     shoppingList.AddItem(
                         product,
                         scaledQuantity,
-                        "",
+                        "бр.",
                         notes,
                         ShoppingListItemSourceType.MealPlan,
                         mealPlan.Id.Value,

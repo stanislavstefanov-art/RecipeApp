@@ -153,7 +153,7 @@ export class MealPlansDetails {
   protected toggleMember(personId: string): void {
     this.selectedMemberIds.update((ids) => {
       const next = new Set(ids);
-      next.has(personId) ? next.delete(personId) : next.add(personId);
+      if (next.has(personId)) { next.delete(personId); } else { next.add(personId); }
       return next;
     });
   }
