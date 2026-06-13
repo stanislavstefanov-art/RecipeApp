@@ -163,12 +163,10 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         variation?.IngredientAdjustmentNotes,
                         assignment.Notes);
 
-                    var unit = NormalizeUnit(ingredient.Unit);
-
                     shoppingList.AddItem(
                         product,
                         scaledQuantity,
-                        unit,
+                        "",
                         notes,
                         ShoppingListItemSourceType.MealPlan,
                         mealPlan.Id.Value,
@@ -181,22 +179,6 @@ public sealed class GenerateShoppingListFromMealPlanHandler
 
         await _shoppingListRepository.SaveChangesAsync(cancellationToken);
         return Result.Success;
-    }
-
-    private static string NormalizeUnit(string? unit)
-    {
-        if (string.IsNullOrWhiteSpace(unit))
-        {
-            return "бр.";
-        }
-
-        // Collapse punctuation/spacing variants ("бр" / "бр." / " бр ") so units
-        // that mean the same thing merge into a single shopping-list item.
-        var trimmed = unit.Trim().TrimEnd('.').Trim();
-
-        return string.Equals(trimmed, "бр", StringComparison.OrdinalIgnoreCase)
-            ? "бр."
-            : trimmed;
     }
 
     private static string? BuildNotes(

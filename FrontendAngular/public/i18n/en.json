@@ -217,6 +217,8 @@
     "noVariation": "No variation",
     "portions": "Portions",
     "portionMultiplier": "Portion multiplier",
+    "assignedMembers": "Members",
+    "noMembersSelected": "Select at least one member.",
     "assignedTo": "Assigned to",
     "editAssignment": "Edit assignment",
     "assignmentUpdated": "Assignment updated for {{name}}.",

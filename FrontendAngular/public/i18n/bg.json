@@ -217,6 +217,8 @@
     "noVariation": "Без вариация",
     "portions": "Порции",
     "portionMultiplier": "Множител на порции",
+    "assignedMembers": "Участници",
+    "noMembersSelected": "Изберете поне един участник.",
     "assignedTo": "Назначено на",
     "editAssignment": "Редактирай назначение",
     "assignmentUpdated": "Назначението за {{name}} е обновено.",

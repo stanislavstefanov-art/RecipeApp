@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   input,
   signal,
@@ -76,6 +77,19 @@ export class MealPlansDetails {
     return getErrorMessage(err, this.translate);
   });
 
+  constructor() {
+    // When the household loads while the add-form is already open, initialise
+    // checkboxes to all members (only if none are selected yet).
+    effect(() => {
+      if (!this.showAddForm()) return;
+      const members = this.household.value()?.members;
+      if (!members || members.length === 0) return;
+      if (this.selectedMemberIds().size === 0) {
+        this.selectedMemberIds.set(new Set(members.map((m) => m.personId)));
+      }
+    });
+  }
+
   protected readonly removingEntryId = signal<string | null>(null);
   protected readonly swappingEntryId = signal<string | null>(null);
 
@@ -122,7 +136,7 @@ export class MealPlansDetails {
 
   protected readonly showAddForm = signal(false);
   protected readonly addEntryState = signal<FormState>({ kind: 'idle' });
-  protected readonly portionMultipliers = signal<Record<string, number>>({});
+  protected readonly selectedMemberIds = signal<Set<string>>(new Set());
   protected readonly addForm = new FormGroup({
     recipeId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     plannedDate: new FormControl(new Date().toISOString().slice(0, 10), {
@@ -132,19 +146,24 @@ export class MealPlansDetails {
     mealType: new FormControl('3', { nonNullable: true, validators: [Validators.required] }),
   });
 
-  protected setPortionMultiplier(personId: string, value: string): void {
-    const n = parseFloat(value);
-    this.portionMultipliers.update((m) => ({ ...m, [personId]: isNaN(n) || n <= 0 ? 1 : n }));
+  protected isMemberSelected(personId: string): boolean {
+    return this.selectedMemberIds().has(personId);
   }
 
-  protected getPortionMultiplier(personId: string): number {
-    return this.portionMultipliers()[personId] ?? 1;
+  protected toggleMember(personId: string): void {
+    this.selectedMemberIds.update((ids) => {
+      const next = new Set(ids);
+      next.has(personId) ? next.delete(personId) : next.add(personId);
+      return next;
+    });
   }
 
   protected onToggleAddForm(): void {
     this.showAddForm.update((v) => !v);
     this.addEntryState.set({ kind: 'idle' });
-    this.portionMultipliers.set({});
+    // Pre-select all current members; effect will fill in if household hasn't loaded yet.
+    const members = this.household.value()?.members ?? [];
+    this.selectedMemberIds.set(new Set(members.map((m) => m.personId)));
     this.addForm.reset({
       recipeId: '',
       plannedDate: new Date().toISOString().slice(0, 10),
@@ -159,6 +178,14 @@ export class MealPlansDetails {
     }
 
     const members = this.household.value()?.members ?? [];
+    const selectedIds = this.selectedMemberIds();
+    const selectedMembers = members.filter((m) => selectedIds.has(m.personId));
+
+    if (selectedMembers.length === 0) {
+      this.addEntryState.set({ kind: 'error', message: this.translate.instant('mealPlans.noMembersSelected') });
+      return;
+    }
+
     const { recipeId, plannedDate, mealType } = this.addForm.getRawValue();
 
     this.addEntryState.set({ kind: 'busy' });
@@ -168,11 +195,11 @@ export class MealPlansDetails {
         plannedDate,
         mealType: parseInt(mealType, 10),
         scope: 1,
-        assignments: members.map((m) => ({
+        assignments: selectedMembers.map((m) => ({
           personId: m.personId,
           assignedRecipeId: recipeId,
           recipeVariationId: null,
-          portionMultiplier: this.getPortionMultiplier(m.personId),
+          portionMultiplier: 1,
           notes: null,
         })),
       })
