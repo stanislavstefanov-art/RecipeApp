@@ -151,6 +151,7 @@ The JSON must match this schema exactly:
         - RecipeId: {recipe.RecipeId}
         Name: {recipe.Name}
         RecipeType: {recipeTypeName}
+        MealsPerCook: {recipe.MealsPerCook}
         Variations:
         {variations}
         """;

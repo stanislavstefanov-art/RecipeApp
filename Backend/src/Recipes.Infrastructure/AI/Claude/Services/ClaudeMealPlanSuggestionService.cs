@@ -37,7 +37,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             request.NumberOfDays,
             request.MealTypes.Count);
 
-        var first = FilterPersons(FilterInvalidEntries(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.MealTypes), request.PersonsPerMealType);
+        var first = FilterPersons(FilterInvalidEntries(EnforceMealsPerCook(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var firstValidation = await _validator.ValidateAsync(first, cancellationToken);
 
         if (firstValidation.IsValid)
@@ -62,7 +62,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Name = $"{request.Name} (retry)"
         };
 
-        var second = FilterPersons(FilterInvalidEntries(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.MealTypes), request.PersonsPerMealType);
+        var second = FilterPersons(FilterInvalidEntries(EnforceMealsPerCook(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var secondValidation = await _validator.ValidateAsync(second, cancellationToken);
 
         if (secondValidation.IsValid)
@@ -108,6 +108,33 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
         }).ToList();
 
         return corrected ? dto with { Entries = entries, NeedsReview = true } : dto;
+    }
+
+    private static MealPlanSuggestionDto EnforceMealsPerCook(
+        MealPlanSuggestionDto dto,
+        IReadOnlyList<AvailableRecipeDto> availableRecipes)
+    {
+        var cap = availableRecipes.ToDictionary(r => r.RecipeId, r => r.MealsPerCook);
+        var usageCount = new Dictionary<Guid, int>();
+        var dropped = false;
+
+        var entries = new List<MealPlanSuggestionEntryDto>();
+        foreach (var entry in dto.Entries)
+        {
+            usageCount.TryGetValue(entry.BaseRecipeId, out var used);
+            var allowed = cap.TryGetValue(entry.BaseRecipeId, out var c) ? c : 1;
+
+            if (used >= allowed)
+            {
+                dropped = true;
+                continue;
+            }
+
+            usageCount[entry.BaseRecipeId] = used + 1;
+            entries.Add(entry);
+        }
+
+        return dropped ? dto with { Entries = entries, NeedsReview = true } : dto;
     }
 
     private static MealPlanSuggestionDto FilterInvalidEntries(MealPlanSuggestionDto dto, IReadOnlyList<int> allowedMealTypes)
