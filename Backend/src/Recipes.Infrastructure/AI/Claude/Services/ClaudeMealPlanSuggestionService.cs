@@ -37,7 +37,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             request.NumberOfDays,
             request.MealTypes.Count);
 
-        var first = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceMealsPerCook(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
+        var first = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceRepeatProximity(EnforceMealsPerCook(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var firstValidation = await _validator.ValidateAsync(first, cancellationToken);
 
         if (firstValidation.IsValid)
@@ -62,7 +62,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Name = $"{request.Name} (retry)"
         };
 
-        var second = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceMealsPerCook(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
+        var second = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceRepeatProximity(EnforceMealsPerCook(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var secondValidation = await _validator.ValidateAsync(second, cancellationToken);
 
         if (secondValidation.IsValid)
@@ -108,6 +108,40 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
         }).ToList();
 
         return corrected ? dto with { Entries = entries, NeedsReview = true } : dto;
+    }
+
+    private static MealPlanSuggestionDto EnforceRepeatProximity(
+        MealPlanSuggestionDto dto,
+        IReadOnlyList<AvailableRecipeDto> availableRecipes)
+    {
+        var cap = availableRecipes.ToDictionary(r => r.RecipeId, r => r.MealsPerCook);
+        var firstUse = new Dictionary<Guid, DateOnly>();
+        var dropped = false;
+
+        var entries = new List<MealPlanSuggestionEntryDto>();
+        foreach (var entry in dto.Entries)
+        {
+            var mealsPerCook = cap.TryGetValue(entry.BaseRecipeId, out var c) ? c : 1;
+
+            if (mealsPerCook < 2 || !firstUse.TryGetValue(entry.BaseRecipeId, out var first))
+            {
+                firstUse[entry.BaseRecipeId] = entry.PlannedDate;
+                entries.Add(entry);
+                continue;
+            }
+
+            // Second use of a mealsPerCook=2 recipe: must be same day or consecutive day.
+            if (Math.Abs(entry.PlannedDate.DayNumber - first.DayNumber) <= 1)
+            {
+                entries.Add(entry);
+            }
+            else
+            {
+                dropped = true;
+            }
+        }
+
+        return dropped ? dto with { Entries = entries, NeedsReview = true } : dto;
     }
 
     private static MealPlanSuggestionDto EnforceAppropriateForMealTypes(

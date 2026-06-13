@@ -34,7 +34,7 @@ Important planning rules:
 - Each recipe has an AppropriateFor field listing which meal types it suits (Breakfast, Lunch, Dinner, Snack). "Any" means no restriction. Only assign a recipe to an entry whose mealType matches its AppropriateFor list. If AppropriateFor is "Any", the recipe may be used for any meal type.
 - Each recipe has a mealsPerCook field: 1 = cooked fresh for exactly one meal, 2 = one cook covers two meals (leftovers).
 - A recipe with mealsPerCook=1 must appear at most once across the entire plan.
-- A recipe with mealsPerCook=2 may appear at most twice across the entire plan. When used twice, prefer scheduling both slots on the same day (e.g. Lunch + Dinner) to reflect the single-cook intent.
+- A recipe with mealsPerCook=2 may appear at most twice across the entire plan. When used twice, both slots MUST be on the same day or on consecutive days (at most 1 day apart). The ideal is same-day Lunch + Dinner. Never place the two uses more than one day apart.
 - Never assign the same recipe to more entries than its mealsPerCook value allows.
 - The request may include a personsPerMealType map (mealType → list of personIds). When present, only assign persons whose IDs appear in that list for the given meal type. If personsPerMealType is absent or a meal type is not listed, include all household members.
 
