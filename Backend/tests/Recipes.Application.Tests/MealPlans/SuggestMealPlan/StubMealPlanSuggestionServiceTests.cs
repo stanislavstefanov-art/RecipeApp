@@ -24,8 +24,8 @@ public sealed class StubMealPlanSuggestionServiceTests
             recipes);
     }
 
-    private static AvailableRecipeDto MakeRecipe(string name, int mealsPerCook) =>
-        new(Guid.NewGuid(), name, 1, mealsPerCook, []);
+    private static AvailableRecipeDto MakeRecipe(string name, int mealsPerCook, IReadOnlyList<int>? appropriateFor = null) =>
+        new(Guid.NewGuid(), name, 1, mealsPerCook, appropriateFor ?? [], []);
 
     [Fact]
     public async Task Recipe_WithMealsPerCookOne_AppearAtMostOnce()

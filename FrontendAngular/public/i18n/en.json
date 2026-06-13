@@ -139,7 +139,9 @@
     "difficultyNotSet": "Not set",
     "mealsPerCook": "Meals per cook",
     "mealsPerCook1": "1 meal (lunch or dinner)",
-    "mealsPerCook2": "2 meals (lunch and dinner)"
+    "mealsPerCook2": "2 meals (lunch and dinner)",
+    "appropriateForLabel": "Appropriate for",
+    "appropriateForHint": "No selection = appropriate for any meal"
   },
   "households": {
     "title": "Households",

@@ -47,6 +47,14 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired()
             .HasDefaultValue(1);
 
+        builder.Property<string>("_appropriateForMealTypes")
+            .HasField("_appropriateForMealTypes")
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
+            .HasColumnName("AppropriateForMealTypes")
+            .IsRequired()
+            .HasDefaultValue("")
+            .HasMaxLength(20);
+
         builder.Property(r => r.Difficulty)
             .HasConversion<int?>()
             .IsRequired(false);

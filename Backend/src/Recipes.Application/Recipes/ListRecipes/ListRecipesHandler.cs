@@ -34,7 +34,8 @@ public sealed class ListRecipesHandler : IRequestHandler<ListRecipesQuery, Error
                 r.IsImported,
                 r.Ingredients.Select(i => i.Name).ToList(),
                 (int)r.Origin,
-                r.MealsPerCook))
+                r.MealsPerCook,
+                r.AppropriateForMealTypes.Select(m => (int)m).ToList()))
             .ToList();
 
         return result.ToErrorOr();

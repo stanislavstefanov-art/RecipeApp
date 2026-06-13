@@ -139,7 +139,9 @@
     "difficultyNotSet": "Не е зададена",
     "mealsPerCook": "Хранения при едно готвене",
     "mealsPerCook1": "1 хранене (обяд или вечеря)",
-    "mealsPerCook2": "2 хранения (обяд и вечеря)"
+    "mealsPerCook2": "2 хранения (обяд и вечеря)",
+    "appropriateForLabel": "Подходяща за",
+    "appropriateForHint": "Без отметки = подходяща за всяко хранене"
   },
   "households": {
     "title": "Домакинства",

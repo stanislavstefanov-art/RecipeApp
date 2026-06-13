@@ -93,6 +93,14 @@ export class RecipesDetails {
   protected readonly savingRecipeType = signal(false);
   protected readonly savingOrigin = signal(false);
   protected readonly savingMealsPerCook = signal(false);
+  protected readonly savingAppropriateFor = signal(false);
+
+  protected readonly MEAL_TYPES = [
+    { value: 1, labelKey: 'enums.mealType.1' },
+    { value: 2, labelKey: 'enums.mealType.2' },
+    { value: 3, labelKey: 'enums.mealType.3' },
+    { value: 4, labelKey: 'enums.mealType.4' },
+  ];
 
   protected readonly editIngredientForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200)] }),
@@ -124,6 +132,22 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.savingRecipeType.set(false),
+      });
+  }
+
+  protected onAppropriateForChange(mealTypeValue: number, checked: boolean): void {
+    const current = this.recipe.value()?.appropriateForMealTypes ?? [];
+    const updated = checked
+      ? [...new Set([...current, mealTypeValue])]
+      : current.filter(v => v !== mealTypeValue);
+
+    this.savingAppropriateFor.set(true);
+    this.client
+      .setAppropriateFor(this.id(), { mealTypes: updated })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => { this.savingAppropriateFor.set(false); this.recipe.reload(); },
+        error: () => this.savingAppropriateFor.set(false),
       });
   }
 

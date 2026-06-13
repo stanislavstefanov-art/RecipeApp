@@ -18,6 +18,7 @@ export interface RecipeListItemDto {
   readonly ingredientNames: readonly string[];
   readonly origin: number;
   readonly mealsPerCook: number;
+  readonly appropriateForMealTypes: readonly number[];
 }
 
 export interface CreateRecipeRequest {
@@ -90,6 +91,11 @@ export interface RecipeDto {
   readonly recipeType: number;
   readonly origin: number;
   readonly mealsPerCook: number;
+  readonly appropriateForMealTypes: readonly number[];
+}
+
+export interface SetAppropriateForRequest {
+  readonly mealTypes: readonly number[];
 }
 
 export interface SetRecipeTypeRequest {

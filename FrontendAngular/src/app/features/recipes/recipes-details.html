@@ -147,6 +147,28 @@
             }
           </div>
         </div>
+
+        <div>
+          <p class="block text-xs font-medium text-gray-500 mb-2">{{ 'recipes.appropriateForLabel' | translate }}</p>
+          <div class="flex flex-wrap gap-3">
+            @for (mt of MEAL_TYPES; track mt.value) {
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="data.appropriateForMealTypes.includes(mt.value)"
+                  [disabled]="savingAppropriateFor()"
+                  (change)="onAppropriateForChange(mt.value, $any($event.target).checked)"
+                  class="h-4 w-4 rounded border-gray-300 text-black disabled:opacity-50"
+                />
+                <span class="text-sm text-gray-700">{{ mt.labelKey | translate }}</span>
+              </label>
+            }
+          </div>
+          @if (savingAppropriateFor()) {
+            <span class="mt-1 text-xs text-gray-400">{{ 'recipes.saving' | translate }}</span>
+          }
+          <p class="mt-1 text-xs text-gray-400">{{ 'recipes.appropriateForHint' | translate }}</p>
+        </div>
       </div>
     </section>
 

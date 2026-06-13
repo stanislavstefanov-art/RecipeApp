@@ -31,6 +31,7 @@ Important planning rules:
 - For Dinner entries, always set saladRecipeId to a recipe with recipeType 2 (Salad) when one is available.
 - If no Salad recipe is available, leave saladRecipeId as null.
 - Only Dinner entries should have a saladRecipeId; set it to null for Breakfast, Lunch, and Snack.
+- Each recipe has an AppropriateFor field listing which meal types it suits (Breakfast, Lunch, Dinner, Snack). "Any" means no restriction. Only assign a recipe to an entry whose mealType matches its AppropriateFor list. If AppropriateFor is "Any", the recipe may be used for any meal type.
 - Each recipe has a mealsPerCook field: 1 = cooked fresh for exactly one meal, 2 = one cook covers two meals (leftovers).
 - A recipe with mealsPerCook=1 must appear at most once across the entire plan.
 - A recipe with mealsPerCook=2 may appear at most twice across the entire plan. When used twice, prefer scheduling both slots on the same day (e.g. Lunch + Dinner) to reflect the single-cook intent.

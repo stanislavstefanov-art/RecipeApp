@@ -18,7 +18,8 @@ public sealed record RecipeDto(
     int? DifficultyLevel,
     int RecipeType,
     int Origin,
-    int MealsPerCook);
+    int MealsPerCook,
+    IReadOnlyList<int> AppropriateForMealTypes);
 
 public sealed record IngredientDto(Guid Id, string Name, decimal Quantity, string Unit);
 

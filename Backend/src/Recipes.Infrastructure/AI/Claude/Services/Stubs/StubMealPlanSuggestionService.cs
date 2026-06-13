@@ -14,16 +14,19 @@ public sealed class StubMealPlanSuggestionService : IMealPlanSuggestionService
         // Track how many times each recipe has been used; never exceed MealsPerCook.
         var usageCount = request.AvailableRecipes.ToDictionary(r => r.RecipeId, _ => 0);
 
-        AvailableRecipeDto PickRecipe(int slotIndex)
+        AvailableRecipeDto PickRecipe(int slotIndex, int mealType)
         {
-            // Try recipes in round-robin order, skipping any that have hit their MealsPerCook cap.
+            // Try recipes in round-robin order, respecting MealsPerCook cap and AppropriateFor.
             for (var offset = 0; offset < request.AvailableRecipes.Count; offset++)
             {
                 var candidate = request.AvailableRecipes[(slotIndex + offset) % request.AvailableRecipes.Count];
-                if (usageCount[candidate.RecipeId] < candidate.MealsPerCook)
-                    return candidate;
+                if (usageCount[candidate.RecipeId] >= candidate.MealsPerCook)
+                    continue;
+                if (candidate.AppropriateForMealTypes.Count > 0 && !candidate.AppropriateForMealTypes.Contains(mealType))
+                    continue;
+                return candidate;
             }
-            // All recipes exhausted — fall back to the first one to avoid returning null.
+            // All recipes exhausted — fall back ignoring constraints.
             return request.AvailableRecipes[slotIndex % request.AvailableRecipes.Count];
         }
 
@@ -34,7 +37,7 @@ public sealed class StubMealPlanSuggestionService : IMealPlanSuggestionService
 
             foreach (var mealType in request.MealTypes)
             {
-                var baseRecipe = PickRecipe(slotIndex);
+                var baseRecipe = PickRecipe(slotIndex, mealType);
                 usageCount[baseRecipe.RecipeId]++;
 
                 var assignments = request.Household.Members

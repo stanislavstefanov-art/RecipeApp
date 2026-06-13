@@ -146,12 +146,16 @@ The JSON must match this schema exactly:
                             $"    - VariationId: {v.RecipeVariationId}, Name: {v.Name}, Notes: {v.Notes ?? "N/A"}, IngredientAdjustmentNotes: {v.IngredientAdjustmentNotes ?? "N/A"}"));
 
                 var recipeTypeName = recipe.RecipeType == (int)Domain.Enums.RecipeType.Salad ? "Salad" : "MainDish";
+                var appropriateFor = recipe.AppropriateForMealTypes.Count == 0
+                    ? "Any"
+                    : string.Join(", ", recipe.AppropriateForMealTypes.Select(m => ((MealType)m).ToString()));
 
                 return $"""
         - RecipeId: {recipe.RecipeId}
         Name: {recipe.Name}
         RecipeType: {recipeTypeName}
         MealsPerCook: {recipe.MealsPerCook}
+        AppropriateFor: {appropriateFor}
         Variations:
         {variations}
         """;

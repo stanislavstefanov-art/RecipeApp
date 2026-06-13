@@ -17,6 +17,14 @@ public sealed class Recipe : Entity
     public RecipeType RecipeType { get; private set; } = RecipeType.MainDish;
     public RecipeOrigin Origin { get; private set; } = RecipeOrigin.Home;
     public int MealsPerCook { get; private set; } = 1;
+    private string _appropriateForMealTypes = "";
+    public IReadOnlyList<MealType> AppropriateForMealTypes =>
+        string.IsNullOrEmpty(_appropriateForMealTypes)
+            ? []
+            : _appropriateForMealTypes
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => (MealType)int.Parse(x))
+                .ToList();
     public DifficultyLevel? Difficulty { get; private set; }
     public bool IsImported { get; private set; }
 
@@ -180,6 +188,11 @@ public sealed class Recipe : Entity
         if (value < 1 || value > 2)
             throw new ArgumentOutOfRangeException(nameof(value), "MealsPerCook must be 1 or 2.");
         MealsPerCook = value;
+    }
+
+    public void SetAppropriateForMealTypes(IReadOnlyList<MealType> mealTypes)
+    {
+        _appropriateForMealTypes = string.Join(',', mealTypes.Distinct().Select(m => (int)m));
     }
 
     public void SetDifficulty(DifficultyLevel? level) => Difficulty = level;

@@ -44,7 +44,8 @@ public sealed class CritiqueRecipeHandler : IRequestHandler<CritiqueRecipeComman
             recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null,
             (int)recipe.RecipeType,
             (int)recipe.Origin,
-            recipe.MealsPerCook);
+            recipe.MealsPerCook,
+            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList());
 
         try
         {

@@ -26,6 +26,7 @@ using Recipes.Application.Recipes.RemoveIngredientFromRecipe;
 using Recipes.Application.Recipes.RemoveStepFromRecipe;
 using Recipes.Application.Recipes.SetRecipeDifficulty;
 using Recipes.Application.Recipes.SetMealsPerCook;
+using Recipes.Application.Recipes.SetAppropriateForMealTypes;
 using Recipes.Application.Recipes.SetRecipeOrigin;
 using Recipes.Application.Recipes.SetRecipeType;
 using Recipes.Application.Recipes.UpdateIngredientInRecipe;
@@ -131,6 +132,12 @@ public static class RecipesEndpoints
         group.MapPut("/{id:guid}/meals-per-cook", async (Guid id, SetMealsPerCookRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new SetMealsPerCookCommand(id, request.MealsPerCook), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPut("/{id:guid}/appropriate-for", async (Guid id, SetAppropriateForRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new SetAppropriateForMealTypesCommand(id, request.MealTypes), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -279,6 +286,8 @@ public sealed record SetRecipeTypeRequest(int RecipeType);
 public sealed record SetRecipeOriginRequest(int Origin);
 
 public sealed record SetMealsPerCookRequest(int MealsPerCook);
+
+public sealed record SetAppropriateForRequest(IReadOnlyList<int> MealTypes);
 
 public sealed record ImportRecipeRequest(string Text);
 public sealed record ImportRecipeFromUrlRequest(string SourceUrl);

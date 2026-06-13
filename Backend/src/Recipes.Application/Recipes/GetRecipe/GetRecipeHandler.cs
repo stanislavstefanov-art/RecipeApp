@@ -57,6 +57,7 @@ public sealed class GetRecipeHandler : IRequestHandler<GetRecipeQuery, ErrorOr<R
             recipe.Difficulty.HasValue ? (int)recipe.Difficulty.Value : null,
             (int)recipe.RecipeType,
             (int)recipe.Origin,
-            recipe.MealsPerCook);
+            recipe.MealsPerCook,
+            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList());
     }
 }

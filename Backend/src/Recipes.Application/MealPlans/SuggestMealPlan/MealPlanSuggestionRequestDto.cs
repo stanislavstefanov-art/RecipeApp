@@ -18,6 +18,7 @@ public sealed record AvailableRecipeDto(
     string Name,
     int RecipeType,
     int MealsPerCook,
+    IReadOnlyList<int> AppropriateForMealTypes,
     IReadOnlyList<AvailableRecipeVariationDto> Variations);
 
 public sealed record AvailableRecipeVariationDto(

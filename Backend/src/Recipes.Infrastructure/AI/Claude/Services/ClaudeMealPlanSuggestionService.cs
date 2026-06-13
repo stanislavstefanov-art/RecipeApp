@@ -37,7 +37,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             request.NumberOfDays,
             request.MealTypes.Count);
 
-        var first = FilterPersons(FilterInvalidEntries(EnforceMealsPerCook(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
+        var first = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceMealsPerCook(await _client.SuggestAsync(request, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var firstValidation = await _validator.ValidateAsync(first, cancellationToken);
 
         if (firstValidation.IsValid)
@@ -62,7 +62,7 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
             Name = $"{request.Name} (retry)"
         };
 
-        var second = FilterPersons(FilterInvalidEntries(EnforceMealsPerCook(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
+        var second = FilterPersons(FilterInvalidEntries(EnforceAppropriateForMealTypes(EnforceMealsPerCook(await _client.SuggestAsync(retryRequest, prompt, schema, cancellationToken), request.AvailableRecipes), request.AvailableRecipes), request.MealTypes), request.PersonsPerMealType);
         var secondValidation = await _validator.ValidateAsync(second, cancellationToken);
 
         if (secondValidation.IsValid)
@@ -108,6 +108,28 @@ public sealed class ClaudeMealPlanSuggestionService : IMealPlanSuggestionService
         }).ToList();
 
         return corrected ? dto with { Entries = entries, NeedsReview = true } : dto;
+    }
+
+    private static MealPlanSuggestionDto EnforceAppropriateForMealTypes(
+        MealPlanSuggestionDto dto,
+        IReadOnlyList<AvailableRecipeDto> availableRecipes)
+    {
+        var restrictions = availableRecipes
+            .Where(r => r.AppropriateForMealTypes.Count > 0)
+            .ToDictionary(r => r.RecipeId, r => new HashSet<int>(r.AppropriateForMealTypes));
+
+        if (restrictions.Count == 0) return dto;
+
+        var dropped = false;
+        var entries = dto.Entries.Where(e =>
+        {
+            if (!restrictions.TryGetValue(e.BaseRecipeId, out var allowed)) return true;
+            if (allowed.Contains(e.MealType)) return true;
+            dropped = true;
+            return false;
+        }).ToList();
+
+        return dropped ? dto with { Entries = entries, NeedsReview = true } : dto;
     }
 
     private static MealPlanSuggestionDto EnforceMealsPerCook(
