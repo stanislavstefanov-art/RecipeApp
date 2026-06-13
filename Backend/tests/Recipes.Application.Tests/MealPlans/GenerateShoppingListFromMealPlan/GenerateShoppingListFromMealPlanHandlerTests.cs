@@ -45,14 +45,11 @@ public sealed class GenerateShoppingListFromMealPlanHandlerTests
         var recipeRepository = new FakeRecipeRepository([recipe1, recipe2]);
         var productRepository = new FakeProductRepository();
 
-        var personRepository = new FakePersonRepository([person]);
-
         var handler = new GenerateShoppingListFromMealPlanHandler(
             mealPlanRepository,
             shoppingListRepository,
             recipeRepository,
-            productRepository,
-            personRepository);
+            productRepository);
 
         var result = await handler.Handle(
             new GenerateShoppingListFromMealPlanCommand(mealPlan.Id.Value, shoppingList.Id.Value),

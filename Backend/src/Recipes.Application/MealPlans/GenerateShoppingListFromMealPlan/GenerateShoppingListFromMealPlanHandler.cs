@@ -14,20 +14,17 @@ public sealed class GenerateShoppingListFromMealPlanHandler
     private readonly IShoppingListRepository _shoppingListRepository;
     private readonly IRecipeRepository _recipeRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IPersonRepository _personRepository;
 
     public GenerateShoppingListFromMealPlanHandler(
         IMealPlanRepository mealPlanRepository,
         IShoppingListRepository shoppingListRepository,
         IRecipeRepository recipeRepository,
-        IProductRepository productRepository,
-        IPersonRepository personRepository)
+        IProductRepository productRepository)
     {
         _mealPlanRepository = mealPlanRepository;
         _shoppingListRepository = shoppingListRepository;
         _recipeRepository = recipeRepository;
         _productRepository = productRepository;
-        _personRepository = personRepository;
     }
 
     public async Task<ErrorOr<Success>> Handle(
@@ -53,9 +50,6 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                 $"Shopping list '{request.ShoppingListId}' was not found.");
         }
 
-        var persons = await _personRepository.GetAllAsync(cancellationToken);
-        var personsById = persons.ToDictionary(x => x.Id, x => x.Name);
-
         foreach (var entry in mealPlan.Entries.OrderBy(x => x.PlannedDate).ThenBy(x => x.MealType))
         {
             foreach (var assignment in entry.PersonAssignments)
@@ -67,10 +61,6 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         "Recipe.NotFound",
                         $"Recipe '{assignment.AssignedRecipeId.Value}' was not found.");
                 }
-
-                var personName = personsById.TryGetValue(assignment.PersonId, out var name)
-                    ? name
-                    : assignment.PersonId.Value.ToString();
 
                 // Bought recipes are added by recipe name — no ingredient expansion.
                 if (recipe.Origin == RecipeOrigin.Bought)
@@ -157,17 +147,11 @@ public sealed class GenerateShoppingListFromMealPlanHandler
                         2,
                         MidpointRounding.AwayFromZero);
 
-                    var notes = BuildNotes(
-                        personName,
-                        variation?.Name,
-                        variation?.IngredientAdjustmentNotes,
-                        assignment.Notes);
-
                     shoppingList.AddItem(
                         product,
                         scaledQuantity,
                         "бр.",
-                        notes,
+                        null,
                         ShoppingListItemSourceType.MealPlan,
                         mealPlan.Id.Value,
                         recipe.Id,
@@ -179,32 +163,6 @@ public sealed class GenerateShoppingListFromMealPlanHandler
 
         await _shoppingListRepository.SaveChangesAsync(cancellationToken);
         return Result.Success;
-    }
-
-    private static string? BuildNotes(
-        string personName,
-        string? variationName,
-        string? variationAdjustmentNotes,
-        string? assignmentNotes)
-    {
-        var parts = new List<string> { $"For {personName}" };
-
-        if (!string.IsNullOrWhiteSpace(variationName))
-        {
-            parts.Add($"Variation: {variationName}");
-        }
-
-        if (!string.IsNullOrWhiteSpace(variationAdjustmentNotes))
-        {
-            parts.Add($"Adjustment: {variationAdjustmentNotes}");
-        }
-
-        if (!string.IsNullOrWhiteSpace(assignmentNotes))
-        {
-            parts.Add($"Assignment notes: {assignmentNotes}");
-        }
-
-        return string.Join(" | ", parts);
     }
 
     private sealed class EffectiveIngredient
