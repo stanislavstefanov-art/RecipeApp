@@ -7,4 +7,7 @@ public sealed record CookingLogEntryDto(
     DateOnly CookedOn,
     int Servings,
     string? Notes,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<CookingLogPreparerDto> PreparedBy);
+
+public sealed record CookingLogPreparerDto(Guid PersonId, string PersonName);

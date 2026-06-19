@@ -29,6 +29,24 @@
     rows="2"
     class="w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
   ></textarea>
+  @if (persons().length > 0) {
+    <div>
+      <p class="mb-1.5 text-sm font-medium text-gray-700">{{ 'cookingLog.preparedBy' | translate }}</p>
+      <div class="flex flex-wrap gap-3">
+        @for (person of persons(); track person.id) {
+          <label class="flex cursor-pointer items-center gap-1.5">
+            <input
+              type="checkbox"
+              [checked]="isPersonSelected(person.id)"
+              (change)="togglePerson(person.id, $any($event.target).checked)"
+              class="h-4 w-4 rounded border-gray-300"
+            />
+            <span class="text-sm text-gray-700">{{ person.name }}</span>
+          </label>
+        }
+      </div>
+    </div>
+  }
   <button
     type="submit"
     [disabled]="form.invalid"

@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { useCookingHistory } from "../hooks/useCookingHistory";
 import { useLogCooking } from "../hooks/useLogCooking";
 import { useDeleteCookingEntry } from "../hooks/useDeleteCookingEntry";
+import { usePersons } from "../../persons/hooks/usePersons";
+import { getUserProfile } from "../../../api/user";
 
 interface CookingHistorySectionProps {
   recipeId: string;
@@ -17,20 +20,50 @@ export function CookingHistorySection({ recipeId }: CookingHistorySectionProps) 
   const { data: entries = [] } = useCookingHistory(recipeId);
   const logMutation = useLogCooking(recipeId);
   const deleteMutation = useDeleteCookingEntry(recipeId);
+  const { data: persons = [] } = usePersons();
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserProfile,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const [cookedOn, setCookedOn] = useState(todayIso);
   const [servings, setServings] = useState(1);
   const [notes, setNotes] = useState("");
+  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>([]);
+  const [preselected, setPreselected] = useState(false);
+
+  const userPersonId = userProfile?.personId ?? null;
+
+  // Pre-select the current user's linked person once the profile loads (runs once)
+  useEffect(() => {
+    if (!preselected && userPersonId) {
+      setSelectedPersonIds([userPersonId]);
+      setPreselected(true);
+    }
+  }, [userPersonId, preselected]);
+
+  function togglePerson(personId: string) {
+    setSelectedPersonIds((prev) =>
+      prev.includes(personId) ? prev.filter((id) => id !== personId) : [...prev, personId],
+    );
+  }
 
   function handleLog(e: React.FormEvent) {
     e.preventDefault();
     logMutation.mutate(
-      { cookedOn, servings, notes: notes.trim() || null },
+      {
+        cookedOn,
+        servings,
+        notes: notes.trim() || null,
+        preparedByPersonIds: selectedPersonIds.length > 0 ? selectedPersonIds : undefined,
+      },
       {
         onSuccess: () => {
           setCookedOn(todayIso());
           setServings(1);
           setNotes("");
+          setSelectedPersonIds(userPersonId ? [userPersonId] : []);
         },
       },
     );
@@ -83,6 +116,24 @@ export function CookingHistorySection({ recipeId }: CookingHistorySectionProps) 
           rows={2}
           className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
         />
+        {persons.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-slate-700">{t("cookingLog.preparedBy")}</p>
+            <div className="flex flex-wrap gap-3">
+              {persons.map((person) => (
+                <label key={person.id} className="flex cursor-pointer items-center gap-1.5">
+                  <input
+                    type="checkbox"
+                    checked={selectedPersonIds.includes(person.id)}
+                    onChange={() => togglePerson(person.id)}
+                    className="h-4 w-4 rounded border-slate-300"
+                  />
+                  <span className="text-sm text-slate-700">{person.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
         <button
           type="submit"
           disabled={logMutation.isPending}
@@ -105,6 +156,11 @@ export function CookingHistorySection({ recipeId }: CookingHistorySectionProps) 
                 <p className="text-sm font-medium">
                   {entry.cookedOn} &middot; {t("cookingLog.servingsLabel", { count: entry.servings })}
                 </p>
+                {entry.preparedBy.length > 0 && (
+                  <p className="text-sm text-slate-500">
+                    {t("cookingLog.preparedBy")}: {entry.preparedBy.map((p) => p.personName).join(", ")}
+                  </p>
+                )}
                 {entry.notes && (
                   <p className="text-sm text-slate-500">{entry.notes}</p>
                 )}

@@ -12,5 +12,9 @@ public sealed class LogCookingEntryCommandValidator : AbstractValidator<LogCooki
             .WithMessage("Cooked date cannot be in the future.");
         RuleFor(x => x.Servings).InclusiveBetween(1, 100);
         RuleFor(x => x.Notes).MaximumLength(500).When(x => x.Notes is not null);
+        RuleFor(x => x.PreparedByPersonIds)
+            .Must(ids => ids is null || ids.Count <= 20)
+            .WithMessage("Cannot record more than 20 preparers.");
+        RuleForEach(x => x.PreparedByPersonIds).NotEmpty();
     }
 }

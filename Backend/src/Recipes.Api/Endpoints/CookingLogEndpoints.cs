@@ -18,7 +18,7 @@ public static class CookingLogEndpoints
         group.MapPost("/", async (LogCookingEntryRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(
-                new LogCookingEntryCommand(request.RecipeId, request.CookedOn, request.Servings, request.Notes), ct);
+                new LogCookingEntryCommand(request.RecipeId, request.CookedOn, request.Servings, request.Notes, request.PreparedByPersonIds), ct);
             return result.ToHttpResult(dto => Results.Created($"/api/cooking-log/{dto.Id}", dto));
         });
 
@@ -44,4 +44,9 @@ public static class CookingLogEndpoints
     }
 }
 
-file sealed record LogCookingEntryRequest(Guid RecipeId, DateOnly CookedOn, int Servings, string? Notes);
+file sealed record LogCookingEntryRequest(
+    Guid RecipeId,
+    DateOnly CookedOn,
+    int Servings,
+    string? Notes,
+    IReadOnlyList<Guid>? PreparedByPersonIds = null);

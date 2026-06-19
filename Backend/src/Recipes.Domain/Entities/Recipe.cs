@@ -133,6 +133,44 @@ public sealed class Recipe : Entity
         return true;
     }
 
+    public bool UpdateStep(RecipeStepId stepId, string instruction)
+    {
+        if (string.IsNullOrWhiteSpace(instruction))
+            throw new ArgumentException("Step instruction cannot be empty.", nameof(instruction));
+
+        var step = _steps.SingleOrDefault(s => s.Id == stepId);
+        if (step is null) return false;
+
+        step.SetInstruction(instruction.Trim());
+        return true;
+    }
+
+    public bool MoveStep(RecipeStepId stepId, string direction)
+    {
+        var step = _steps.SingleOrDefault(s => s.Id == stepId);
+        if (step is null) return false;
+
+        var ordered = _steps.OrderBy(s => s.Order).ToList();
+        var idx = ordered.IndexOf(step);
+
+        if (direction == "up" && idx > 0)
+        {
+            var neighbour = ordered[idx - 1];
+            var tmp = step.Order;
+            step.SetOrder(neighbour.Order);
+            neighbour.SetOrder(tmp);
+        }
+        else if (direction == "down" && idx < ordered.Count - 1)
+        {
+            var neighbour = ordered[idx + 1];
+            var tmp = step.Order;
+            step.SetOrder(neighbour.Order);
+            neighbour.SetOrder(tmp);
+        }
+
+        return true;
+    }
+
     public RecipeVariation AddVariation(
         string name,
         string? notes = null,

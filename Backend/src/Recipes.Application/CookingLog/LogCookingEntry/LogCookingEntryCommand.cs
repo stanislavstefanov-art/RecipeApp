@@ -7,4 +7,5 @@ public sealed record LogCookingEntryCommand(
     Guid RecipeId,
     DateOnly CookedOn,
     int Servings,
-    string? Notes) : IRequest<ErrorOr<CookingLogEntryDto>>;
+    string? Notes,
+    IReadOnlyList<Guid>? PreparedByPersonIds = null) : IRequest<ErrorOr<CookingLogEntryDto>>;

@@ -15,11 +15,14 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { RecipesClient } from '../../api/recipes.client';
+import { PersonsClient } from '../../api/persons.client';
+import { UserClient } from '../../api/user.client';
 import { ToastService } from '../../core/toast.service';
 import { getErrorMessage } from '../../shared/get-error-message';
 import { DifficultyRatingComponent } from '../../shared/ui/difficulty-rating/difficulty-rating';
 import { StarRatingComponent } from '../../shared/ui/star-rating/star-rating';
 import { UnitNamePipe } from '../../shared/unit-name.pipe';
+import { PreparerNamesPipe } from '../../shared/preparer-names.pipe';
 import { AddIngredientForm } from './add-ingredient-form';
 import { AddStepForm } from './add-step-form';
 import { LogCookingFormComponent } from './log-cooking-form';
@@ -43,13 +46,16 @@ type ImageState =
 
 @Component({
   selector: 'app-recipes-details',
-  imports: [RouterLink, FormsModule, ReactiveFormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, DifficultyRatingComponent, UnitNamePipe],
+  imports: [RouterLink, FormsModule, ReactiveFormsModule, UpdateRecipeNameForm, AddIngredientForm, AddStepForm, LogCookingFormComponent, SuggestSubstitutionsForm, TranslateModule, StarRatingComponent, DifficultyRatingComponent, UnitNamePipe, PreparerNamesPipe],
   templateUrl: './recipes-details.html',
   styleUrl: './recipes-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class RecipesDetails {
   private readonly client = inject(RecipesClient);
+  private readonly personsClient = inject(PersonsClient);
+  private readonly userClient = inject(UserClient);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translate = inject(TranslateService);
@@ -87,7 +93,22 @@ export class RecipesDetails {
 
   protected readonly deletingIngredientId = signal<string | null>(null);
   protected readonly deletingStepId = signal<string | null>(null);
+  protected readonly editingStepId = signal<string | null>(null);
+  protected readonly editingStepInstruction = signal('');
+  protected readonly savingStepId = signal<string | null>(null);
+  protected readonly movingStepId = signal<string | null>(null);
   protected readonly editingIngredientId = signal<string | null>(null);
+
+  // Persons and user profile (for "who prepared" checkboxes)
+  protected readonly persons = rxResource({
+    stream: () => this.personsClient.list(),
+  });
+
+  protected readonly userProfile = rxResource({
+    stream: () => this.userClient.getProfile(),
+  });
+
+  protected readonly userPersonId = computed(() => this.userProfile.value()?.personId ?? null);
   protected readonly savingIngredientId = signal<string | null>(null);
   protected readonly savingDifficulty = signal(false);
   protected readonly savingRecipeType = signal(false);
@@ -224,6 +245,49 @@ export class RecipesDetails {
           this.recipe.reload();
         },
         error: () => this.deletingIngredientId.set(null),
+      });
+  }
+
+  protected onEditStep(step: { id: string; instruction: string }): void {
+    this.editingStepId.set(step.id);
+    this.editingStepInstruction.set(step.instruction);
+  }
+
+  protected onCancelEditStep(): void {
+    this.editingStepId.set(null);
+    this.editingStepInstruction.set('');
+  }
+
+  protected onSaveEditStep(stepId: string): void {
+    const instruction = this.editingStepInstruction().trim();
+    if (!instruction) return;
+
+    this.savingStepId.set(stepId);
+    this.client
+      .updateStep(this.id(), stepId, { instruction })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.savingStepId.set(null);
+          this.editingStepId.set(null);
+          this.editingStepInstruction.set('');
+          this.recipe.reload();
+        },
+        error: () => this.savingStepId.set(null),
+      });
+  }
+
+  protected onMoveStep(stepId: string, direction: 'up' | 'down'): void {
+    this.movingStepId.set(stepId);
+    this.client
+      .moveStep(this.id(), stepId, { direction })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.movingStepId.set(null);
+          this.recipe.reload();
+        },
+        error: () => this.movingStepId.set(null),
       });
   }
 
@@ -392,7 +456,13 @@ export class RecipesDetails {
   protected onLogCooking(value: LogCookingValue): void {
     this.isLoggingCooking.set(true);
     this.client
-      .logCooking({ recipeId: this.id(), ...value })
+      .logCooking({
+        recipeId: this.id(),
+        cookedOn: value.cookedOn,
+        servings: value.servings,
+        notes: value.notes,
+        preparedByPersonIds: value.preparedByPersonIds.length ? value.preparedByPersonIds : undefined,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

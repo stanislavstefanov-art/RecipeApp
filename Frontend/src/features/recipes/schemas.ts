@@ -1,6 +1,11 @@
 import { z } from "zod";
 import type { TFunction } from "i18next";
 
+export const cookingLogPreparerSchema = z.object({
+  personId: z.string().uuid(),
+  personName: z.string(),
+});
+
 export const cookingLogEntrySchema = z.object({
   id: z.string().uuid(),
   recipeId: z.string().uuid(),
@@ -9,8 +14,10 @@ export const cookingLogEntrySchema = z.object({
   servings: z.number().int().min(1),
   notes: z.string().nullable().default(null),
   createdAt: z.string(),
+  preparedBy: z.array(cookingLogPreparerSchema).default([]),
 });
 export type CookingLogEntry = z.infer<typeof cookingLogEntrySchema>;
+export type CookingLogPreparer = z.infer<typeof cookingLogPreparerSchema>;
 
 export const recipeVariationSchema = z.object({
   id: z.string().uuid(),
@@ -42,6 +49,7 @@ export const recipeIngredientSchema = z.object({
 });
 
 export const recipeStepSchema = z.object({
+  id: z.string().uuid(),
   order: z.number(),
   instruction: z.string(),
 });

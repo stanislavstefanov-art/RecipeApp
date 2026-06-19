@@ -12,6 +12,7 @@ import {
   ImportedRecipeDto,
   IngredientSubstitutionSuggestionDto,
   LogCookingRequest,
+  MoveStepRequest,
   RateRecipeRequest,
   RecipeDto,
   RecipeListItemDto,
@@ -24,6 +25,7 @@ import {
   SuggestSubstitutionsRequest,
   UpdateIngredientRequest,
   UpdateRecipeRequest,
+  UpdateStepRequest,
 } from './recipes.dto';
 
 import { environment } from '../../environments/environment';
@@ -100,6 +102,20 @@ export class RecipesClient {
   removeStep(recipeId: string, stepId: string): Observable<void> {
     return this.http.delete<void>(
       `${API_BASE_URL}/api/recipes/${recipeId}/steps/${stepId}`,
+    );
+  }
+
+  updateStep(recipeId: string, stepId: string, payload: UpdateStepRequest): Observable<void> {
+    return this.http.put<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/steps/${stepId}`,
+      payload,
+    );
+  }
+
+  moveStep(recipeId: string, stepId: string, payload: MoveStepRequest): Observable<void> {
+    return this.http.post<void>(
+      `${API_BASE_URL}/api/recipes/${recipeId}/steps/${stepId}/move`,
+      payload,
     );
   }
 

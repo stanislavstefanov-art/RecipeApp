@@ -24,6 +24,8 @@ using Recipes.Application.Recipes.RateRecipe;
 using Recipes.Application.Recipes.UpdateRecipeVariationOverrides;
 using Recipes.Application.Recipes.RemoveIngredientFromRecipe;
 using Recipes.Application.Recipes.RemoveStepFromRecipe;
+using Recipes.Application.Recipes.UpdateStep;
+using Recipes.Application.Recipes.MoveStep;
 using Recipes.Application.Recipes.SetRecipeDifficulty;
 using Recipes.Application.Recipes.SetMealsPerCook;
 using Recipes.Application.Recipes.SetAppropriateForMealTypes;
@@ -144,6 +146,18 @@ public static class RecipesEndpoints
         group.MapDelete("/{id:guid}/steps/{stepId:guid}", async (Guid id, Guid stepId, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new RemoveStepFromRecipeCommand(id, stepId), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPut("/{id:guid}/steps/{stepId:guid}", async (Guid id, Guid stepId, UpdateStepRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new UpdateStepCommand(id, stepId, request.Instruction), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPost("/{id:guid}/steps/{stepId:guid}/move", async (Guid id, Guid stepId, MoveStepRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new MoveStepCommand(id, stepId, request.Direction), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -309,3 +323,7 @@ public sealed record BatchAnalyzeRequest(IReadOnlyList<Guid> RecipeIds);
 public sealed record UpdateIngredientInRecipeRequest(string Name, decimal Quantity, string Unit);
 
 public sealed record RateRecipeRequest(int Stars, string? Comment);
+
+public sealed record UpdateStepRequest(string Instruction);
+
+public sealed record MoveStepRequest(string Direction);

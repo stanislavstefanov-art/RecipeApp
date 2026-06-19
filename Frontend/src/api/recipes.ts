@@ -37,6 +37,14 @@ export async function addStep(recipeId: string, input: AddStepInput) {
   await apiClient.post(`/api/recipes/${recipeId}/steps`, input);
 }
 
+export async function updateStep(recipeId: string, stepId: string, instruction: string) {
+  await apiClient.put(`/api/recipes/${recipeId}/steps/${stepId}`, { instruction });
+}
+
+export async function moveStep(recipeId: string, stepId: string, direction: "up" | "down") {
+  await apiClient.post(`/api/recipes/${recipeId}/steps/${stepId}/move`, { direction });
+}
+
 export async function deleteRecipe(recipeId: string) {
   await apiClient.delete(`/api/recipes/${recipeId}`);
 }
@@ -55,8 +63,15 @@ export async function logCooking(
   cookedOn: string,
   servings: number,
   notes?: string | null,
+  preparedByPersonIds?: string[],
 ) {
-  const res = await apiClient.post("/api/cooking-log", { recipeId, cookedOn, servings, notes });
+  const res = await apiClient.post("/api/cooking-log", {
+    recipeId,
+    cookedOn,
+    servings,
+    notes,
+    preparedByPersonIds: preparedByPersonIds?.length ? preparedByPersonIds : undefined,
+  });
   return cookingLogEntrySchema.parse(res.data);
 }
 

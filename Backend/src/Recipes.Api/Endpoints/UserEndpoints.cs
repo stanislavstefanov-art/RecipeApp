@@ -1,6 +1,7 @@
 using MediatR;
 using Recipes.Api.Extensions;
 using Recipes.Application.Users.ClearUserData;
+using Recipes.Application.Users.GetUserProfile;
 
 namespace Recipes.Api.Endpoints;
 
@@ -11,6 +12,12 @@ public static class UserEndpoints
         var group = app.MapGroup("/api/user")
             .WithTags("User")
             .RequireAuthorization();
+
+        group.MapGet("/me", async (ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new GetUserProfileQuery(), ct);
+            return result.ToHttpResult(dto => Results.Ok(dto));
+        });
 
         group.MapDelete("/data", async (ISender sender, CancellationToken ct) =>
         {

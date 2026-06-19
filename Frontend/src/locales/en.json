@@ -42,6 +42,8 @@
     "addStep": "Add step",
     "noIngredients": "No ingredients added yet.",
     "noSteps": "No steps added yet.",
+    "moveStepUp": "Move up",
+    "moveStepDown": "Move down",
     "noRecipes": "No recipes yet.",
     "noRecipesDesc": "Create your first recipe.",
     "ingredients": "Ingredients",
@@ -238,7 +240,8 @@
     "confirmDelete": "Delete this cooking log entry?",
     "deleting": "Deleting…",
     "deleteEntry": "Delete entry",
-    "servingsLabel": "{{count}} serving(s)"
+    "servingsLabel": "{{count}} serving(s)",
+    "preparedBy": "Prepared by"
   },
   "ratings": {
     "title": "Ratings",

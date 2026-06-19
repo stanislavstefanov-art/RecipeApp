@@ -11,15 +11,18 @@ public sealed class GetRecipeCookingHistoryHandler
 {
     private readonly IRecipeRepository _recipes;
     private readonly ICookingLogRepository _cookingLog;
+    private readonly IPersonRepository _persons;
     private readonly ICurrentUser _currentUser;
 
     public GetRecipeCookingHistoryHandler(
         IRecipeRepository recipes,
         ICookingLogRepository cookingLog,
+        IPersonRepository persons,
         ICurrentUser currentUser)
     {
         _recipes = recipes;
         _cookingLog = cookingLog;
+        _persons = persons;
         _currentUser = currentUser;
     }
 
@@ -42,6 +45,16 @@ public sealed class GetRecipeCookingHistoryHandler
         var entries = await _cookingLog.GetByRecipeAndUserAsync(
             recipeId, _currentUser.UserId, limit: 20, cancellationToken);
 
+        var allPreparerIds = entries
+            .SelectMany(e => e.PreparedBy.Select(p => p.PersonId))
+            .Distinct()
+            .ToList();
+
+        var personLookup = allPreparerIds.Count == 0
+            ? new Dictionary<PersonId, string>()
+            : (await _persons.GetByIdsAsync(allPreparerIds, cancellationToken))
+                .ToDictionary(p => p.Id, p => p.Name);
+
         IReadOnlyList<CookingLogEntryDto> result = entries
             .Select(e => new CookingLogEntryDto(
                 e.Id.Value,
@@ -50,7 +63,12 @@ public sealed class GetRecipeCookingHistoryHandler
                 e.CookedOn,
                 e.Servings,
                 e.Notes,
-                e.CreatedAt))
+                e.CreatedAt,
+                e.PreparedBy
+                    .Select(p => new CookingLogPreparerDto(
+                        p.PersonId.Value,
+                        personLookup.GetValueOrDefault(p.PersonId, "Unknown")))
+                    .ToList()))
             .ToList();
 
         return result.ToErrorOr();

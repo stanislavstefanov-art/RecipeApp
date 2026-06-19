@@ -50,5 +50,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.Property(x => x.LastLoginAt);
+
+        builder.Property(x => x.PersonId)
+            .HasConversion(
+                id => id.HasValue ? id.Value.Value : (Guid?)null,
+                value => value.HasValue ? PersonId.From(value.Value) : null)
+            .IsRequired(false);
     }
 }

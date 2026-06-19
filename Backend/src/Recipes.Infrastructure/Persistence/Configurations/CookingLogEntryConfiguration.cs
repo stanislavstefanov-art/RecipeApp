@@ -45,5 +45,18 @@ public sealed class CookingLogEntryConfiguration : IEntityTypeConfiguration<Cook
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(e => new { e.RecipeId, e.UserId });
+
+        builder.OwnsMany(e => e.PreparedBy, b =>
+        {
+            b.ToTable("CookingLogPreparers");
+            b.WithOwner().HasForeignKey("CookingLogEntryId");
+            b.Property(p => p.PersonId)
+                .HasConversion(
+                    id => id.Value,
+                    value => PersonId.From(value))
+                .HasColumnName("PersonId")
+                .IsRequired();
+            b.HasKey("CookingLogEntryId", "PersonId");
+        });
     }
 }

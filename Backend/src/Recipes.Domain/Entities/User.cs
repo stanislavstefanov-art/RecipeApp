@@ -13,6 +13,7 @@ public sealed class User : Entity
     public Guid? EntraObjectId { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? LastLoginAt { get; private set; }
+    public PersonId? PersonId { get; private set; }
 
     private User() { }
 
@@ -44,4 +45,6 @@ public sealed class User : Entity
     {
         LastLoginAt = now;
     }
+
+    public void LinkToPerson(PersonId personId) => PersonId = personId;
 }

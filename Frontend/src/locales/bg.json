@@ -42,6 +42,8 @@
     "addStep": "Добави стъпка",
     "noIngredients": "Все още няма добавени съставки.",
     "noSteps": "Все още няма добавени стъпки.",
+    "moveStepUp": "Премести нагоре",
+    "moveStepDown": "Премести надолу",
     "noRecipes": "Все още няма рецепти.",
     "noRecipesDesc": "Създайте първата си рецепта.",
     "ingredients": "Съставки",
@@ -238,7 +240,8 @@
     "confirmDelete": "Изтрий тази история?",
     "deleting": "Изтриване…",
     "deleteEntry": "Изтрий запис",
-    "servingsLabel": "{{count}} порц."
+    "servingsLabel": "{{count}} порц.",
+    "preparedBy": "Приготвено от"
   },
   "ratings": {
     "title": "Оценки",

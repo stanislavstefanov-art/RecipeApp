@@ -19,5 +19,7 @@ public sealed class RecipeStep
     }
 
     internal void SetOrder(int order) => Order = order;
+
+    internal void SetInstruction(string instruction) => Instruction = instruction;
 }
 

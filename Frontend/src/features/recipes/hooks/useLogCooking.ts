@@ -9,11 +9,13 @@ export function useLogCooking(recipeId: string) {
       cookedOn,
       servings,
       notes,
+      preparedByPersonIds,
     }: {
       cookedOn: string;
       servings: number;
       notes?: string | null;
-    }) => logCooking(recipeId, cookedOn, servings, notes),
+      preparedByPersonIds?: string[];
+    }) => logCooking(recipeId, cookedOn, servings, notes, preparedByPersonIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cookingHistory", recipeId] });
     },

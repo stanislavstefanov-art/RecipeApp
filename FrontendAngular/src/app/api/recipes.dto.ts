@@ -58,6 +58,14 @@ export interface AddStepRequest {
   readonly instruction: string;
 }
 
+export interface UpdateStepRequest {
+  readonly instruction: string;
+}
+
+export interface MoveStepRequest {
+  readonly direction: 'up' | 'down';
+}
+
 export interface IngredientDto {
   readonly id: string;
   readonly name: string;
@@ -110,6 +118,11 @@ export interface SetMealsPerCookRequest {
   readonly mealsPerCook: number;
 }
 
+export interface CookingLogPreparerDto {
+  readonly personId: string;
+  readonly personName: string;
+}
+
 export interface CookingLogEntryDto {
   readonly id: string;
   readonly recipeId: string;
@@ -118,6 +131,7 @@ export interface CookingLogEntryDto {
   readonly servings: number;
   readonly notes: string | null;
   readonly createdAt: string;
+  readonly preparedBy: readonly CookingLogPreparerDto[];
 }
 
 export interface LogCookingRequest {
@@ -125,6 +139,7 @@ export interface LogCookingRequest {
   readonly cookedOn: string;
   readonly servings: number;
   readonly notes?: string | null;
+  readonly preparedByPersonIds?: readonly string[];
 }
 
 export interface RateRecipeRequest {

@@ -11,15 +11,18 @@ public sealed class LogCookingEntryCommandHandler : IRequestHandler<LogCookingEn
 {
     private readonly IRecipeRepository _recipes;
     private readonly ICookingLogRepository _cookingLog;
+    private readonly IPersonRepository _persons;
     private readonly ICurrentUser _currentUser;
 
     public LogCookingEntryCommandHandler(
         IRecipeRepository recipes,
         ICookingLogRepository cookingLog,
+        IPersonRepository persons,
         ICurrentUser currentUser)
     {
         _recipes = recipes;
         _cookingLog = cookingLog;
+        _persons = persons;
         _currentUser = currentUser;
     }
 
@@ -39,6 +42,10 @@ public sealed class LogCookingEntryCommandHandler : IRequestHandler<LogCookingEn
                 return Error.NotFound("Recipe.NotFound", $"Recipe '{request.RecipeId}' was not found.");
         }
 
+        var preparerIds = request.PreparedByPersonIds?
+            .Select(id => PersonId.From(id))
+            .ToList() ?? [];
+
         var entry = new CookingLogEntry(
             recipeId,
             _currentUser.UserId,
@@ -46,10 +53,13 @@ public sealed class LogCookingEntryCommandHandler : IRequestHandler<LogCookingEn
             request.CookedOn,
             request.Servings,
             request.Notes,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow,
+            preparerIds);
 
         _cookingLog.Add(entry);
         await _cookingLog.SaveChangesAsync(cancellationToken);
+
+        var preparerDtos = await BuildPreparerDtosAsync(preparerIds, cancellationToken);
 
         return new CookingLogEntryDto(
             entry.Id.Value,
@@ -58,6 +68,21 @@ public sealed class LogCookingEntryCommandHandler : IRequestHandler<LogCookingEn
             entry.CookedOn,
             entry.Servings,
             entry.Notes,
-            entry.CreatedAt);
+            entry.CreatedAt,
+            preparerDtos);
+    }
+
+    private async Task<IReadOnlyList<CookingLogPreparerDto>> BuildPreparerDtosAsync(
+        IReadOnlyList<PersonId> preparerIds, CancellationToken ct)
+    {
+        if (preparerIds.Count == 0) return [];
+
+        var persons = await _persons.GetByIdsAsync(preparerIds, ct);
+        var lookup = persons.ToDictionary(p => p.Id);
+
+        return preparerIds
+            .Where(id => lookup.ContainsKey(id))
+            .Select(id => new CookingLogPreparerDto(id.Value, lookup[id].Name))
+            .ToList();
     }
 }

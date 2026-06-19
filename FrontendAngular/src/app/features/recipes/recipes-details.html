@@ -283,24 +283,74 @@
       <h2 class="text-lg font-medium">{{ 'recipes.steps' | translate }}</h2>
       @if (hasSteps()) {
         <ol class="mt-4 space-y-3">
-          @for (step of data.steps; track step.id) {
-            <li class="flex items-start justify-between gap-3">
-              <div class="flex flex-1 gap-3">
-                <span
-                  class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold"
-                >
-                  {{ step.order }}
-                </span>
-                <span class="text-sm text-gray-700">{{ step.instruction }}</span>
-              </div>
-              <button
-                type="button"
-                (click)="onDeleteStep(step.id)"
-                [disabled]="deletingStepId() === step.id"
-                class="shrink-0 text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+          @for (step of data.steps; track step.id; let idx = $index; let last = $last) {
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold"
               >
-                {{ deletingStepId() === step.id ? ('recipes.deleting' | translate) : ('common.delete' | translate) }}
-              </button>
+                {{ step.order }}
+              </span>
+              @if (editingStepId() === step.id) {
+                <div class="flex flex-1 flex-col gap-2">
+                  <textarea
+                    [value]="editingStepInstruction()"
+                    (input)="editingStepInstruction.set($any($event.target).value)"
+                    maxlength="1000"
+                    rows="3"
+                    class="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-black focus:outline-none"
+                  ></textarea>
+                  <div class="flex gap-1">
+                    <button
+                      type="button"
+                      (click)="onSaveEditStep(step.id)"
+                      [disabled]="savingStepId() === step.id || !editingStepInstruction().trim()"
+                      class="rounded bg-black px-2 py-1 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+                    >
+                      {{ savingStepId() === step.id ? ('recipes.saving' | translate) : ('common.save' | translate) }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="onCancelEditStep()"
+                      class="rounded border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      {{ 'common.cancel' | translate }}
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <span class="flex-1 text-sm text-gray-700">{{ step.instruction }}</span>
+                <div class="flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    [title]="'recipes.moveStepUp' | translate"
+                    [disabled]="idx === 0 || movingStepId() !== null"
+                    (click)="onMoveStep(step.id, 'up')"
+                    class="rounded p-0.5 text-gray-400 hover:text-gray-700 disabled:opacity-25"
+                  >↑</button>
+                  <button
+                    type="button"
+                    [title]="'recipes.moveStepDown' | translate"
+                    [disabled]="last || movingStepId() !== null"
+                    (click)="onMoveStep(step.id, 'down')"
+                    class="rounded p-0.5 text-gray-400 hover:text-gray-700 disabled:opacity-25"
+                  >↓</button>
+                  <button
+                    type="button"
+                    (click)="onEditStep(step)"
+                    class="ml-1 text-xs text-gray-600 hover:text-gray-800"
+                  >
+                    {{ 'common.edit' | translate }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="onDeleteStep(step.id)"
+                    [disabled]="deletingStepId() === step.id"
+                    class="text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
+                  >
+                    {{ deletingStepId() === step.id ? ('recipes.deleting' | translate) : ('common.delete' | translate) }}
+                  </button>
+                </div>
+              }
             </li>
           }
         </ol>
@@ -354,7 +404,11 @@
       <h2 class="text-lg font-medium">{{ 'cookingLog.title' | translate }}</h2>
 
       <div class="mt-4 border-t border-gray-100 pt-4">
-        <app-log-cooking-form (submitted)="onLogCooking($event)" />
+        <app-log-cooking-form
+          [persons]="persons.value() ?? []"
+          [userPersonId]="userPersonId()"
+          (submitted)="onLogCooking($event)"
+        />
       </div>
 
       @if (cookingHistory.isLoading()) {
@@ -369,6 +423,11 @@
                 <p class="text-sm font-medium">
                   {{ entry.cookedOn }} &middot; {{ 'cookingLog.servingsLabel' | translate:{ count: entry.servings } }}
                 </p>
+                @if (entry.preparedBy && entry.preparedBy.length) {
+                  <p class="text-sm text-gray-500">
+                    {{ 'cookingLog.preparedBy' | translate }}: {{ entry.preparedBy | preparerNames }}
+                  </p>
+                }
                 @if (entry.notes) {
                   <p class="text-sm text-gray-500">{{ entry.notes }}</p>
                 }
