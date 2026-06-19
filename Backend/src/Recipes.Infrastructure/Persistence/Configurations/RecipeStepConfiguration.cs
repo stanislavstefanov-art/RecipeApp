@@ -32,8 +32,7 @@ public sealed class RecipeStepConfiguration : IEntityTypeConfiguration<RecipeSte
             .IsRequired()
             .HasMaxLength(2000);
 
-        builder.HasIndex(s => new { s.RecipeId, s.Order })
-            .IsUnique();
+        builder.HasIndex(s => new { s.RecipeId, s.Order });
     }
 }
 
