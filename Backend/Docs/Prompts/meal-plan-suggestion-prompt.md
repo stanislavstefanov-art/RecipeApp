@@ -51,3 +51,11 @@ The plan should balance the whole week, not try to satisfy every soft preference
 Pantry and cooking history guidance:
 - When availableIngredients is provided, strongly prefer recipes that use any of those ingredients. These are priority ingredients the user has on hand and wants to consume soon.
 - When recentlyCookedRecipes is provided, de-prioritize recipes cooked recently (low daysAgo). Prefer recipes not cooked in the last 14 days. Recipes cooked 7 or fewer days ago should be avoided unless no alternatives exist.
+
+Seasonality guidance:
+- The request includes a currentSeason field (e.g., "Summer") derived from the plan start date.
+- Each available recipe has a seasonality field: 0=AllYear, 1=Spring, 2=Summer, 3=Autumn, 4=Winter.
+- AllYear (0) recipes match every season and should be used freely.
+- When a recipe's seasonality matches the currentSeason, prefer it over AllYear alternatives where appropriate.
+- Strongly de-prioritize recipes whose seasonality does not match the currentSeason (e.g., a Summer recipe in Winter).
+- Only use out-of-season recipes when no suitable in-season or AllYear alternatives exist for the required meal type and dietary constraints.

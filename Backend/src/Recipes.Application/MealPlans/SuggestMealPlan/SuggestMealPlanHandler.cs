@@ -124,11 +124,13 @@ public sealed class SuggestMealPlanHandler
                     v.Id.Value,
                     v.Name,
                     v.Notes,
-                    v.IngredientAdjustmentNotes)).ToList()))
+                    v.IngredientAdjustmentNotes)).ToList(),
+                (int)x.Seasonality))
             .ToList(),
             request.PersonsPerMealType,
             availableIngredients,
-            recentlyCookedRecipes.Count > 0 ? recentlyCookedRecipes : null);
+            recentlyCookedRecipes.Count > 0 ? recentlyCookedRecipes : null,
+            CurrentSeason: GetSeasonName(request.StartDate));
 
         var suggestion = await _mealPlanSuggestionService.SuggestAsync(
             suggestionRequest,
@@ -136,4 +138,12 @@ public sealed class SuggestMealPlanHandler
 
         return suggestion;
     }
+
+    private static string GetSeasonName(DateOnly date) => date.Month switch
+    {
+        3 or 4 or 5 => "Spring",
+        6 or 7 or 8 => "Summer",
+        9 or 10 or 11 => "Autumn",
+        _ => "Winter",
+    };
 }

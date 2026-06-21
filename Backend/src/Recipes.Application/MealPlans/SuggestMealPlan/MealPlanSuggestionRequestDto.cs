@@ -9,7 +9,8 @@ public sealed record MealPlanSuggestionRequestDto(
     IReadOnlyList<AvailableRecipeDto> AvailableRecipes,
     IReadOnlyDictionary<int, IReadOnlyList<Guid>>? PersonsPerMealType = null,
     IReadOnlyList<string>? AvailableIngredients = null,
-    IReadOnlyList<RecentlyCookedDto>? RecentlyCookedRecipes = null);
+    IReadOnlyList<RecentlyCookedDto>? RecentlyCookedRecipes = null,
+    string? CurrentSeason = null);
 
 public sealed record RecentlyCookedDto(Guid RecipeId, string RecipeName, int DaysAgo);
 
@@ -19,7 +20,8 @@ public sealed record AvailableRecipeDto(
     int RecipeType,
     int MealsPerCook,
     IReadOnlyList<int> AppropriateForMealTypes,
-    IReadOnlyList<AvailableRecipeVariationDto> Variations);
+    IReadOnlyList<AvailableRecipeVariationDto> Variations,
+    int Seasonality = 0);
 
 public sealed record AvailableRecipeVariationDto(
     Guid RecipeVariationId,
