@@ -143,7 +143,8 @@
     "mealsPerCook1": "1 meal (lunch or dinner)",
     "mealsPerCook2": "2 meals (lunch and dinner)",
     "appropriateForLabel": "Appropriate for",
-    "appropriateForHint": "No selection = appropriate for any meal"
+    "appropriateForHint": "No selection = appropriate for any meal",
+    "seasonality": "Seasonality"
   },
   "households": {
     "title": "Households",
@@ -502,6 +503,13 @@
       "1": "Manual",
       "2": "From shopping list",
       "3": "Meal plan"
+    },
+    "season": {
+      "0": "All Year",
+      "1": "Spring",
+      "2": "Summer",
+      "3": "Autumn",
+      "4": "Winter"
     }
   },
   "cookingLog": {

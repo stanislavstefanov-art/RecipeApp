@@ -100,6 +100,7 @@ export interface RecipeDto {
   readonly origin: number;
   readonly mealsPerCook: number;
   readonly appropriateForMealTypes: readonly number[];
+  readonly seasonality: number;
 }
 
 export interface SetAppropriateForRequest {
@@ -166,6 +167,10 @@ export interface IngredientSubstitutionSuggestionDto {
   readonly confidence: number;
   readonly needsReview: boolean;
   readonly notes?: string;
+}
+
+export interface SetSeasonalityRequest {
+  readonly seasonality: number;
 }
 
 export interface ImportRecipeRequest {

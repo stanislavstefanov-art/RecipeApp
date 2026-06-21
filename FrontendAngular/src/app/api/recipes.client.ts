@@ -22,6 +22,7 @@ import {
   SetMealsPerCookRequest,
   SetRecipeOriginRequest,
   SetRecipeTypeRequest,
+  SetSeasonalityRequest,
   SuggestSubstitutionsRequest,
   UpdateIngredientRequest,
   UpdateRecipeRequest,
@@ -84,6 +85,10 @@ export class RecipesClient {
 
   setAppropriateFor(recipeId: string, payload: SetAppropriateForRequest): Observable<void> {
     return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/appropriate-for`, payload);
+  }
+
+  setSeasonality(recipeId: string, payload: SetSeasonalityRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/api/recipes/${recipeId}/seasonality`, payload);
   }
 
   updateIngredient(recipeId: string, ingredientId: string, payload: UpdateIngredientRequest): Observable<void> {
