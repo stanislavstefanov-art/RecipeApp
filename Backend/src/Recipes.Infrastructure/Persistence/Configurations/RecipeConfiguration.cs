@@ -63,6 +63,11 @@ public sealed class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(r => r.Seasonality)
+            .HasConversion<int>()
+            .IsRequired()
+            .HasDefaultValue(Season.AllYear);
+
         builder.Property(r => r.ImageUrl)
             .IsRequired(false)
             .HasMaxLength(2048);
