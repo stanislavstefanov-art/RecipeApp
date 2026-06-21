@@ -27,6 +27,7 @@ public sealed class Recipe : Entity
                 .ToList();
     public DifficultyLevel? Difficulty { get; private set; }
     public bool IsImported { get; private set; }
+    public Season Seasonality { get; private set; } = Season.AllYear;
 
     public string? ImageUrl { get; private set; }
 
@@ -234,6 +235,8 @@ public sealed class Recipe : Entity
     }
 
     public void SetDifficulty(DifficultyLevel? level) => Difficulty = level;
+
+    public void SetSeasonality(Season season) => Seasonality = season;
 
     public void MarkAsImported() => IsImported = true;
 }
