@@ -19,7 +19,8 @@ public sealed record RecipeDto(
     int RecipeType,
     int Origin,
     int MealsPerCook,
-    IReadOnlyList<int> AppropriateForMealTypes);
+    IReadOnlyList<int> AppropriateForMealTypes,
+    int Seasonality);
 
 public sealed record IngredientDto(Guid Id, string Name, decimal Quantity, string Unit);
 

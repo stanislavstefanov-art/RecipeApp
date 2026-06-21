@@ -31,6 +31,7 @@ using Recipes.Application.Recipes.SetMealsPerCook;
 using Recipes.Application.Recipes.SetAppropriateForMealTypes;
 using Recipes.Application.Recipes.SetRecipeOrigin;
 using Recipes.Application.Recipes.SetRecipeType;
+using Recipes.Application.Recipes.SetSeasonality;
 using Recipes.Application.Recipes.UpdateIngredientInRecipe;
 
 namespace Recipes.Api.Endpoints;
@@ -140,6 +141,12 @@ public static class RecipesEndpoints
         group.MapPut("/{id:guid}/appropriate-for", async (Guid id, SetAppropriateForRequest request, ISender sender, CancellationToken ct) =>
         {
             var result = await sender.Send(new SetAppropriateForMealTypesCommand(id, request.MealTypes), ct);
+            return result.ToHttpResult(_ => Results.NoContent());
+        });
+
+        group.MapPut("/{id:guid}/seasonality", async (Guid id, SetSeasonalityRequest request, ISender sender, CancellationToken ct) =>
+        {
+            var result = await sender.Send(new SetSeasonalityCommand(id, request.Seasonality), ct);
             return result.ToHttpResult(_ => Results.NoContent());
         });
 
@@ -327,3 +334,5 @@ public sealed record RateRecipeRequest(int Stars, string? Comment);
 public sealed record UpdateStepRequest(string Instruction);
 
 public sealed record MoveStepRequest(string Direction);
+
+public sealed record SetSeasonalityRequest(int Seasonality);

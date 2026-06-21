@@ -45,7 +45,8 @@ public sealed class CritiqueRecipeHandler : IRequestHandler<CritiqueRecipeComman
             (int)recipe.RecipeType,
             (int)recipe.Origin,
             recipe.MealsPerCook,
-            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList());
+            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList(),
+            (int)recipe.Seasonality);
 
         try
         {

@@ -48,7 +48,8 @@ public sealed class ScaleRecipeHandler : IRequestHandler<ScaleRecipeCommand, Err
             (int)recipe.RecipeType,
             (int)recipe.Origin,
             recipe.MealsPerCook,
-            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList());
+            recipe.AppropriateForMealTypes.Select(m => (int)m).ToList(),
+            (int)recipe.Seasonality);
 
         try
         {
