@@ -45,6 +45,10 @@ export async function moveStep(recipeId: string, stepId: string, direction: "up"
   await apiClient.post(`/api/recipes/${recipeId}/steps/${stepId}/move`, { direction });
 }
 
+export async function setSeasonality(recipeId: string, seasonality: number) {
+  await apiClient.put(`/api/recipes/${recipeId}/seasonality`, { seasonality });
+}
+
 export async function deleteRecipe(recipeId: string) {
   await apiClient.delete(`/api/recipes/${recipeId}`);
 }

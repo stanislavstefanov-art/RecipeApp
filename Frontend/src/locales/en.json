@@ -81,7 +81,8 @@
     "suggestions": "Suggestions",
     "scaled": "Scaled recipe",
     "jurorVerdicts": "Juror verdicts",
-    "consensus": "Consensus"
+    "consensus": "Consensus",
+    "seasonality": "Seasonality"
   },
   "households": {
     "title": "Households",
@@ -316,6 +317,13 @@
       "1": "Manual",
       "2": "From shopping list",
       "3": "Meal plan"
+    },
+    "season": {
+      "0": "All Year",
+      "1": "Spring",
+      "2": "Summer",
+      "3": "Autumn",
+      "4": "Winter"
     }
   },
   "errors": {

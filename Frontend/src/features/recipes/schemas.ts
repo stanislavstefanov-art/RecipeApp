@@ -64,6 +64,7 @@ export const recipeDetailsSchema = z.object({
   ratingCount: z.number().int().default(0),
   ratings: z.array(recipeRatingSchema).default([]),
   myRating: recipeRatingSchema.nullable().default(null),
+  seasonality: z.number().int().default(0),
 });
 
 export const createRecipeSchema = (t: TFunction) =>

@@ -9,6 +9,7 @@ import {
 import { useRecipe } from "../../features/recipes/hooks/useRecipe";
 import { useUpdateStep } from "../../features/recipes/hooks/useUpdateStep";
 import { useMoveStep } from "../../features/recipes/hooks/useMoveStep";
+import { useSetSeasonality } from "../../features/recipes/hooks/useSetSeasonality";
 import { UpdateRecipeNameForm } from "../../features/recipes/components/UpdateRecipeNameForm";
 import { AddIngredientForm } from "../../features/recipes/components/AddIngredientForm";
 import { AddStepForm } from "../../features/recipes/components/AddStepForm";
@@ -22,6 +23,7 @@ export function RecipeDetailsPage() {
   const { data, isLoading, isError, error } = useRecipe(recipeId);
   const updateStepMutation = useUpdateStep(recipeId);
   const moveStepMutation = useMoveStep(recipeId);
+  const setSeasonalityMutation = useSetSeasonality(recipeId);
 
   const [editingStepId, setEditingStepId] = useState<string | null>(null);
   const [editingInstruction, setEditingInstruction] = useState("");
@@ -116,6 +118,29 @@ export function RecipeDetailsPage() {
           <AddStepForm recipeId={data.id} />
         </section>
       </div>
+
+      <section className="rounded-xl border bg-white p-5 sm:p-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-medium sm:text-lg">{t('recipes.seasonality')}</h3>
+          {setSeasonalityMutation.isPending && (
+            <span className="text-sm text-slate-400">{t('common.loading')}</span>
+          )}
+        </div>
+        <div className="mt-3">
+          <select
+            value={data.seasonality}
+            disabled={setSeasonalityMutation.isPending}
+            onChange={(e) => setSeasonalityMutation.mutate(Number(e.target.value))}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:opacity-50"
+          >
+            {[0, 1, 2, 3, 4].map((s) => (
+              <option key={s} value={s}>
+                {t(`enums.season.${s}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
 
       <section className="rounded-xl border bg-white p-5 sm:p-6">
         <div className="flex items-center justify-between">
