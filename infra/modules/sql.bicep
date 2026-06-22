@@ -45,7 +45,8 @@ resource database 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
     // Opt in to Azure SQL free offer: 32 GB storage + 100k vCore-seconds/month free
     useFreeLimit: true
     freeLimitExhaustionBehavior: 'AutoPause'
-    requestedBackupStorageRedundancy: 'Geo'
+    // Free-tier constraint: only Local redundancy is allowed with useFreeLimit + AutoPause
+    requestedBackupStorageRedundancy: 'Local'
   }
 }
 
