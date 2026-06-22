@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useCookingHistory } from "../hooks/useCookingHistory";
@@ -30,23 +30,21 @@ export function CookingHistorySection({ recipeId }: CookingHistorySectionProps) 
   const [cookedOn, setCookedOn] = useState(todayIso);
   const [servings, setServings] = useState(1);
   const [notes, setNotes] = useState("");
-  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>([]);
-  const [preselected, setPreselected] = useState(false);
+  // null = no explicit user choice yet; derives default from userPersonId
+  const [userSelectedPersonIds, setUserSelectedPersonIds] = useState<string[] | null>(null);
 
   const userPersonId = userProfile?.personId ?? null;
 
-  // Pre-select the current user's linked person once the profile loads (runs once)
-  useEffect(() => {
-    if (!preselected && userPersonId) {
-      setSelectedPersonIds([userPersonId]);
-      setPreselected(true);
-    }
-  }, [userPersonId, preselected]);
+  // Effective selection: user's explicit choice, or fall back to pre-selecting their person
+  const selectedPersonIds = userSelectedPersonIds ?? (userPersonId ? [userPersonId] : []);
 
   function togglePerson(personId: string) {
-    setSelectedPersonIds((prev) =>
-      prev.includes(personId) ? prev.filter((id) => id !== personId) : [...prev, personId],
-    );
+    setUserSelectedPersonIds((prev) => {
+      const current = prev ?? (userPersonId ? [userPersonId] : []);
+      return current.includes(personId)
+        ? current.filter((id) => id !== personId)
+        : [...current, personId];
+    });
   }
 
   function handleLog(e: React.FormEvent) {
@@ -63,7 +61,7 @@ export function CookingHistorySection({ recipeId }: CookingHistorySectionProps) 
           setCookedOn(todayIso());
           setServings(1);
           setNotes("");
-          setSelectedPersonIds(userPersonId ? [userPersonId] : []);
+          setUserSelectedPersonIds(null); // reset to default pre-selection
         },
       },
     );
