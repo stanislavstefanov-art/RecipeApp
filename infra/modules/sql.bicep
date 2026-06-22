@@ -45,6 +45,16 @@ resource database 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
     // Opt in to Azure SQL free offer: 32 GB storage + 100k vCore-seconds/month free
     useFreeLimit: true
     freeLimitExhaustionBehavior: 'AutoPause'
+    requestedBackupStorageRedundancy: 'Geo'
+  }
+}
+
+resource backupRetention 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2023-08-01-preview' = {
+  parent: database
+  name: 'default'
+  properties: {
+    retentionDays: 7
+    diffBackupIntervalInHours: 12
   }
 }
 
